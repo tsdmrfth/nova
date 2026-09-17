@@ -1,0 +1,23 @@
+.shell {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.phase {
+  margin: 0 0 0.5rem;
+  color: #8aa0b8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+h1 {
+  margin: 0 0 0.75rem;
+  font-size: 2.5rem;
+  font-weight: 650;
+}
+
+.meta {
+  color: #8aa0b8;
+}
