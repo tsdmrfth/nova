@@ -1,6 +1,14 @@
 :root {
-  color: #e8eef7;
-  background: #0b1220;
+  --color-bg: #07111c;
+  --color-navy: #0b1a2e;
+  --color-navy-glass: rgba(11, 26, 46, 0.72);
+  --color-accent: #2775CA;
+  --color-glow: #3B8EF0;
+  --color-text: #e8eef7;
+  --color-muted: #8aa0b8;
+  --color-stroke: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  color: var(--color-text);
+  background: var(--color-bg);
   font-family: ui-sans-serif, system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -20,4 +28,11 @@ body,
 
 body {
   min-height: 100vh;
+  background:
+    radial-gradient(circle at top, color-mix(in srgb, var(--color-glow) 16%, transparent), transparent 42%),
+    var(--color-bg);
+}
+
+a {
+  color: var(--color-glow);
 }

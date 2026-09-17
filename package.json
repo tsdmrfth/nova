@@ -14,7 +14,8 @@
     "lint": "eslint .",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "vitest run",
-    "build": "pnpm -r --if-present run build"
+    "build": "pnpm -r --if-present run build",
+    "quality": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
   },
   "pnpm": {
     "onlyBuiltDependencies": ["esbuild"]
