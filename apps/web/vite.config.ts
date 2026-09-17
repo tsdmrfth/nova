@@ -3,7 +3,16 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {
+    exclude: ["@nova/assets"],
+  },
   server: {
-    port: 5173,
+    host: "127.0.0.1",
+    port: 43123,
+    strictPort: true,
+  },
+  preview: {
+    host: "127.0.0.1",
+    port: 43123,
   },
 });

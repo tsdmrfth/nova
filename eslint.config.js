@@ -34,6 +34,17 @@ export default tseslint.config(
         "warn",
         { allowConstantExport: true },
       ],
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/drafts/**", "@nova/assets/drafts", "@nova/assets/drafts/**"],
+              message: "Client production code must import canon ids via @nova/assets.",
+            },
+          ],
+        },
+      ],
     },
   },
   {

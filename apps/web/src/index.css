@@ -9,7 +9,7 @@
   --color-stroke: color-mix(in srgb, var(--color-accent) 40%, transparent);
   color: var(--color-text);
   background: var(--color-bg);
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family: "Avenir Next", "Segoe UI", "Trebuchet MS", ui-sans-serif, system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: dark;

@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { NavLink, Navigate, Route, Routes } from "react-router";
+import { NavLink, Navigate, Route, Routes, useLocation } from "react-router";
 import { appConfig } from "@nova/config";
 import { HomePage } from "./pages/HomePage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
@@ -17,24 +17,42 @@ const pages: Record<ProductRouteId, ReactElement> = {
   profile: <PlaceholderPage title="Profile" />,
 };
 
-export function App() {
+function ProductNav({ compact }: { compact: boolean }) {
+  const links = PRODUCT_ROUTES.map((route) => (
+    <NavLink key={route.id} to={route.path} end={route.path === "/"}>
+      {route.label}
+    </NavLink>
+  ));
+
+  if (!compact) {
+    return (
+      <nav className="app-nav" aria-label="Product">
+        {links}
+      </nav>
+    );
+  }
+
   return (
-    <div className="app-shell">
-      <header className="app-header">
-        <p className="brand">{appConfig.name}</p>
-        <nav className="app-nav" aria-label="Product">
-          {PRODUCT_ROUTES.map((route) => (
-            <NavLink
-              key={route.id}
-              to={route.path}
-              end={route.path === "/"}
-            >
-              {route.label}
-            </NavLink>
-          ))}
-        </nav>
+    <details className="page-jump">
+      <summary>Menu</summary>
+      <nav className="app-nav app-nav--panel" aria-label="Product">
+        {links}
+      </nav>
+    </details>
+  );
+}
+
+export function App() {
+  const { pathname } = useLocation();
+  const cinema = pathname === "/";
+
+  return (
+    <div className={cinema ? "app-shell app-shell--cinema" : "app-shell"}>
+      <header className={cinema ? "app-header app-header--jump" : "app-header"}>
+        {cinema ? null : <p className="brand">{appConfig.name}</p>}
+        <ProductNav compact={cinema} />
       </header>
-      <main className="app-main">
+      <main className={cinema ? "app-main app-main--cinema" : "app-main"}>
         <Routes>
           {PRODUCT_ROUTES.map((route) => (
             <Route

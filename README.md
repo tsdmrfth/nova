@@ -1,25 +1,34 @@
 # Nova
 
-pnpm monorepo for Nova. Phase 0 scaffold is in place. This branch adds **P1-01**: shared prize-pool math and unit tests in `@nova/shared`.
+pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. This branch is **P1-02**: bind the Home route to a lazy PixiJS v8 scene plus the floating navy-glass HUD from the art lock.
 
-There is still **no buy/vote UI**, **no wallet**, and **no contracts**. Pool formulas live only in `packages/shared` so later UI can import them instead of duplicating math.
+There is still **no wallet**, **no Cast/Vote flow**, and **no pool math in the UI**. Prize-pool formulas stay in `@nova/shared`. Home numbers are layout placeholders.
 
 ## Status
 
 | Phase | Scope |
 | --- | --- |
 | **0** | Tooling, 8 product route placeholders, lazy PixiJS v8 canvas host, navy-glass tokens, asset canon/drafts layout, CI. |
-| **P1-01 (current)** | `@nova/shared` Extra Influence buy split, day pool, packs, caps, settlement, SPARK stub. Tests only — no HUD. |
-| **1 (next)** | PixiJS renderer plus a **blue HUD** overlay on the Home scene. |
+| **P1-01** | `@nova/shared` Extra Influence buy split, day pool, packs, caps, settlement, SPARK stub. Tests only — no HUD. |
+| **P1-02 (current)** | Canon asset ids + default day pack, abstract sunset-city Pixi layers, Home HUD chrome. |
+| **P1-03 (next)** | Cast / Vote flow. |
 
 ## Workspace
 
 | Path | Package | Role |
 | --- | --- | --- |
-| `apps/web` | `@nova/web` | Vite + React + TypeScript shell, React Router, Home Pixi stub |
+| `apps/web` | `@nova/web` | Vite + React + TypeScript, React Router, Home Pixi scene + HUD |
 | `packages/shared` | `@nova/shared` | Pool math, packs, Influence caps, SPARK constants, tests |
 | `packages/config` | `@nova/config` | Shared TypeScript config, app constants, color tokens |
-| `packages/assets` | `@nova/assets` | `canon/`, `drafts/`, reference pointer, empty canon manifest |
+| `packages/assets` | `@nova/assets` | Canon manifest, day packs, placeholder plates (`drafts/` is unpublished) |
+
+## Home bind
+
+React owns HUD copy, chips, A/B/C tiles, and the Cast button. Pixi owns the full-bleed world (sky / skyline / water / platform / Nova). Both address art only through `@nova/assets` helpers (`getAsset`, `getAssetUrl`, `getDayPack`, `assertCanon`). Production code never imports `drafts/`.
+
+Placeholder plates are abstract SVG layers in `packages/assets/canon/` matching the lock colors (electric blue `#2775CA`, glow `#3B8EF0`, sunset gold as world light only). Photographic `FINAL-HOME.png` is not shipped — it is too large and is a HUD mock, not a textless plate.
+
+Cast Influence is layout-only in this slice: selecting a tile highlights it; the CTA does not start a vote.
 
 ## Pool math (`@nova/shared`)
 
@@ -56,9 +65,7 @@ Worked example (20 Spark + 8 Pulse): gross 60 → studio 6, P 54 → paid 48.6 /
 | Nova/Neighborhood | `/neighborhood` (`/nova` redirects here) |
 | Profile | `/profile` |
 
-Home mounts a **lazy** PixiJS v8 scene host (`import("pixi.js")` on mount). The canvas may be empty.
-
-Design tokens: `--color-accent: #2775CA` and `--color-glow: #3B8EF0` (navy glass). No amber.
+Routes other than Home remain placeholders.
 
 ## Setup
 
@@ -69,6 +76,8 @@ pnpm install
 cp .env.example .env.local
 pnpm dev
 ```
+
+`pnpm dev` starts the web shell at http://127.0.0.1:43123.
 
 ## Scripts
 
@@ -87,7 +96,11 @@ Same four gates as CI:
 pnpm quality
 ```
 
-`pnpm dev` starts the web shell at http://localhost:5173.
+Regenerate canon placeholder plates (optional):
+
+```sh
+node packages/assets/scripts/generate-placeholders.mjs
+```
 
 ## CI
 
@@ -100,5 +113,3 @@ It runs on pushes to `main` and on pull requests:
 3. `pnpm typecheck`
 4. `pnpm test`
 5. `pnpm build`
-
-Run the same locally with `pnpm quality`.

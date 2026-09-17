@@ -1,12 +1,18 @@
 {
   "extends": "../config/tsconfig.base.json",
   "compilerOptions": {
+    "lib": ["ES2022", "DOM"],
     "noEmit": true,
     "declaration": false,
     "declarationMap": false,
     "sourceMap": false,
     "types": []
   },
-  "include": ["src", "canon/manifest.json", "reference.json"],
-  "exclude": ["src/**/*.test.ts"]
+  "include": [
+    "src",
+    "canon/manifest.json",
+    "canon/packs/home-default.json",
+    "reference.json"
+  ],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
 }
