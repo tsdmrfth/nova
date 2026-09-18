@@ -1,8 +1,11 @@
 import type { ChoiceId } from "@nova/assets";
 import {
+  attemptBuy,
   grantDailyFree,
   spendInfluence,
   type DayGoal,
+  type MicroUsdc,
+  type PackId,
 } from "@nova/shared";
 import { getSeasonDay, type DayChoiceCopy } from "../content/season1";
 
@@ -22,6 +25,13 @@ export type VoteSchedule = {
   publishAt: number;
 };
 
+export type LastBuy = {
+  ok: boolean;
+  packId: PackId;
+  extraInfluence: number;
+  code?: "DAILY_BUY_CAP_EXCEEDED";
+};
+
 export type DayState = {
   day: number;
   goal: DayGoal;
@@ -32,6 +42,8 @@ export type DayState = {
   choices: [DayChoiceCopy, DayChoiceCopy, DayChoiceCopy];
   freeInfluence: number;
   extraInfluence: number;
+  spentTodayMicro: MicroUsdc;
+  lastBuy: LastBuy | null;
   selected: ChoiceId | null;
   spendAmount: number;
   casts: LocalCast[];
@@ -77,6 +89,8 @@ export function createDayState(
     choices: copy.choices,
     freeInfluence,
     extraInfluence: 0,
+    spentTodayMicro: 0n,
+    lastBuy: null,
     selected: null,
     spendAmount: freeInfluence,
     casts: [],
@@ -117,7 +131,7 @@ export function canCast(state: DayState): boolean {
 
 /**
  * Spends Free Influence onto the selected tile via `@nova/shared` helpers.
- * Extra stays unused in this slice (no wallet / no buy).
+ * Extra is credited only through `buyPack` and stays on its own balance.
  */
 export function castSelected(state: DayState): DayState {
   if (!canCast(state) || !state.selected) {
@@ -141,5 +155,34 @@ export function castSelected(state: DayState): DayState {
       },
     ],
     status: "cast",
+  };
+}
+
+/**
+ * Mock Extra purchase: `attemptBuy` from `@nova/shared`, no chain / no wallet.
+ * Free Influence is never mixed into Extra.
+ */
+export function buyPack(state: DayState, packId: PackId): DayState {
+  const attempt = attemptBuy(packId, state.spentTodayMicro);
+  if (!attempt.ok) {
+    return {
+      ...state,
+      lastBuy: {
+        ok: false,
+        packId,
+        extraInfluence: 0,
+        code: attempt.code,
+      },
+    };
+  }
+  return {
+    ...state,
+    extraInfluence: state.extraInfluence + attempt.extraInfluence,
+    spentTodayMicro: attempt.spentAfter,
+    lastBuy: {
+      ok: true,
+      packId,
+      extraInfluence: attempt.extraInfluence,
+    },
   };
 }

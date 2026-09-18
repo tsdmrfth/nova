@@ -175,6 +175,34 @@
       "createdAt": "2026-09-17T00:00:00.000Z",
       "approvedBy": "eng-p1-02",
       "pixelRatio": 1
+    },
+    {
+      "id": "pack_spark",
+      "path": "hud/pack-spark.svg",
+      "kind": "hud",
+      "screens": [
+        "buy"
+      ],
+      "sha256": "c3a5645bbf35808236f6e22ac2e9e780488c88823b1f7791ed3139fd0103bbdd",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-18T00:00:00.000Z",
+      "approvedBy": "eng-p1-04",
+      "pixelRatio": 1
+    },
+    {
+      "id": "pack_pulse",
+      "path": "hud/pack-pulse.svg",
+      "kind": "hud",
+      "screens": [
+        "buy"
+      ],
+      "sha256": "f158c9d6685972f3f229905091d1106e584f91752d46a19b3e9e28bce3ece81e",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-18T00:00:00.000Z",
+      "approvedBy": "eng-p1-04",
+      "pixelRatio": 1
     }
   ],
   "bundles": [
@@ -228,6 +256,19 @@
         {
           "alias": "tile_selected_glow_frame",
           "src": "tiles/tile-selected-glow-frame.svg"
+        }
+      ]
+    },
+    {
+      "name": "buy",
+      "assets": [
+        {
+          "alias": "pack_spark",
+          "src": "hud/pack-spark.svg"
+        },
+        {
+          "alias": "pack_pulse",
+          "src": "hud/pack-pulse.svg"
         }
       ]
     }

@@ -68,4 +68,17 @@ describe("Home / Vote cast shell", () => {
     expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
     expect(screen.getByTestId("cast-influence")).toBeTruthy();
   });
+
+  it("opens Extra Influence from the USDC chip", async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await user.click(screen.getByTestId("hud-usdc"));
+    expect(screen.getByRole("heading", { name: "Extra Influence" })).toBeTruthy();
+    expect(screen.getByTestId("buy-cta")).toBeTruthy();
+  });
 });

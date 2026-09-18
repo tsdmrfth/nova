@@ -79,6 +79,16 @@ describe("day packs", () => {
   });
 });
 
+describe("buy pack plates", () => {
+  it("exposes Spark and Pulse as buy-screen canon ids", () => {
+    expect(getAssetUrl("pack_spark")).toBeTruthy();
+    expect(getAssetUrl("pack_pulse")).toBeTruthy();
+    expect(getAsset("pack_spark")?.screens).toContain("buy");
+    expect(getAsset("pack_pulse")?.screens).toContain("buy");
+    expect(getAsset("pack_spark")?.path).not.toMatch(/drafts/);
+  });
+});
+
 describe("missing ids", () => {
   it("do not throw", () => {
     const error = vi.spyOn(console, "error").mockImplementation(() => {});

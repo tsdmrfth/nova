@@ -1,4 +1,6 @@
 import type { ChoiceId } from "@nova/assets";
+import { EFFECTIVE_EXTRA_CAP } from "@nova/shared";
+import { BUY_COPY } from "../buy/buyCopy";
 import { canCast, formatLocalStamp, type DayState } from "../day/dayStore";
 
 export type HudChoice = {
@@ -28,6 +30,8 @@ export type HudModel = {
   castEnabled: boolean;
   castMessage: string;
   castDetail: string;
+  buyEntry: string | null;
+  buyEntryToBuy: boolean;
   disclaimer: string;
 };
 
@@ -48,11 +52,28 @@ const RANK_CHROME = {
     "Influence is non-binding but impactful. Outcomes shape the world for all citizens.",
 } as const;
 
+export function voteBuyEntry(state: DayState): {
+  buyEntry: string | null;
+  buyEntryToBuy: boolean;
+} {
+  if (state.freeInfluence === 0 && state.extraInfluence === 0) {
+    return { buyEntry: BUY_COPY.comeBack, buyEntryToBuy: true };
+  }
+  if (state.extraInfluence === 0) {
+    return { buyEntry: BUY_COPY.needMore, buyEntryToBuy: true };
+  }
+  if (state.extraInfluence >= EFFECTIVE_EXTRA_CAP) {
+    return { buyEntry: BUY_COPY.capHint, buyEntryToBuy: false };
+  }
+  return { buyEntry: null, buyEntryToBuy: false };
+}
+
 export function buildHudModel(
   state: DayState,
   artByChoice: Record<ChoiceId, string>,
 ): HudModel {
   const castEnabled = canCast(state);
+  const { buyEntry, buyEntryToBuy } = voteBuyEntry(state);
   return {
     day: state.day,
     goal: state.goal,
@@ -79,6 +100,8 @@ export function buildHudModel(
       state.status === "cast"
         ? `Locked until ${formatLocalStamp(state.schedule.voteCloseAt)}. Results publish around ${formatLocalStamp(state.schedule.publishAt)}.`
         : state.dayHint,
+    buyEntry,
+    buyEntryToBuy,
     disclaimer: RANK_CHROME.disclaimer,
   };
 }

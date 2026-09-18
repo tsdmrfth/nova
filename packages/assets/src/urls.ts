@@ -41,6 +41,8 @@ export const canonAssetUrls = {
     "../canon/tiles/tile-selected-glow-frame.svg",
     import.meta.url,
   ).href,
+  pack_spark: new URL("../canon/hud/pack-spark.svg", import.meta.url).href,
+  pack_pulse: new URL("../canon/hud/pack-pulse.svg", import.meta.url).href,
 } as const;
 
 export type CanonAssetId = keyof typeof canonAssetUrls;

@@ -4,7 +4,7 @@
  * Not photographic FINAL-HOME art — lock colors/composition only.
  */
 import { createHash } from "node:crypto";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -309,6 +309,26 @@ const assets = records.map(([id, path, kind, screens]) => ({
   pixelRatio: 1,
 }));
 
+const buyPlates = [
+  ["pack_spark", "hud/pack-spark.svg"],
+  ["pack_pulse", "hud/pack-pulse.svg"],
+];
+for (const [id, path] of buyPlates) {
+  const bytes = readFileSync(join(root, "canon", path));
+  assets.push({
+    id,
+    path,
+    kind: "hud",
+    screens: ["buy"],
+    sha256: sha256(bytes),
+    license: "internal-placeholder",
+    artLockVersion: ART_LOCK,
+    createdAt: "2026-09-18T00:00:00.000Z",
+    approvedBy: "eng-p1-04",
+    pixelRatio: 1,
+  });
+}
+
 const manifest = {
   version: 1,
   name: "nova-canon",
@@ -319,6 +339,12 @@ const manifest = {
       name: "home",
       assets: assets
         .filter((asset) => asset.screens.includes("home"))
+        .map((asset) => ({ alias: asset.id, src: asset.path })),
+    },
+    {
+      name: "buy",
+      assets: assets
+        .filter((asset) => asset.screens.includes("buy"))
         .map((asset) => ({ alias: asset.id, src: asset.path })),
     },
   ],

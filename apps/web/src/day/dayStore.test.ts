@@ -6,6 +6,7 @@ import {
   createDayState,
   formatLocalStamp,
   LOCAL_PLAYER_ID,
+  buyPack,
   selectChoice,
   setSpendAmount,
   stubVoteSchedule,
@@ -65,5 +66,27 @@ describe("in-memory day store", () => {
     const schedule = stubVoteSchedule(now);
     expect(schedule.publishAt - schedule.voteCloseAt).toBe(2 * 60 * 60 * 1000);
     expect(formatLocalStamp(schedule.voteCloseAt).length).toBeGreaterThan(4);
+  });
+
+  it("credits Extra via attemptBuy without mixing Free", () => {
+    let state = createDayState(1, now);
+    state = buyPack(state, "spark");
+    expect(state.freeInfluence).toBe(grantDailyFree());
+    expect(state.extraInfluence).toBe(10);
+    expect(state.spentTodayMicro).toBe(1_000_000n);
+    expect(state.lastBuy).toEqual({
+      ok: true,
+      packId: "spark",
+      extraInfluence: 10,
+    });
+
+    state = buyPack(state, "pulse");
+    expect(state.extraInfluence).toBe(65);
+    expect(state.freeInfluence).toBe(10);
+
+    state = buyPack(state, "pulse");
+    expect(state.extraInfluence).toBe(65);
+    expect(state.lastBuy?.ok).toBe(false);
+    expect(state.lastBuy?.code).toBe("DAILY_BUY_CAP_EXCEEDED");
   });
 });

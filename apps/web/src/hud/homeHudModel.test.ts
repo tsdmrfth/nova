@@ -38,6 +38,11 @@ describe("home HUD model", () => {
     ]);
   });
 
+  it("prompts Need more Extra Influence when Extra is 0", () => {
+    expect(DAY_1_MODEL.buyEntry).toBe("Need more Extra Influence?");
+    expect(DAY_1_MODEL.buyEntryToBuy).toBe(true);
+  });
+
   it("resolves choice art through canon ids", () => {
     for (const choice of DAY_1_MODEL.choices) {
       expect(getAssetUrl(choice.artId)).toBeTruthy();

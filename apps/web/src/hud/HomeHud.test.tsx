@@ -35,6 +35,7 @@ describe("HomeHud", () => {
         onSpend={onSpend}
         onCast={onCast}
         onUsdcChip={onUsdcChip}
+        onBuyExtraPlus={onUsdcChip}
       />,
     );
 
@@ -49,6 +50,9 @@ describe("HomeHud", () => {
 
     await user.click(screen.getByTestId("hud-usdc"));
     expect(onUsdcChip).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByTestId("buy-entry"));
+    expect(onUsdcChip).toHaveBeenCalledTimes(2);
   });
 
   it("keeps Cast Influence disabled until a tile is selected", () => {
@@ -60,6 +64,7 @@ describe("HomeHud", () => {
         onSpend={() => undefined}
         onCast={() => undefined}
         onUsdcChip={() => undefined}
+        onBuyExtraPlus={() => undefined}
       />,
     );
     expect(screen.getByTestId("cast-influence")).toHaveProperty("disabled", true);
@@ -77,6 +82,7 @@ describe("HomeHud", () => {
         onSpend={() => undefined}
         onCast={() => undefined}
         onUsdcChip={() => undefined}
+        onBuyExtraPlus={() => undefined}
       />,
     );
     const bar = screen.getByRole("progressbar", { name: /influence rank/i });

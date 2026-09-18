@@ -19,6 +19,7 @@ describe("client bind contract", () => {
       readFileSync("apps/web/src/index.css", "utf8"),
       readFileSync("apps/web/src/App.css", "utf8"),
       readFileSync("apps/web/src/hud/HomeHud.css", "utf8"),
+      readFileSync("apps/web/src/buy/BuyHud.css", "utf8"),
     ].join("\n");
     expect(css).toContain("#2775CA");
     expect(css).toContain("#3B8EF0");
@@ -35,11 +36,15 @@ describe("client bind contract", () => {
 
   it("exposes Playwright test ids on the Home HUD", () => {
     const hud = readFileSync("apps/web/src/hud/HomeHud.tsx", "utf8");
+    const buy = readFileSync("apps/web/src/buy/BuyHud.tsx", "utf8");
     const scene = readFileSync("apps/web/src/scene/HomeSceneHost.tsx", "utf8");
     expect(hud).toContain('data-testid={`choice-${choice.id}`}');
     expect(hud).toContain('data-testid="cast-influence"');
     expect(hud).toContain('data-testid="day-goal"');
     expect(hud).toContain('data-testid="spend-free"');
+    expect(hud).toContain('data-testid="buy-entry"');
+    expect(buy).toContain('data-testid="buy-cta"');
+    expect(buy).toContain('data-testid={`buy-pack-${pack.id}`}');
     expect(scene).toContain('data-testid="scene-stage"');
   });
 
@@ -50,6 +55,9 @@ describe("client bind contract", () => {
       expect(text, file).not.toMatch(/Submit vote/i);
       expect(text, file).not.toMatch(/partnered with Circle/i);
       expect(text, file).not.toMatch(/Circle's official/i);
+      expect(text, file).not.toMatch(/\bAPR\b/);
+      expect(text, file).not.toMatch(/\bRTP\b/);
+      expect(text, file).not.toMatch(/house edge/i);
     }
   });
 });
