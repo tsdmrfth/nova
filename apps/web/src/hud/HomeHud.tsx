@@ -4,6 +4,7 @@ import {
   DayIcon,
   ExtraInfluenceIcon,
   FreeInfluenceIcon,
+  GoalIcon,
   RankIcon,
   ShieldIcon,
   UsdcIcon,
@@ -11,7 +12,10 @@ import {
 import type { HudCallbacks, HudModel } from "./homeHudModel";
 import "./HomeHud.css";
 
-type HomeHudProps = Pick<HudCallbacks, "onSelect" | "onCast" | "onUsdcChip"> & {
+type HomeHudProps = Pick<
+  HudCallbacks,
+  "onSelect" | "onSpend" | "onCast" | "onUsdcChip"
+> & {
   model: HudModel;
   selected: ChoiceId | null;
 };
@@ -24,6 +28,7 @@ export function HomeHud({
   model,
   selected,
   onSelect,
+  onSpend,
   onCast,
   onUsdcChip,
 }: HomeHudProps) {
@@ -31,28 +36,46 @@ export function HomeHud({
     model.rankXp.next === 0
       ? 0
       : Math.min(1, model.rankXp.current / model.rankXp.next);
+  const spendLocked = model.status !== "open";
 
   return (
     <div className="home-hud">
       <div className="hud-top">
-        <div className="hud-chip" data-testid="hud-day">
-          <span className="hud-chip-icon">
-            <DayIcon />
-          </span>
-          <span className="hud-chip-copy">
-            <span className="hud-chip-label">Day</span>
-            <span className="hud-chip-value">{padDay(model.day)}</span>
-          </span>
+        <div className="hud-chip-row">
+          <div className="hud-chip" data-testid="hud-day">
+            <span className="hud-chip-icon">
+              <DayIcon />
+            </span>
+            <span className="hud-chip-copy">
+              <span className="hud-chip-label">Day</span>
+              <span className="hud-chip-value">{padDay(model.day)}</span>
+            </span>
+          </div>
+          <div className="hud-chip" data-testid="day-goal">
+            <span className="hud-chip-icon hud-chip-icon--glow">
+              <GoalIcon />
+            </span>
+            <span className="hud-chip-copy">
+              <span className="hud-chip-label">Day goal</span>
+              <span className="hud-chip-value">{model.goal}</span>
+            </span>
+          </div>
         </div>
 
         <div className="hud-meter">
-          <div className="hud-chip hud-chip--resource" data-testid="hud-free">
+          <div
+            className="hud-chip hud-chip--resource"
+            data-testid="hud-free"
+            title={model.freeHint}
+          >
             <span className="hud-chip-icon hud-chip-icon--glow">
               <FreeInfluenceIcon />
             </span>
             <span className="hud-chip-copy">
               <span className="hud-chip-label">Free Influence</span>
-              <span className="hud-chip-value">{model.freeInfluence}</span>
+              <span className="hud-chip-value" data-testid="hud-free-value">
+                {model.freeInfluence}
+              </span>
             </span>
           </div>
           <span className="hud-plus" aria-hidden="true">
@@ -85,6 +108,7 @@ export function HomeHud({
       <div className="hud-center">
         <div className="hud-hero">
           <h1 className="hud-title">{model.heroTitle}</h1>
+          <p className="hud-scene">{model.scene}</p>
           <p className="hud-sub">{model.heroSub}</p>
         </div>
         <div className="hud-choices">
@@ -102,10 +126,12 @@ export function HomeHud({
                 }
                 data-testid={`choice-${choice.id}`}
                 aria-pressed={isSelected}
+                disabled={spendLocked}
                 onClick={() => onSelect(choice.id)}
               >
                 <span className="choice-letter">{choice.id}</span>
                 <span className="choice-label">{choice.label}</span>
+                <span className="choice-self">{choice.title}</span>
                 {artUrl ? (
                   <img
                     className="choice-art"
@@ -148,21 +174,69 @@ export function HomeHud({
           </span>
         </div>
 
-        <button
-          type="button"
-          className="cast-button"
-          data-testid="cast-influence"
-          disabled={!model.castEnabled}
-          aria-label="Cast Influence"
-          aria-describedby="cast-preview-hint"
-          onClick={onCast}
-        >
-          Cast Influence
-          <span aria-hidden="true">›</span>
-        </button>
-        <span id="cast-preview-hint" className="sr-only">
-          Vote submission is not available in this preview.
-        </span>
+        <div className="cast-panel">
+          <div className="spend-control" data-testid="spend-free">
+            <span className="spend-label">Free to cast</span>
+            <div className="spend-stepper">
+              <button
+                type="button"
+                className="spend-button"
+                data-testid="spend-decrease"
+                aria-label="Decrease Free Influence"
+                disabled={spendLocked || model.spendAmount <= 1}
+                onClick={() => onSpend(model.spendAmount - 1)}
+              >
+                −
+              </button>
+              <span
+                className="spend-value"
+                data-testid="spend-amount"
+                aria-live="polite"
+              >
+                {model.spendAmount}
+              </span>
+              <button
+                type="button"
+                className="spend-button"
+                data-testid="spend-increase"
+                aria-label="Increase Free Influence"
+                disabled={spendLocked || model.spendAmount >= model.freeInfluence}
+                onClick={() => onSpend(model.spendAmount + 1)}
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="cast-button"
+            data-testid="cast-influence"
+            disabled={!model.castEnabled}
+            aria-label="Cast Influence"
+            aria-describedby="cast-preview-hint"
+            onClick={onCast}
+          >
+            Cast Influence
+            <span aria-hidden="true">›</span>
+          </button>
+          <p
+            id="cast-preview-hint"
+            className={
+              model.status === "cast" ? "cast-status" : "cast-status cast-status--hint"
+            }
+            data-testid="cast-status"
+          >
+            {model.status === "cast" ? (
+              <>
+                <strong>{model.castMessage}</strong>
+                <span>{model.castDetail}</span>
+              </>
+            ) : (
+              model.castDetail
+            )}
+          </p>
+        </div>
 
         <div className="hud-brand" aria-hidden="true">
           <span className="hud-brand-name">Arc</span>

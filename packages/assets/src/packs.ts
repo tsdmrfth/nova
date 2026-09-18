@@ -7,7 +7,7 @@ import type {
   PackResolution,
 } from "./types";
 
-export const DEFAULT_HOME_DAY = 7;
+export const DEFAULT_HOME_DAY = 1;
 
 const homePack = homeDefault as DayScenePack;
 

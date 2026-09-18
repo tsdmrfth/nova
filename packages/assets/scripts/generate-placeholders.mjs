@@ -286,10 +286,10 @@ const records = [
   ["layer_light_trails", "vfx/layer-light-trails.svg", "vfx", ["home"]],
   ["layer_fog_haze", "vfx/layer-fog-haze.svg", "vfx", ["home"]],
   ["nova_idle_stand_3q", "character/nova-idle-stand-3q.svg", "character", ["home"]],
-  ["tile_stabilize", "tiles/tile-stabilize.svg", "tile", ["home"]],
-  ["tile_expand", "tiles/tile-expand.svg", "tile", ["home"]],
-  ["tile_route", "tiles/tile-route.svg", "tile", ["home"]],
-  ["tile_selected_glow_frame", "tiles/tile-selected-glow-frame.svg", "tile", ["home", "shared"]],
+  ["tile_stabilize", "tiles/tile-stabilize.svg", "tile", ["home", "vote"]],
+  ["tile_expand", "tiles/tile-expand.svg", "tile", ["home", "vote"]],
+  ["tile_route", "tiles/tile-route.svg", "tile", ["home", "vote"]],
+  ["tile_selected_glow_frame", "tiles/tile-selected-glow-frame.svg", "tile", ["home", "vote", "shared"]],
 ];
 
 const hashed = Object.fromEntries(
@@ -330,7 +330,7 @@ writeFileSync(
 );
 
 const pack = {
-  day: 7,
+  day: 1,
   screen: "home",
   layers: {
     sky: "layer_sky_sunset",

@@ -1,8 +1,8 @@
 # Nova
 
-pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. This branch is **P1-02**: bind the Home route to a lazy PixiJS v8 scene plus the floating navy-glass HUD from the art lock.
+pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. This branch is **P1-03**: the Cast Influence / Vote shell.
 
-There is still **no wallet**, **no Cast/Vote flow**, and **no pool math in the UI**. Prize-pool formulas stay in `@nova/shared`. Home numbers are layout placeholders.
+There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@nova/shared`. Extra Influence buy and Results/Claim are later slices.
 
 ## Status
 
@@ -10,25 +10,26 @@ There is still **no wallet**, **no Cast/Vote flow**, and **no pool math in the U
 | --- | --- |
 | **0** | Tooling, 8 product route placeholders, lazy PixiJS v8 canvas host, navy-glass tokens, asset canon/drafts layout, CI. |
 | **P1-01** | `@nova/shared` Extra Influence buy split, day pool, packs, caps, settlement, SPARK stub. Tests only — no HUD. |
-| **P1-02 (current)** | Canon asset ids + default day pack, abstract sunset-city Pixi layers, Home HUD chrome. |
-| **P1-03 (next)** | Cast / Vote flow. |
+| **P1-02** | Canon asset ids + default day pack, abstract sunset-city Pixi layers, Home HUD chrome. |
+| **P1-03 (current)** | Day 1 Vote/Home cast shell: Stabilize / Expand / Route tiles, Free Influence spend into an in-memory day store, MOST/LEAST/MIDDLE goal stub. |
+| **P1-04 (next)** | Confirmation / pending — not started. |
 
 ## Workspace
 
 | Path | Package | Role |
 | --- | --- | --- |
-| `apps/web` | `@nova/web` | Vite + React + TypeScript, React Router, Home Pixi scene + HUD |
-| `packages/shared` | `@nova/shared` | Pool math, packs, Influence caps, SPARK constants, tests |
+| `apps/web` | `@nova/web` | Vite + React + TypeScript, React Router, Home/Vote Pixi scene + HUD |
+| `packages/shared` | `@nova/shared` | Pool math, packs, Influence caps, day-goal rotation, SPARK constants, tests |
 | `packages/config` | `@nova/config` | Shared TypeScript config, app constants, color tokens |
 | `packages/assets` | `@nova/assets` | Canon manifest, day packs, placeholder plates (`drafts/` is unpublished) |
 
-## Home bind
+## Cast / Vote shell
 
-React owns HUD copy, chips, A/B/C tiles, and the Cast button. Pixi owns the full-bleed world (sky / skyline / water / platform / Nova). Both address art only through `@nova/assets` helpers (`getAsset`, `getAssetUrl`, `getDayPack`, `assertCanon`). Production code never imports `drafts/`.
+Home (`/`) and Vote (`/vote`) share one cinema Cast screen. React owns HUD copy, chips, A/B/C tiles, Free spend, and the **Cast Influence** button. Pixi owns the full-bleed world. Both address art only through `@nova/assets` helpers (`getAsset`, `getAssetUrl`, `getDayPack`, `assertCanon`). Production code never imports `drafts/`.
 
-Placeholder plates are abstract SVG layers in `packages/assets/canon/` matching the lock colors (electric blue `#2775CA`, glow `#3B8EF0`, sunset gold as world light only). Photographic `FINAL-HOME.png` is not shipped — it is too large and is a HUD mock, not a textless plate.
+Default content is **Day 1 · First light** (HIKAYE / COPY-S1): scene, self titles/captions, world labels Stabilize / Expand / Route, day goal **MOST**. Tile art uses canon ids `tile_stabilize` / `tile_expand` / `tile_route`.
 
-Cast Influence is layout-only in this slice: selecting a tile highlights it; the CTA does not start a vote.
+Casting spends Free Influence through `@nova/shared` `grantDailyFree` / `spendInfluence` into an in-memory day store (local player id, no wallet). Partial spend is allowed before the CTA; the first successful cast locks the day. Extra Influence stays `0` in this slice.
 
 ## Pool math (`@nova/shared`)
 
@@ -47,8 +48,9 @@ Canonical formulas (CEO lock). Amounts are **micro-USDC** (`bigint`, 6 decimals)
 | Caps | `effectiveExtra = min(raw, 100)`; max 10 USDC Extra buy / day |
 | Empty lane | unused paid and/or free bucket rolls into next-day P |
 | SPARK | +5 vote lock, +15 correct, +25 weekly streak — non-tradable |
+| Day goal | Day1 MOST · Day2 LEAST · Day3 MIDDLE · repeat (`dayGoalFor`) |
 
-Import from `@nova/shared`: `quotePack`, `buildDayPrizePool`, `settleDay`, `effectiveExtra`, `SPARK_TABLE`, and related types.
+Import from `@nova/shared`: `quotePack`, `buildDayPrizePool`, `settleDay`, `effectiveExtra`, `spendInfluence`, `grantDailyFree`, `dayGoalFor`, `SPARK_TABLE`, and related types.
 
 Worked example (20 Spark + 8 Pulse): gross 60 → studio 6, P 54 → paid 48.6 / free 5.4.
 
@@ -65,7 +67,7 @@ Worked example (20 Spark + 8 Pulse): gross 60 → studio 6, P 54 → paid 48.6 /
 | Nova/Neighborhood | `/neighborhood` (`/nova` redirects here) |
 | Profile | `/profile` |
 
-Routes other than Home remain placeholders.
+Home and Vote are the Cast Influence shell. Other routes remain placeholders.
 
 ## Setup
 

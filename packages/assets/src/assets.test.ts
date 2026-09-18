@@ -56,8 +56,8 @@ describe("canon manifest", () => {
 
 describe("day packs", () => {
   it("resolves the default Home pack against canon", () => {
-    const { pack, missing } = resolvePack(canonManifest, 7);
-    expect(pack.day).toBe(7);
+    const { pack, missing } = resolvePack(canonManifest, 1);
+    expect(pack.day).toBe(1);
     expect(pack.screen).toBe("home");
     expect(pack.layers.sky).toBe("layer_sky_sunset");
     expect(pack.layers.far).toBe("layer_skyline");
@@ -72,9 +72,10 @@ describe("day packs", () => {
   });
 
   it("falls back to the Home plates while keeping the requested day", () => {
-    const pack = getDayPack(1);
-    expect(pack.day).toBe(1);
+    const pack = getDayPack(7);
+    expect(pack.day).toBe(7);
     expect(pack.layers.sky).toBe("layer_sky_sunset");
+    expect(pack.tiles.A.artId).toBe("tile_stabilize");
   });
 });
 

@@ -1,7 +1,8 @@
 import type { ReactElement } from "react";
 import { NavLink, Navigate, Route, Routes, useLocation } from "react-router";
 import { appConfig } from "@nova/config";
-import { HomePage } from "./pages/HomePage";
+import { DayStoreProvider } from "./day/DayStoreProvider";
+import { HomePage, VotePage } from "./pages/HomePage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { PRODUCT_ROUTES, type ProductRouteId } from "./productRoutes";
 import "./App.css";
@@ -9,13 +10,17 @@ import "./App.css";
 const pages: Record<ProductRouteId, ReactElement> = {
   connect: <PlaceholderPage title="Connect" />,
   home: <HomePage />,
-  vote: <PlaceholderPage title="Vote" />,
+  vote: <VotePage />,
   buy: <PlaceholderPage title="Buy" />,
   confirmation: <PlaceholderPage title="Confirmation" />,
   results: <PlaceholderPage title="Results" />,
   neighborhood: <PlaceholderPage title="Nova/Neighborhood" />,
   profile: <PlaceholderPage title="Profile" />,
 };
+
+function isCinemaPath(pathname: string): boolean {
+  return pathname === "/" || pathname === "/vote";
+}
 
 function ProductNav({ compact }: { compact: boolean }) {
   const links = PRODUCT_ROUTES.map((route) => (
@@ -43,8 +48,16 @@ function ProductNav({ compact }: { compact: boolean }) {
 }
 
 export function App() {
+  return (
+    <DayStoreProvider>
+      <AppLayout />
+    </DayStoreProvider>
+  );
+}
+
+function AppLayout() {
   const { pathname } = useLocation();
-  const cinema = pathname === "/";
+  const cinema = isCinemaPath(pathname);
 
   return (
     <div className={cinema ? "app-shell app-shell--cinema" : "app-shell"}>

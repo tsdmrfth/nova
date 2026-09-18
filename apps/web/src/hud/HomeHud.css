@@ -35,6 +35,13 @@
   gap: 0.75rem 1rem;
 }
 
+.hud-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
 .hud-chip {
   display: flex;
   align-items: center;
@@ -134,6 +141,17 @@
   text-shadow: 0 8px 28px rgba(7, 17, 28, 0.45);
 }
 
+.hud-scene {
+  margin: 0.65rem 0 0;
+  color: color-mix(in srgb, var(--color-text) 90%, var(--color-glow));
+  font-size: clamp(0.95rem, 1.6vw, 1.12rem);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  text-shadow: 0 4px 18px rgba(7, 17, 28, 0.55);
+}
+
 .hud-sub {
   margin: 0.55rem 0 0;
   color: color-mix(in srgb, var(--color-text) 82%, var(--color-glow));
@@ -152,7 +170,7 @@
 
 .choice-card {
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto auto auto 1fr auto;
   gap: 0.35rem;
   min-height: 13.5rem;
   padding: 0.85rem 0.85rem 0.95rem;
@@ -196,6 +214,12 @@
 .choice-label {
   font-size: 1.15rem;
   font-weight: 750;
+}
+
+.choice-self {
+  color: color-mix(in srgb, var(--color-text) 88%, var(--color-glow));
+  font-size: 0.92rem;
+  font-weight: 650;
 }
 
 .choice-art {
@@ -283,12 +307,103 @@
   font-size: 0.75rem;
 }
 
+.cast-panel {
+  display: grid;
+  justify-items: center;
+  gap: 0.65rem;
+  min-width: min(22rem, 100%);
+}
+
+.spend-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  background: var(--color-navy-glass);
+  border: 1px solid var(--color-stroke);
+  border-radius: 999px;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--color-glow) 16%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.spend-label {
+  color: var(--color-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.spend-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.spend-button {
+  width: 2rem;
+  height: 2rem;
+  color: #fff;
+  background: color-mix(in srgb, var(--color-navy) 80%, transparent);
+  border: 1px solid var(--color-stroke);
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.spend-button:hover,
+.spend-button:focus-visible {
+  border-color: var(--color-glow);
+}
+
+.spend-button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.spend-value {
+  min-width: 1.6rem;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 750;
+  text-align: center;
+}
+
+.cast-status {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.cast-status strong {
+  color: #fff;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cast-status--hint {
+  color: var(--color-muted);
+}
+
+.choice-card:disabled {
+  cursor: default;
+}
+
 .cast-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.65rem;
-  min-width: min(22rem, 100%);
+  width: 100%;
+  min-width: 0;
   padding: 0.95rem 2rem;
   color: #fff;
   background: linear-gradient(180deg, #3b8ef0, var(--color-accent));
@@ -313,7 +428,8 @@
 
 .cast-button:disabled {
   cursor: default;
-  opacity: 0.72;
+  opacity: 0.45;
+  box-shadow: none;
 }
 
 .cast-button span {
@@ -383,12 +499,16 @@
 
   .choice-card {
     grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto auto auto;
     min-height: 0;
   }
 
   .choice-letter {
     grid-row: 1 / span 2;
+  }
+
+  .choice-self {
+    grid-column: 2;
   }
 
   .choice-art {
@@ -405,6 +525,7 @@
     align-items: stretch;
   }
 
+  .cast-panel,
   .cast-button,
   .rank-card {
     width: 100%;
