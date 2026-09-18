@@ -20,6 +20,8 @@ describe("client bind contract", () => {
       readFileSync("apps/web/src/App.css", "utf8"),
       readFileSync("apps/web/src/hud/HomeHud.css", "utf8"),
       readFileSync("apps/web/src/buy/BuyHud.css", "utf8"),
+      readFileSync("apps/web/src/results/ResultsHud.css", "utf8"),
+      readFileSync("apps/web/src/pages/ProfilePage.css", "utf8"),
     ].join("\n");
     expect(css).toContain("#2775CA");
     expect(css).toContain("#3B8EF0");
@@ -37,6 +39,8 @@ describe("client bind contract", () => {
   it("exposes Playwright test ids on the Home HUD", () => {
     const hud = readFileSync("apps/web/src/hud/HomeHud.tsx", "utf8");
     const buy = readFileSync("apps/web/src/buy/BuyHud.tsx", "utf8");
+    const results = readFileSync("apps/web/src/results/ResultsHud.tsx", "utf8");
+    const profile = readFileSync("apps/web/src/pages/ProfilePage.tsx", "utf8");
     const scene = readFileSync("apps/web/src/scene/HomeSceneHost.tsx", "utf8");
     expect(hud).toContain('data-testid={`choice-${choice.id}`}');
     expect(hud).toContain('data-testid="cast-influence"');
@@ -45,6 +49,11 @@ describe("client bind contract", () => {
     expect(hud).toContain('data-testid="buy-entry"');
     expect(buy).toContain('data-testid="buy-cta"');
     expect(buy).toContain('data-testid={`buy-pack-${pack.id}`}');
+    expect(results).toContain('data-testid="results-claim"');
+    expect(results).toContain('data-testid="results-canon"');
+    expect(results).toContain('data-testid="results-spark"');
+    expect(profile).toContain('data-testid="profile-casts"');
+    expect(profile).not.toMatch(/results-claim|Claim \{/);
     expect(scene).toContain('data-testid="scene-stage"');
   });
 

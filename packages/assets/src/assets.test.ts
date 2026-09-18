@@ -89,6 +89,14 @@ describe("buy pack plates", () => {
   });
 });
 
+describe("results badge", () => {
+  it("exposes the winner badge as a results-screen canon id", () => {
+    expect(getAssetUrl("badge_winner")).toBeTruthy();
+    expect(getAsset("badge_winner")?.screens).toContain("results");
+    expect(getAsset("badge_winner")?.path).not.toMatch(/drafts/);
+  });
+});
+
 describe("missing ids", () => {
   it("do not throw", () => {
     const error = vi.spyOn(console, "error").mockImplementation(() => {});

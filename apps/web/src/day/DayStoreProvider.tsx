@@ -5,9 +5,11 @@ import { DayStoreContext } from "./dayStoreContext";
 import {
   buyPack,
   castSelected,
+  claimPayout,
   createDayState,
   selectChoice,
   setSpendAmount,
+  type ClaimSnapshot,
 } from "./dayStore";
 
 export function DayStoreProvider({ children }: { children: ReactNode }) {
@@ -29,9 +31,13 @@ export function DayStoreProvider({ children }: { children: ReactNode }) {
     setState((current) => buyPack(current, packId));
   }, []);
 
+  const claim = useCallback((snapshot: ClaimSnapshot) => {
+    setState((current) => claimPayout(current, snapshot));
+  }, []);
+
   const value = useMemo(
-    () => ({ state, select, setSpend, cast, buy }),
-    [state, select, setSpend, cast, buy],
+    () => ({ state, select, setSpend, cast, buy, claim }),
+    [state, select, setSpend, cast, buy, claim],
   );
 
   return (

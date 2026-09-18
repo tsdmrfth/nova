@@ -15,6 +15,7 @@ import {
   formatUsdc,
   grantDailyFree,
   payoutsByWallet,
+  pickWinningOption,
   quotePack,
   settleDay,
   spendInfluence,
@@ -203,6 +204,19 @@ describe("PARA anti-fixtures", () => {
     });
     expect(result.winningOptionId).toBe("expand");
     expect(result.paid.shares.map((s) => s.walletId)).toEqual(["hit"]);
+
+    expect(
+      pickWinningOption({
+        goal: "MOST",
+        optionIds: ["stabilize", "expand", "route"],
+        casts: [
+          { optionId: "stabilize", free: 10 },
+          { optionId: "expand", free: 40 },
+          { optionId: "route", free: 20 },
+          { optionId: "stabilize", free: 0 },
+        ],
+      }),
+    ).toBe("expand");
   });
 
   it("there is no settlement-time studio cut of P", () => {

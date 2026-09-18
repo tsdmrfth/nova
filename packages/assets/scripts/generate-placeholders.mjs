@@ -329,6 +329,23 @@ for (const [id, path] of buyPlates) {
   });
 }
 
+const resultsPlates = [["badge_winner", "hud/badge-winner.svg"]];
+for (const [id, path] of resultsPlates) {
+  const bytes = readFileSync(join(root, "canon", path));
+  assets.push({
+    id,
+    path,
+    kind: "hud",
+    screens: ["results"],
+    sha256: sha256(bytes),
+    license: "internal-placeholder",
+    artLockVersion: ART_LOCK,
+    createdAt: "2026-09-18T00:00:00.000Z",
+    approvedBy: "eng-p1-05",
+    pixelRatio: 1,
+  });
+}
+
 const manifest = {
   version: 1,
   name: "nova-canon",
@@ -345,6 +362,12 @@ const manifest = {
       name: "buy",
       assets: assets
         .filter((asset) => asset.screens.includes("buy"))
+        .map((asset) => ({ alias: asset.id, src: asset.path })),
+    },
+    {
+      name: "results",
+      assets: assets
+        .filter((asset) => asset.screens.includes("results"))
         .map((asset) => ({ alias: asset.id, src: asset.path })),
     },
   ],

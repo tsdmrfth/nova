@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="badge-core" cx="50%" cy="42%" r="48%">
+      <stop offset="0%" stop-color="#1A3F78"/>
+      <stop offset="70%" stop-color="#0B1A2E"/>
+      <stop offset="100%" stop-color="#07111C"/>
+    </radialGradient>
+    <linearGradient id="badge-chevron" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#B9E0FF"/>
+      <stop offset="38%" stop-color="#3B8EF0"/>
+      <stop offset="100%" stop-color="#2775CA"/>
+    </linearGradient>
+    <filter id="badge-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <polygon
+    points="256,28 430,118 430,302 256,392 82,302 82,118"
+    fill="#0B1A2E"
+    stroke="#2775CA"
+    stroke-width="10"
+    filter="url(#badge-glow)"
+  />
+  <polygon
+    points="256,52 408,132 408,288 256,368 104,288 104,132"
+    fill="none"
+    stroke="#3B8EF0"
+    stroke-width="3"
+    opacity="0.85"
+  />
+  <circle cx="256" cy="210" r="118" fill="url(#badge-core)" stroke="#3B8EF0" stroke-width="4"/>
+  <path
+    d="M256 118 L318 186 L256 164 L194 186 Z"
+    fill="url(#badge-chevron)"
+  />
+  <path
+    d="M256 168 L332 248 L256 220 L180 248 Z"
+    fill="url(#badge-chevron)"
+    opacity="0.92"
+  />
+  <path
+    d="M256 214 L300 262 L256 244 L212 262 Z"
+    fill="#9BD0FF"
+    opacity="0.55"
+  />
+</svg>
