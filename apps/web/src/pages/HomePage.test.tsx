@@ -8,8 +8,8 @@ vi.mock("../scene/HomeSceneHost", () => ({
   HomeSceneHost: () => <div data-testid="scene-stage" />,
 }));
 
-describe("Home route chrome", () => {
-  it("keeps the user on Home when Cast Influence is pressed", async () => {
+describe("Home / Vote cast shell", () => {
+  it("casts Free Influence on Home and keeps the cinema shell", async () => {
     const user = userEvent.setup();
     render(
       <MemoryRouter initialEntries={["/"]}>
@@ -17,12 +17,45 @@ describe("Home route chrome", () => {
       </MemoryRouter>,
     );
 
+    expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
+    expect(screen.getByTestId("cast-influence")).toHaveProperty("disabled", true);
+
+    await user.click(screen.getByTestId("choice-A"));
     await user.click(screen.getByTestId("cast-influence"));
-    expect(screen.getByRole("heading", { name: /economy/i })).toBeTruthy();
+
+    expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
     expect(screen.getByTestId("scene-stage")).toBeTruthy();
+    expect(screen.getByTestId("cast-status").textContent).toMatch(/Influence cast/i);
+    expect(screen.getByTestId("hud-free-value").textContent).toBe("0");
   });
 
-  it("opens other product routes from the compact menu", async () => {
+  it("shares the in-memory day store with the Vote route", async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await user.click(screen.getByTestId("choice-C"));
+    await user.click(screen.getByTestId("spend-decrease"));
+    await user.click(screen.getByTestId("cast-influence"));
+    expect(screen.getByTestId("hud-free-value").textContent).toBe("1");
+
+    await user.click(screen.getByText("Menu"));
+    await user.click(screen.getByRole("link", { name: "Vote" }));
+
+    expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
+    expect(screen.getByTestId("day-goal").textContent).toMatch(/MOST/);
+    expect(screen.getByTestId("cast-status").textContent).toMatch(/Influence cast/i);
+    expect(screen.getByTestId("choice-C").getAttribute("aria-pressed")).toBe(
+      "true",
+    );
+    expect(screen.getByText("Route")).toBeTruthy();
+    expect(screen.getByText("Find your place")).toBeTruthy();
+  });
+
+  it("opens the Vote cinema shell from the compact menu", async () => {
     const user = userEvent.setup();
     render(
       <MemoryRouter initialEntries={["/"]}>
@@ -32,6 +65,7 @@ describe("Home route chrome", () => {
 
     await user.click(screen.getByText("Menu"));
     await user.click(screen.getByRole("link", { name: "Vote" }));
-    expect(screen.getByRole("heading", { name: "Vote" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
+    expect(screen.getByTestId("cast-influence")).toBeTruthy();
   });
 });

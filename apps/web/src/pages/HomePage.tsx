@@ -1,37 +1,38 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import {
   assertArtLockVersion,
   canonManifest,
   resolvePack,
   tileArtId,
-  type ChoiceId,
 } from "@nova/assets";
+import { useDayStore } from "../day/useDayStore";
 import { HomeHud } from "../hud/HomeHud";
-import { HOME_HUD_MODEL } from "../hud/homeHudModel";
+import { buildHudModel } from "../hud/homeHudModel";
 import { usePrefersReducedMotion } from "../hud/usePrefersReducedMotion";
 import { HomeSceneHost } from "../scene/HomeSceneHost";
 
-export function HomePage() {
+export function CastPage() {
+  const { state, select, setSpend, cast } = useDayStore();
   const { pack, missing } = useMemo(
-    () => resolvePack(canonManifest, HOME_HUD_MODEL.day),
-    [],
+    () => resolvePack(canonManifest, state.day),
+    [state.day],
   );
-  const [selected, setSelected] = useState<ChoiceId | null>(null);
   const reducedMotion = usePrefersReducedMotion();
   const dpr = Math.min(
     typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
     2,
   );
-  const model = useMemo(
+  const artByChoice = useMemo(
     () => ({
-      ...HOME_HUD_MODEL,
-      day: pack.day,
-      choices: HOME_HUD_MODEL.choices.map((choice) => ({
-        ...choice,
-        artId: tileArtId(pack, choice.id),
-      })),
+      A: tileArtId(pack, "A"),
+      B: tileArtId(pack, "B"),
+      C: tileArtId(pack, "C"),
     }),
     [pack],
+  );
+  const model = useMemo(
+    () => buildHudModel(state, artByChoice),
+    [state, artByChoice],
   );
 
   useEffect(() => {
@@ -45,18 +46,27 @@ export function HomePage() {
     <section className="home-screen">
       <HomeSceneHost
         pack={pack}
-        selected={selected}
-        phase="idle"
+        selected={state.selected}
+        phase={state.status === "cast" ? "pending" : "choosing"}
         reducedMotion={reducedMotion}
         dpr={dpr}
       />
       <HomeHud
         model={model}
-        selected={selected}
-        onSelect={setSelected}
-        onCast={() => undefined}
+        selected={state.selected}
+        onSelect={select}
+        onSpend={setSpend}
+        onCast={cast}
         onUsdcChip={() => undefined}
       />
     </section>
   );
+}
+
+export function HomePage() {
+  return <CastPage />;
+}
+
+export function VotePage() {
+  return <CastPage />;
 }

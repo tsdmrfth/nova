@@ -120,7 +120,8 @@
       "path": "tiles/tile-stabilize.svg",
       "kind": "tile",
       "screens": [
-        "home"
+        "home",
+        "vote"
       ],
       "sha256": "6adb70367a96a1bbd32d9326df7cfb064a22a57f441bb310152e2d1b45e24327",
       "license": "internal-placeholder",
@@ -134,7 +135,8 @@
       "path": "tiles/tile-expand.svg",
       "kind": "tile",
       "screens": [
-        "home"
+        "home",
+        "vote"
       ],
       "sha256": "0afdeb4c9c9fce4d741b3f4e5a46ec263e28e02da4edc2eed5d367364bf6d39a",
       "license": "internal-placeholder",
@@ -148,7 +150,8 @@
       "path": "tiles/tile-route.svg",
       "kind": "tile",
       "screens": [
-        "home"
+        "home",
+        "vote"
       ],
       "sha256": "65d238bc4944cbbc664c657d1d4bf2da0b291c365802e49f9928ab3131535102",
       "license": "internal-placeholder",
@@ -163,6 +166,7 @@
       "kind": "tile",
       "screens": [
         "home",
+        "vote",
         "shared"
       ],
       "sha256": "7c16da041b247485eb003485fbb38614170749e21c2f4c4054753f02b326a683",

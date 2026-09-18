@@ -1,62 +1,84 @@
 import type { ChoiceId } from "@nova/assets";
+import { canCast, formatLocalStamp, type DayState } from "../day/dayStore";
+
+export type HudChoice = {
+  id: ChoiceId;
+  label: string;
+  title: string;
+  body: string;
+  artId: string;
+};
 
 export type HudModel = {
   day: number;
+  goal: DayState["goal"];
   freeInfluence: number;
   extraInfluence: number;
+  spendAmount: number;
   usdcLabel: string;
   rankTitle: string;
   rankXp: { current: number; next: number };
   heroTitle: string;
   heroSub: string;
-  choices: Array<{
-    id: ChoiceId;
-    label: string;
-    body: string;
-    artId: string;
-  }>;
+  scene: string;
+  freeHint: string;
+  dayHint: string;
+  choices: HudChoice[];
+  status: DayState["status"];
   castEnabled: boolean;
+  castMessage: string;
+  castDetail: string;
   disclaimer: string;
 };
 
 export type HudCallbacks = {
   onSelect(id: ChoiceId): void;
+  onSpend(amount: number): void;
   onCast(): void;
   onBuyFreePlus(): void;
   onBuyExtraPlus(): void;
   onUsdcChip(): void;
 };
 
-export const HOME_HUD_MODEL: HudModel = {
-  day: 7,
-  freeInfluence: 10,
-  extraInfluence: 0,
+const RANK_CHROME = {
   usdcLabel: "USDC",
   rankTitle: "Architect Apprentice",
   rankXp: { current: 1250, next: 2000 },
-  heroTitle: "Design today's economy.",
-  heroSub: "Your influence shapes the Nova Archipelago.",
-  choices: [
-    {
-      id: "A",
-      label: "Stabilize",
-      body: "Strengthen systems. Reduce volatility and protect what's built.",
-      artId: "tile_stabilize",
-    },
-    {
-      id: "B",
-      label: "Expand",
-      body: "Grow the network. Unlock new zones and increase capacity.",
-      artId: "tile_expand",
-    },
-    {
-      id: "C",
-      label: "Route",
-      body: "Redirect flows. Improve trade routes and balance resources.",
-      artId: "tile_route",
-    },
-  ],
-  castEnabled: true,
   disclaimer:
     "Influence is non-binding but impactful. Outcomes shape the world for all citizens.",
-};
+} as const;
+
+export function buildHudModel(
+  state: DayState,
+  artByChoice: Record<ChoiceId, string>,
+): HudModel {
+  const castEnabled = canCast(state);
+  return {
+    day: state.day,
+    goal: state.goal,
+    freeInfluence: state.freeInfluence,
+    extraInfluence: state.extraInfluence,
+    spendAmount: state.spendAmount,
+    ...RANK_CHROME,
+    heroTitle: state.roundTitle,
+    heroSub: `Day goal ${state.goal}`,
+    scene: state.scene,
+    freeHint: state.freeHint,
+    dayHint: state.dayHint,
+    choices: state.choices.map((choice) => ({
+      id: choice.id,
+      label: choice.world,
+      title: choice.title,
+      body: choice.caption,
+      artId: artByChoice[choice.id],
+    })),
+    status: state.status,
+    castEnabled,
+    castMessage: state.status === "cast" ? "Influence cast" : "Cast Influence",
+    castDetail:
+      state.status === "cast"
+        ? `Locked until ${formatLocalStamp(state.schedule.voteCloseAt)}. Results publish around ${formatLocalStamp(state.schedule.publishAt)}.`
+        : state.dayHint,
+    disclaimer: RANK_CHROME.disclaimer,
+  };
+}

@@ -38,6 +38,18 @@ describe("client bind contract", () => {
     const scene = readFileSync("apps/web/src/scene/HomeSceneHost.tsx", "utf8");
     expect(hud).toContain('data-testid={`choice-${choice.id}`}');
     expect(hud).toContain('data-testid="cast-influence"');
+    expect(hud).toContain('data-testid="day-goal"');
+    expect(hud).toContain('data-testid="spend-free"');
     expect(scene).toContain('data-testid="scene-stage"');
+  });
+
+  it("never uses Submit vote or Circle-official claims in the client", () => {
+    expect(sources.length).toBeGreaterThan(0);
+    for (const file of sources) {
+      const text = readFileSync(file, "utf8");
+      expect(text, file).not.toMatch(/Submit vote/i);
+      expect(text, file).not.toMatch(/partnered with Circle/i);
+      expect(text, file).not.toMatch(/Circle's official/i);
+    }
   });
 });
