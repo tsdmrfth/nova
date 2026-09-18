@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { useNavigate } from "react-router";
 import {
   assertArtLockVersion,
   canonManifest,
@@ -13,6 +14,8 @@ import { HomeSceneHost } from "../scene/HomeSceneHost";
 
 export function CastPage() {
   const { state, select, setSpend, cast } = useDayStore();
+  const navigate = useNavigate();
+  const goBuy = () => navigate("/buy");
   const { pack, missing } = useMemo(
     () => resolvePack(canonManifest, state.day),
     [state.day],
@@ -57,7 +60,8 @@ export function CastPage() {
         onSelect={select}
         onSpend={setSpend}
         onCast={cast}
-        onUsdcChip={() => undefined}
+        onUsdcChip={goBuy}
+        onBuyExtraPlus={goBuy}
       />
     </section>
   );

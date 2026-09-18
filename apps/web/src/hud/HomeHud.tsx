@@ -14,7 +14,7 @@ import "./HomeHud.css";
 
 type HomeHudProps = Pick<
   HudCallbacks,
-  "onSelect" | "onSpend" | "onCast" | "onUsdcChip"
+  "onSelect" | "onSpend" | "onCast" | "onUsdcChip" | "onBuyExtraPlus"
 > & {
   model: HudModel;
   selected: ChoiceId | null;
@@ -31,6 +31,7 @@ export function HomeHud({
   onSpend,
   onCast,
   onUsdcChip,
+  onBuyExtraPlus,
 }: HomeHudProps) {
   const xpRatio =
     model.rankXp.next === 0
@@ -87,7 +88,9 @@ export function HomeHud({
             </span>
             <span className="hud-chip-copy">
               <span className="hud-chip-label">Extra Influence</span>
-              <span className="hud-chip-value">{model.extraInfluence}</span>
+              <span className="hud-chip-value" data-testid="hud-extra-value">
+                {model.extraInfluence}
+              </span>
             </span>
           </div>
           <span className="hud-plus" aria-hidden="true">
@@ -103,6 +106,23 @@ export function HomeHud({
             <UsdcIcon className="hud-usdc-mark" />
           </button>
         </div>
+
+        {model.buyEntry ? (
+          model.buyEntryToBuy ? (
+            <button
+              type="button"
+              className="hud-buy-entry"
+              data-testid="buy-entry"
+              onClick={onBuyExtraPlus}
+            >
+              {model.buyEntry}
+            </button>
+          ) : (
+            <p className="hud-buy-entry hud-buy-entry--hint" data-testid="buy-entry">
+              {model.buyEntry}
+            </p>
+          )
+        ) : null}
       </div>
 
       <div className="hud-center">

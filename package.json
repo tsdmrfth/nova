@@ -2,7 +2,7 @@
   "name": "nova",
   "version": "0.0.0",
   "private": true,
-  "description": "Nova monorepo — Vote cast shell (P1-03)",
+  "description": "Nova monorepo — Extra Influence buy packs (P1-04)",
   "type": "module",
   "packageManager": "pnpm@10.33.3",
   "engines": {

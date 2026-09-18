@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useState, type ReactNode } from "react";
 import type { ChoiceId } from "@nova/assets";
+import type { PackId } from "@nova/shared";
 import { DayStoreContext } from "./dayStoreContext";
 import {
+  buyPack,
   castSelected,
   createDayState,
   selectChoice,
@@ -23,9 +25,13 @@ export function DayStoreProvider({ children }: { children: ReactNode }) {
     setState((current) => castSelected(current));
   }, []);
 
+  const buy = useCallback((packId: PackId) => {
+    setState((current) => buyPack(current, packId));
+  }, []);
+
   const value = useMemo(
-    () => ({ state, select, setSpend, cast }),
-    [state, select, setSpend, cast],
+    () => ({ state, select, setSpend, cast, buy }),
+    [state, select, setSpend, cast, buy],
   );
 
   return (

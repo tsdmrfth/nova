@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="640" height="640">
+  <defs>
+    <radialGradient id="spark-bg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#12325C"/>
+      <stop offset="100%" stop-color="#07111C"/>
+    </radialGradient>
+    <linearGradient id="spark-crystal" x1="0.2" y1="0" x2="0.85" y2="1">
+      <stop offset="0%" stop-color="#9BD0FF"/>
+      <stop offset="42%" stop-color="#3B8EF0"/>
+      <stop offset="100%" stop-color="#2775CA"/>
+    </linearGradient>
+    <radialGradient id="spark-glow" cx="50%" cy="36%" r="32%">
+      <stop offset="0%" stop-color="#7EC8FF" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#2775CA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="640" fill="url(#spark-bg)"/>
+  <ellipse cx="320" cy="518" rx="210" ry="34" fill="#07111C" opacity="0.7"/>
+  <ellipse cx="320" cy="502" rx="188" ry="26" fill="#0B1A2E"/>
+  <ellipse cx="320" cy="502" rx="188" ry="26" fill="none" stroke="#C9A227" stroke-width="3" opacity="0.5"/>
+  <ellipse cx="320" cy="478" rx="148" ry="18" fill="#10233F"/>
+  <ellipse cx="320" cy="478" rx="148" ry="18" fill="none" stroke="#C9A227" stroke-width="2" opacity="0.38"/>
+  <ellipse cx="320" cy="458" rx="96" ry="10" fill="#2775CA" opacity="0.28"/>
+  <circle cx="320" cy="286" r="150" fill="url(#spark-glow)"/>
+  <polygon points="320,118 402,248 320,458 238,248" fill="url(#spark-crystal)"/>
+  <polygon points="320,118 238,248 320,286" fill="#E8F4FF" opacity="0.38"/>
+  <polygon points="320,118 402,248 320,286" fill="#2775CA" opacity="0.28"/>
+  <polygon points="238,248 320,286 320,458" fill="#0E3A72" opacity="0.42"/>
+  <polygon points="402,248 320,286 320,458" fill="#3B8EF0" opacity="0.5"/>
+  <path d="M320 150 L356 248 L320 286 Z" fill="#7EC8FF" opacity="0.35"/>
+  <circle cx="236" cy="214" r="3.2" fill="#7EC8FF"/>
+  <circle cx="412" cy="198" r="2.4" fill="#9BD0FF"/>
+  <circle cx="438" cy="292" r="2" fill="#3B8EF0"/>
+  <circle cx="204" cy="304" r="2.2" fill="#3B8EF0"/>
+  <circle cx="360" cy="168" r="1.8" fill="#E8F4FF"/>
+</svg>
