@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="40%" stop-color="#F4C97A" stop-opacity="0"/>
+      <stop offset="58%" stop-color="#E8A05A" stop-opacity="0.18"/>
+      <stop offset="70%" stop-color="#07111C" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#haze)"/>
+</svg>

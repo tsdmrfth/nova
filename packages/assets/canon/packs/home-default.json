@@ -1,0 +1,35 @@
+{
+  "day": 1,
+  "screen": "home",
+  "layers": {
+    "sky": "layer_sky_sunset",
+    "far": "layer_skyline",
+    "mid": "layer_water_highways",
+    "near": "layer_platform",
+    "fx": [
+      "layer_light_trails",
+      "layer_fog_haze"
+    ]
+  },
+  "masterPlate": "scene_home_sunset_city",
+  "nova": {
+    "mode": "sprite",
+    "spriteId": "nova_idle_stand_3q",
+    "animation": "idle"
+  },
+  "tiles": {
+    "A": {
+      "artId": "tile_stabilize",
+      "labelKey": "choice.stabilize"
+    },
+    "B": {
+      "artId": "tile_expand",
+      "labelKey": "choice.expand"
+    },
+    "C": {
+      "artId": "tile_route",
+      "labelKey": "choice.route"
+    }
+  },
+  "worldFamily": "stabilize_expand_route"
+}

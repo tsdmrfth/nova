@@ -1,0 +1,276 @@
+{
+  "version": 1,
+  "name": "nova-canon",
+  "artLockVersion": "2026-09-17",
+  "assets": [
+    {
+      "id": "scene_home_sunset_city",
+      "path": "scene/scene-home-sunset-city.svg",
+      "kind": "scene",
+      "screens": [
+        "home"
+      ],
+      "sha256": "63dd747c2e9093de80ec819f1f0b7709940f9eb212d7cf4592e148e7a35b8159",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "layer_sky_sunset",
+      "path": "scene/layer-sky-sunset.svg",
+      "kind": "scene",
+      "screens": [
+        "home"
+      ],
+      "sha256": "6302ee8c84b7f60a79e90d44448ddba28639f649f80ba10a6a0c7ee10802e908",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "layer_skyline",
+      "path": "scene/layer-skyline.svg",
+      "kind": "scene",
+      "screens": [
+        "home"
+      ],
+      "sha256": "6bd80aedaf353f0a6a9904293863993de08f0cfd4b525ffe54f1ec47d9e311eb",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "layer_water_highways",
+      "path": "scene/layer-water-highways.svg",
+      "kind": "scene",
+      "screens": [
+        "home"
+      ],
+      "sha256": "087689496028aeb779f7e0cfafac9b51578bea5977f20a867315e09c3d83427d",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "layer_platform",
+      "path": "scene/layer-platform.svg",
+      "kind": "scene",
+      "screens": [
+        "home"
+      ],
+      "sha256": "f929f145a0e575ab0bd805cf773edbfc3ecdf12694294c7958d5b39b832cefd7",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "layer_light_trails",
+      "path": "vfx/layer-light-trails.svg",
+      "kind": "vfx",
+      "screens": [
+        "home"
+      ],
+      "sha256": "7b5c7d14f97fee7304e685fa19d78a9f32a1b8c5a004c2cb0071feaa8fc632ae",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "layer_fog_haze",
+      "path": "vfx/layer-fog-haze.svg",
+      "kind": "vfx",
+      "screens": [
+        "home"
+      ],
+      "sha256": "e5e9fba594fc74b4cc6fab05f11f7c56ecc1e45c7337b54210adeb80a16a04af",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "nova_idle_stand_3q",
+      "path": "character/nova-idle-stand-3q.svg",
+      "kind": "character",
+      "screens": [
+        "home"
+      ],
+      "sha256": "07346bdf6761a5c88328ea349cde171e25a2edb7343e6519ca5d977e0a7b5541",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "tile_stabilize",
+      "path": "tiles/tile-stabilize.svg",
+      "kind": "tile",
+      "screens": [
+        "home",
+        "vote"
+      ],
+      "sha256": "6adb70367a96a1bbd32d9326df7cfb064a22a57f441bb310152e2d1b45e24327",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "tile_expand",
+      "path": "tiles/tile-expand.svg",
+      "kind": "tile",
+      "screens": [
+        "home",
+        "vote"
+      ],
+      "sha256": "0afdeb4c9c9fce4d741b3f4e5a46ec263e28e02da4edc2eed5d367364bf6d39a",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "tile_route",
+      "path": "tiles/tile-route.svg",
+      "kind": "tile",
+      "screens": [
+        "home",
+        "vote"
+      ],
+      "sha256": "65d238bc4944cbbc664c657d1d4bf2da0b291c365802e49f9928ab3131535102",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "tile_selected_glow_frame",
+      "path": "tiles/tile-selected-glow-frame.svg",
+      "kind": "tile",
+      "screens": [
+        "home",
+        "vote",
+        "shared"
+      ],
+      "sha256": "7c16da041b247485eb003485fbb38614170749e21c2f4c4054753f02b326a683",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "eng-p1-02",
+      "pixelRatio": 1
+    },
+    {
+      "id": "pack_spark",
+      "path": "hud/pack-spark.svg",
+      "kind": "hud",
+      "screens": [
+        "buy"
+      ],
+      "sha256": "c3a5645bbf35808236f6e22ac2e9e780488c88823b1f7791ed3139fd0103bbdd",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-18T00:00:00.000Z",
+      "approvedBy": "eng-p1-04",
+      "pixelRatio": 1
+    },
+    {
+      "id": "pack_pulse",
+      "path": "hud/pack-pulse.svg",
+      "kind": "hud",
+      "screens": [
+        "buy"
+      ],
+      "sha256": "f158c9d6685972f3f229905091d1106e584f91752d46a19b3e9e28bce3ece81e",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-18T00:00:00.000Z",
+      "approvedBy": "eng-p1-04",
+      "pixelRatio": 1
+    }
+  ],
+  "bundles": [
+    {
+      "name": "home",
+      "assets": [
+        {
+          "alias": "scene_home_sunset_city",
+          "src": "scene/scene-home-sunset-city.svg"
+        },
+        {
+          "alias": "layer_sky_sunset",
+          "src": "scene/layer-sky-sunset.svg"
+        },
+        {
+          "alias": "layer_skyline",
+          "src": "scene/layer-skyline.svg"
+        },
+        {
+          "alias": "layer_water_highways",
+          "src": "scene/layer-water-highways.svg"
+        },
+        {
+          "alias": "layer_platform",
+          "src": "scene/layer-platform.svg"
+        },
+        {
+          "alias": "layer_light_trails",
+          "src": "vfx/layer-light-trails.svg"
+        },
+        {
+          "alias": "layer_fog_haze",
+          "src": "vfx/layer-fog-haze.svg"
+        },
+        {
+          "alias": "nova_idle_stand_3q",
+          "src": "character/nova-idle-stand-3q.svg"
+        },
+        {
+          "alias": "tile_stabilize",
+          "src": "tiles/tile-stabilize.svg"
+        },
+        {
+          "alias": "tile_expand",
+          "src": "tiles/tile-expand.svg"
+        },
+        {
+          "alias": "tile_route",
+          "src": "tiles/tile-route.svg"
+        },
+        {
+          "alias": "tile_selected_glow_frame",
+          "src": "tiles/tile-selected-glow-frame.svg"
+        }
+      ]
+    },
+    {
+      "name": "buy",
+      "assets": [
+        {
+          "alias": "pack_spark",
+          "src": "hud/pack-spark.svg"
+        },
+        {
+          "alias": "pack_pulse",
+          "src": "hud/pack-pulse.svg"
+        }
+      ]
+    }
+  ]
+}
