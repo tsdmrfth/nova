@@ -64,8 +64,8 @@ describe("client bind contract", () => {
     expect(scene).toContain('data-testid="scene-stage"');
     expect(connect).toContain('data-testid="connect-cta"');
     expect(connect).toContain('data-testid="connect-checkbox"');
-    expect(connect).toContain('data-testid="geo-block"');
-    expect(connect).toContain('data-testid="network-switch"');
+    expect(connect).toContain('testId="geo-block"');
+    expect(connect).toContain('testId: "network-switch"');
     expect(toast).toContain('data-testid="grant-toast"');
     expect(tutorial).toContain('data-testid="tutorial-skip"');
   });

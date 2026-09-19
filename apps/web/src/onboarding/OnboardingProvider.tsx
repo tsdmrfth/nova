@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useReducer, useRef, type ReactNode } from "react";
+import { useCallback, useMemo, useReducer, type ReactNode } from "react";
 import { useSearchParams } from "react-router";
 import { OnboardingContext } from "./onboardingContext";
 import {
@@ -102,16 +102,13 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     persist(snapshot);
     return snapshot;
   });
-  const stateRef = useRef(state);
-  stateRef.current = state;
 
   const run = useCallback((action: Action): OnboardingSnapshot => {
-    const next = reducer(stateRef.current, action);
-    stateRef.current = next;
+    const next = reducer(state, action);
     persist(next);
     dispatch({ type: "hydrate", snapshot: next });
     return next;
-  }, []);
+  }, [state]);
 
   const setChecked = useCallback((checked: boolean) => {
     run({ type: "check", checked });
