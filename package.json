@@ -2,7 +2,7 @@
   "name": "nova",
   "version": "0.0.0",
   "private": true,
-  "description": "Nova monorepo — Results + offline day settle (P1-05)",
+  "description": "Nova monorepo — Onboarding UI first-run (P1-09)",
   "type": "module",
   "packageManager": "pnpm@10.33.3",
   "engines": {

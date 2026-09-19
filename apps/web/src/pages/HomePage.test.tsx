@@ -1,14 +1,18 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../App";
+import { seedOnboarded } from "../onboarding/onboardingStorage";
 
 vi.mock("../scene/HomeSceneHost", () => ({
   HomeSceneHost: () => <div data-testid="scene-stage" />,
 }));
 
 describe("Home / Vote cast shell", () => {
+  beforeEach(() => {
+    seedOnboarded();
+  });
   it("casts Free Influence on Home and keeps the cinema shell", async () => {
     const user = userEvent.setup();
     render(
