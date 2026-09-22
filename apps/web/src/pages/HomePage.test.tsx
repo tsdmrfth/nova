@@ -73,6 +73,29 @@ describe("Home / Vote cast shell", () => {
     expect(screen.getByTestId("cast-influence")).toBeTruthy();
   });
 
+  it("renders a later round from the day query without copying strings into the HUD", async () => {
+    render(
+      <MemoryRouter initialEntries={["/?day=10"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("heading", { name: "First promise" })).toBeTruthy();
+    expect(screen.getByTestId("day-goal").textContent).toMatch(/MOST/);
+    expect(screen.getByText("Check first")).toBeTruthy();
+    expect(screen.getByText("Say yes more")).toBeTruthy();
+    expect(screen.getByText("Promise the path")).toBeTruthy();
+    expect(screen.getByText("Stabilize")).toBeTruthy();
+    expect(screen.getByText("Expand")).toBeTruthy();
+    expect(screen.getByText("Route")).toBeTruthy();
+    expect(screen.getByTestId("cast-influence").textContent).toMatch(/Cast Influence/);
+    expect(document.body.textContent).not.toMatch(/ask_first|protect_money/);
+    expect(document.body.textContent).not.toMatch(/non-binding but impactful/);
+    expect(document.body.textContent).toMatch(
+      /Not affiliated with Circle's Architects program/,
+    );
+  });
+
   it("opens Extra Influence from the USDC chip", async () => {
     const user = userEvent.setup();
     render(

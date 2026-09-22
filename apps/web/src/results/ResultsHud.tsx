@@ -47,6 +47,11 @@ export function ResultsHud({
           <p className="results-goal" data-testid="results-goal">
             {model.goalLine}
           </p>
+          {model.hook ? (
+            <p className="results-hook" data-testid="results-hook">
+              {model.hook}
+            </p>
+          ) : null}
         </header>
 
         {model.needCast ? (
@@ -133,8 +138,7 @@ export function ResultsHud({
 
         <p className="results-disclaimer">
           <ShieldIcon className="results-disclaimer-icon" />
-          Extra Influence does not make a pick more likely to win. SPARK is
-          in-game points — not a token.
+          {model.disclaimer}
         </p>
       </div>
     </div>

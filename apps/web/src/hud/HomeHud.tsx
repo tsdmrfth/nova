@@ -233,11 +233,11 @@ export function HomeHud({
             className="cast-button"
             data-testid="cast-influence"
             disabled={!model.castEnabled}
-            aria-label="Cast Influence"
+            aria-label={model.voteCta}
             aria-describedby="cast-preview-hint"
             onClick={onCast}
           >
-            Cast Influence
+            {model.voteCta}
             <span aria-hidden="true">›</span>
           </button>
           <p

@@ -7,7 +7,11 @@ import {
   type MicroUsdc,
   type PackId,
 } from "@nova/shared";
-import { getSeasonDay, type DayChoiceCopy } from "../content/season1";
+import {
+  cloneSeasonChoices,
+  getSeasonDay,
+  type SeasonDayCopy,
+} from "../content/season1";
 
 export const LOCAL_PLAYER_ID = "local";
 
@@ -49,7 +53,7 @@ export type DayState = {
   scene: string;
   freeHint: string;
   dayHint: string;
-  choices: [DayChoiceCopy, DayChoiceCopy, DayChoiceCopy];
+  choices: SeasonDayCopy["choices"];
   freeInfluence: number;
   extraInfluence: number;
   spentTodayMicro: MicroUsdc;
@@ -99,7 +103,7 @@ export function createDayState(
     scene: copy.scene,
     freeHint: copy.freeHint,
     dayHint: copy.dayHint,
-    choices: copy.choices,
+    choices: cloneSeasonChoices(copy.choices),
     freeInfluence,
     extraInfluence: 0,
     spentTodayMicro: 0n,

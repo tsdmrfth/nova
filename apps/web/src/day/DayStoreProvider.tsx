@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useSearchParams } from "react-router";
 import type { ChoiceId } from "@nova/assets";
 import type { PackId } from "@nova/shared";
+import { parseSeasonDay } from "../content/season1";
 import { DayStoreContext } from "./dayStoreContext";
 import {
   buyPack,
@@ -13,7 +15,11 @@ import {
 } from "./dayStore";
 
 export function DayStoreProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState(() => createDayState(1));
+  const [params] = useSearchParams();
+  // Read once. Later routes keep this round. Advancing the day is P1-07.
+  const [state, setState] = useState(() =>
+    createDayState(parseSeasonDay(params.get("day"))),
+  );
 
   const select = useCallback((id: ChoiceId) => {
     setState((current) => selectChoice(current, id));

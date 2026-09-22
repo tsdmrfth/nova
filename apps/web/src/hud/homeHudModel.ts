@@ -1,6 +1,7 @@
 import type { ChoiceId } from "@nova/assets";
 import { EFFECTIVE_EXTRA_CAP } from "@nova/shared";
 import { BUY_COPY } from "../buy/buyCopy";
+import { S1_COPY } from "../content/s1Copy";
 import { canCast, formatLocalStamp, type DayState } from "../day/dayStore";
 
 export type HudChoice = {
@@ -28,6 +29,7 @@ export type HudModel = {
   choices: HudChoice[];
   status: DayState["status"];
   castEnabled: boolean;
+  voteCta: string;
   castMessage: string;
   castDetail: string;
   buyEntry: string | null;
@@ -48,8 +50,7 @@ const RANK_CHROME = {
   usdcLabel: "USDC",
   rankTitle: "Architect Apprentice",
   rankXp: { current: 1250, next: 2000 },
-  disclaimer:
-    "Influence is non-binding but impactful. Outcomes shape the world for all citizens.",
+  disclaimer: S1_COPY.affiliation,
 } as const;
 
 export function voteBuyEntry(state: DayState): {
@@ -95,10 +96,14 @@ export function buildHudModel(
     })),
     status: state.status,
     castEnabled,
-    castMessage: state.status === "cast" ? "Influence cast" : "Cast Influence",
+    voteCta: S1_COPY.voteCta,
+    castMessage: state.status === "cast" ? S1_COPY.castSuccess : S1_COPY.voteCta,
     castDetail:
       state.status === "cast"
-        ? `Locked until ${formatLocalStamp(state.schedule.voteCloseAt)}. Results publish around ${formatLocalStamp(state.schedule.publishAt)}.`
+        ? S1_COPY.confirmLocked(
+            formatLocalStamp(state.schedule.voteCloseAt),
+            formatLocalStamp(state.schedule.publishAt),
+          )
         : state.dayHint,
     buyEntry,
     buyEntryToBuy,
