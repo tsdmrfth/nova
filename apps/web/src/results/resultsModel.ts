@@ -1,6 +1,7 @@
 import type { ChoiceId } from "@nova/assets";
 import { formatUsdc, type DayGoal, type MicroUsdc } from "@nova/shared";
 import type { ClaimStatus, DayState } from "../day/dayStore";
+import { playerFacingIfWins } from "../content/season1";
 import { RESULTS_COPY } from "./resultsCopy";
 import { settleOffline, type OfflineDaySettle } from "./settleMock";
 
@@ -18,6 +19,7 @@ export type ResultsHudModel = {
   goal: DayGoal;
   canon: string;
   goalLine: string;
+  hook: string | null;
   winnerId: ChoiceId;
   winnerTitle: string;
   winnerWorld: string;
@@ -36,6 +38,7 @@ export type ResultsHudModel = {
   claimEnabled: boolean;
   share: string;
   back: string;
+  disclaimer: string;
   needCast: string | null;
   voteCta: string;
   lockedVote: boolean;
@@ -97,6 +100,7 @@ export function buildResultsModel(
     goal: state.goal,
     canon: RESULTS_COPY.canonToday(winnerChoice?.title ?? settled.winningOptionId),
     goalLine: RESULTS_COPY.dayGoal(state.goal),
+    hook: playerFacingIfWins(winnerChoice?.ifWins),
     winnerId: winnerChoice?.id ?? "B",
     winnerTitle: winnerChoice?.title ?? settled.winningOptionId,
     winnerWorld: winnerChoice?.world ?? "",
@@ -115,6 +119,7 @@ export function buildResultsModel(
     claimEnabled: total > 0n && claimStatus !== "claimed",
     share: RESULTS_COPY.share,
     back: RESULTS_COPY.back,
+    disclaimer: RESULTS_COPY.resultsNote,
     needCast: settled.lockedVote ? null : RESULTS_COPY.needCast,
     voteCta: RESULTS_COPY.voteCta,
     lockedVote: settled.lockedVote,

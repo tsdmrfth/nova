@@ -1,8 +1,8 @@
 # Nova
 
-pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. This branch is **P1-09**: first-run onboarding (Connect, disclaimer, mock wallet, grant toast, skippable tutorial, geo / wrong-network).
+pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. **P1-09** added first-run onboarding. This branch is **P1-06**: Season 1 copy and rounds 01–10 wired into Home, Vote, Confirmation, and Results.
 
-There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@nova/shared`. Confirmation is a later slice.
+There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@nova/shared`. This branch is stacked on P1-09 (which includes P1-05); those commits are not on `main`. Day advance stays with P1-07.
 
 ## Status
 
@@ -14,8 +14,8 @@ There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@
 | **P1-03** | Day 1 Vote/Home cast shell: Stabilize / Expand / Route tiles, Free Influence spend into an in-memory day store, MOST/LEAST/MIDDLE goal stub. |
 | **P1-04** | `/buy` Extra Influence: Spark 1 USDC → 10 Extra, Pulse 5 USDC → 55 Extra via `quotePack` / `attemptBuy`. Mock pay, no chain. |
 | **P1-05** | `/results` offline settle via `pickWinningOption` / `buildDayPrizePool` / `settleDay` / `sparkForDay`. Claim CTA on Results; Profile is history-only. |
-| **P1-09 (current)** | `/connect` first-run: disclaimer, mock Connect / Continue, +10 Free grant toast, skippable tutorial, geo-block + Switch to Arc. Persists in localStorage. |
-| **P1-06 (next)** | Confirmation / pending — not started. |
+| **P1-09** | `/connect` first-run: disclaimer, mock Connect / Continue, +10 Free grant toast, skippable tutorial, geo-block + Switch to Arc. Persists in localStorage. |
+| **P1-06 (current)** | Typed Season 1 rounds 01–10. Home, Vote, Confirmation, and Results read scene, choices, and B3/B5/B6 copy from that source. |
 
 ## Workspace
 
@@ -30,7 +30,9 @@ There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@
 
 Home (`/`) and Vote (`/vote`) share one cinema Cast screen. React owns HUD copy, chips, A/B/C tiles, Free spend, and the **Cast Influence** button. Pixi owns the full-bleed world. Both address art only through `@nova/assets` helpers (`getAsset`, `getAssetUrl`, `getDayPack`, `assertCanon`). Production code never imports `drafts/`.
 
-Default content is **Day 1 · First light** (HIKAYE / COPY-S1): scene, self titles/captions, world labels Stabilize / Expand / Route, day goal **MOST**. Tile art uses canon ids `tile_stabilize` / `tile_expand` / `tile_route`.
+Default content is **Day 1 · First light**. Rounds 01–10 live in `apps/web/src/content/season1.ts` (HIKAYE) and `apps/web/src/content/s1Copy.ts` (COPY-S1). World labels stay Stabilize / Expand / Route. Tile art uses canon ids `tile_stabilize` / `tile_expand` / `tile_route`.
+
+Open `/?day=8` (or `/vote?day=8`, `/results?day=8`, `/confirmation?day=8`) to preview that round. The query is read once; route changes keep the same day in memory. It does not advance a season or burn Free between days.
 
 Casting spends Free Influence through `@nova/shared` `grantDailyFree` / `spendInfluence` into an in-memory day store (local player id, no wallet). Partial spend is allowed before the CTA; the first successful cast locks the day. Extra bought today is placed on that same option as a separate lane.
 
@@ -110,7 +112,7 @@ Worked example (20 Spark + 8 Pulse): gross 60 → studio 6, P 54 → paid 48.6 /
 | Nova/Neighborhood | `/neighborhood` (`/nova` redirects here) |
 | Profile | `/profile` |
 
-Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout. Results is the day-settle + claim HUD. Profile is history-only. Connect is the first-run Welcome / disclaimer / mock wallet gate. Confirmation / Neighborhood remain placeholders.
+Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout. Results is the day-settle + claim HUD. Confirmation shows the active round and, after a cast, **Influence cast** plus the locked-until line. Profile is history-only. Connect is the first-run Welcome / disclaimer / mock wallet gate. Neighborhood remains a placeholder.
 
 ## Setup
 

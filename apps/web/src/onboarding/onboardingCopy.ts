@@ -1,3 +1,5 @@
+import { S1_COPY } from "../content/s1Copy";
+
 /** COPY-S1 B1–B2 + C + E1 / ONBOARDING-EDGE-COPY / PRE-CODE-LOCKS. EN-first. */
 export const ONBOARDING_COPY = {
   headline: "Nova just woke up.",
@@ -16,11 +18,10 @@ export const ONBOARDING_COPY = {
   feePool:
     "90% of Extra purchases go to that day's prize pool; 10% is the platform service fee.",
   feeRisk: "No guaranteed reward. Soft launch geo may apply.",
-  feeAffiliation:
-    "Third-party game on Arc. Not affiliated with Circle's Architects program.",
-  grantTitle: "+10 Free Influence",
-  grantBody: "Yours for today. Unused Free burns when the day ends.",
-  grantFirstDay: "Use it on today's three choices. You can skip Extra.",
+  feeAffiliation: S1_COPY.affiliation,
+  grantTitle: S1_COPY.grantTitle,
+  grantBody: S1_COPY.grantBody,
+  grantFirstDay: S1_COPY.grantFirstDay,
   tutorialTitle: "How today works",
   tutorialSteps: [
     "Goal of the day: MOST, LEAST, or MIDDLE — match the crowd's Influence.",

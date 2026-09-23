@@ -113,6 +113,7 @@ describe("offline settle mock", () => {
     );
     expect(model.canon).toBe("Canon today: Say hello");
     expect(model.goalLine).toBe("Day goal was MOST");
+    expect(model.hook).toBe("Neighbors notice a wave.");
   });
 
   it("freezes the claim snapshot and keeps copy hukuk-safe", () => {

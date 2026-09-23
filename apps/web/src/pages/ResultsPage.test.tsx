@@ -42,6 +42,9 @@ describe("Results + Profile mock loop", () => {
       "Canon today: Say hello",
     );
     expect(screen.getByTestId("results-goal").textContent).toBe("Day goal was MOST");
+    expect(screen.getByTestId("results-hook").textContent).toBe(
+      "Neighbors notice a wave.",
+    );
     expect(screen.getByTestId("results-world").textContent).toMatch(/Expand/i);
     expect(screen.getByTestId("results-share-free").textContent).toBe(
       `Free pool: ${formatUsdc(expected.player.free)} USDC`,
@@ -117,6 +120,21 @@ describe("Results + Profile mock loop", () => {
 
     await user.click(screen.getByTestId("results-back"));
     expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
+  });
+
+  it("names the Round 02 canon from the story pack on a LEAST day", () => {
+    render(
+      <MemoryRouter initialEntries={["/results?day=2"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId("results-canon").textContent).toBe(
+      "Canon today: Ask the deadline",
+    );
+    expect(screen.getByTestId("results-goal").textContent).toBe("Day goal was LEAST");
+    expect(screen.getByTestId("results-world").textContent).toMatch(/Stabilize/);
+    expect(screen.queryByTestId("results-hook")).toBeNull();
   });
 
   it("shows the empty Profile copy before any cast", async () => {

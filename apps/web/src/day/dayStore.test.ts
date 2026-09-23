@@ -15,6 +15,19 @@ import {
 describe("in-memory day store", () => {
   const now = new Date("2026-09-18T12:00:00");
 
+  it("opens later rounds from the season pack", () => {
+    const state = createDayState(5, now);
+    expect(state.day).toBe(5);
+    expect(state.goal).toBe("LEAST");
+    expect(state.roundTitle).toBe("Neighbor at the door");
+    expect(state.choices.map((choice) => choice.title)).toEqual([
+      "Finish your list",
+      "Neighbor day",
+      "Help, then return",
+    ]);
+    expect(() => createDayState(11, now)).toThrow(RangeError);
+  });
+
   it("opens Day 1 with a Free grant and MOST goal", () => {
     const state = createDayState(1, now);
     expect(state.day).toBe(1);
