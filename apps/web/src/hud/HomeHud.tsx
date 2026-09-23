@@ -18,6 +18,7 @@ type HomeHudProps = Pick<
 > & {
   model: HudModel;
   selected: ChoiceId | null;
+  onConfirm?(): void;
 };
 
 function padDay(day: number): string {
@@ -32,6 +33,7 @@ export function HomeHud({
   onCast,
   onUsdcChip,
   onBuyExtraPlus,
+  onConfirm,
 }: HomeHudProps) {
   const xpRatio =
     model.rankXp.next === 0
@@ -256,6 +258,17 @@ export function HomeHud({
               model.castDetail
             )}
           </p>
+          {model.confirmLabel ? (
+            <button
+              type="button"
+              className="cast-button"
+              data-testid="cast-confirm"
+              onClick={onConfirm}
+            >
+              {model.confirmLabel}
+              <span aria-hidden="true">›</span>
+            </button>
+          ) : null}
         </div>
 
         <div className="hud-brand" aria-hidden="true">

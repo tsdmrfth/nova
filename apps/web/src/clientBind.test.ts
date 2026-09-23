@@ -21,6 +21,7 @@ describe("client bind contract", () => {
       readFileSync("apps/web/src/hud/HomeHud.css", "utf8"),
       readFileSync("apps/web/src/buy/BuyHud.css", "utf8"),
       readFileSync("apps/web/src/results/ResultsHud.css", "utf8"),
+      readFileSync("apps/web/src/confirmation/ConfirmationHud.css", "utf8"),
       readFileSync("apps/web/src/pages/ProfilePage.css", "utf8"),
       readFileSync("apps/web/src/onboarding/onboarding.css", "utf8"),
     ].join("\n");
@@ -45,6 +46,10 @@ describe("client bind contract", () => {
     const scene = readFileSync("apps/web/src/scene/HomeSceneHost.tsx", "utf8");
     const connect = readFileSync("apps/web/src/onboarding/ConnectHud.tsx", "utf8");
     const toast = readFileSync("apps/web/src/onboarding/GrantToast.tsx", "utf8");
+    const confirmation = readFileSync(
+      "apps/web/src/confirmation/ConfirmationHud.tsx",
+      "utf8",
+    );
     const tutorial = readFileSync(
       "apps/web/src/onboarding/TutorialOverlay.tsx",
       "utf8",
@@ -67,6 +72,10 @@ describe("client bind contract", () => {
     expect(connect).toContain('testId="geo-block"');
     expect(connect).toContain('testId: "network-switch"');
     expect(toast).toContain('data-testid="grant-toast"');
+    expect(confirmation).toContain('data-testid="confirmation-results"');
+    expect(confirmation).toContain('data-testid="confirmation-free"');
+    expect(confirmation).toContain('data-testid="confirmation-extra"');
+    expect(confirmation).toContain('data-testid="confirmation-close"');
     expect(tutorial).toContain('data-testid="tutorial-skip"');
   });
 

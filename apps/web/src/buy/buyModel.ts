@@ -10,6 +10,7 @@ import {
   type MicroUsdc,
   type PackId,
 } from "@nova/shared";
+import { CONFIRMATION_COPY } from "../confirmation/confirmationCopy";
 import type { DayState } from "../day/dayStore";
 import { BUY_COPY, DEFAULT_PACK_ID, PACK_ART_IDS } from "./buyCopy";
 
@@ -64,6 +65,7 @@ export type BuyHudModel = {
   ctaEnabled: boolean;
   ctaDisabledReason: string | null;
   back: string;
+  confirmLabel: string | null;
   feeOneLiner: string;
   feeExpand: string;
   noGuarantee: string;
@@ -118,6 +120,7 @@ export function buildBuyModel(
     ctaEnabled: attempt.ok,
     ctaDisabledReason: attempt.ok ? null : BUY_COPY.capExceeded,
     back: BUY_COPY.back,
+    confirmLabel: state.status === "cast" ? CONFIRMATION_COPY.reviewCta : null,
     feeOneLiner: BUY_COPY.feeOneLiner,
     feeExpand: BUY_COPY.feeExpand,
     noGuarantee: BUY_COPY.noGuarantee,

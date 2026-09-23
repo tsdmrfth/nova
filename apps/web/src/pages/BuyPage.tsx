@@ -52,6 +52,7 @@ export function BuyPage() {
         onSelectPack={setSelectedPackId}
         onBuy={() => buy(selectedPackId)}
         onBack={() => navigate("/vote")}
+        onConfirm={() => navigate("/confirmation")}
       />
     </section>
   );
