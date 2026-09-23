@@ -13,6 +13,8 @@ export const LOCAL_PLAYER_ID = "local";
 
 export type CastStatus = "open" | "cast";
 
+export type ClaimStatus = "idle" | "pending" | "claimed";
+
 export type LocalCast = {
   walletId: typeof LOCAL_PLAYER_ID;
   optionId: ChoiceId;
@@ -32,6 +34,14 @@ export type LastBuy = {
   code?: "DAILY_BUY_CAP_EXCEEDED";
 };
 
+export type ClaimSnapshot = {
+  paid: MicroUsdc;
+  free: MicroUsdc;
+  total: MicroUsdc;
+  spark: number;
+  winningOptionId: string;
+};
+
 export type DayState = {
   day: number;
   goal: DayGoal;
@@ -43,12 +53,15 @@ export type DayState = {
   freeInfluence: number;
   extraInfluence: number;
   spentTodayMicro: MicroUsdc;
+  packsBought: PackId[];
   lastBuy: LastBuy | null;
   selected: ChoiceId | null;
   spendAmount: number;
   casts: LocalCast[];
   status: CastStatus;
   schedule: VoteSchedule;
+  claimStatus: ClaimStatus;
+  claim: ClaimSnapshot | null;
 };
 
 const MS_HOUR = 60 * 60 * 1000;
@@ -90,12 +103,15 @@ export function createDayState(
     freeInfluence,
     extraInfluence: 0,
     spentTodayMicro: 0n,
+    packsBought: [],
     lastBuy: null,
     selected: null,
     spendAmount: freeInfluence,
     casts: [],
     status: "open",
     schedule: stubVoteSchedule(now),
+    claimStatus: "idle",
+    claim: null,
   };
 }
 
@@ -129,9 +145,24 @@ export function canCast(state: DayState): boolean {
   );
 }
 
+function placeExtraOnLatestCast(state: DayState, extra: number): DayState {
+  if (state.status !== "cast" || extra === 0 || state.casts.length === 0) {
+    return state;
+  }
+  const index = state.casts.length - 1;
+  const current = state.casts[index];
+  if (!current) {
+    return state;
+  }
+  const casts = state.casts.map((cast, i) =>
+    i === index ? { ...cast, extra: cast.extra + extra } : cast,
+  );
+  return { ...state, casts };
+}
+
 /**
  * Spends Free Influence onto the selected tile via `@nova/shared` helpers.
- * Extra is credited only through `buyPack` and stays on its own balance.
+ * Extra already bought today is placed on the same option (separate lane).
  */
 export function castSelected(state: DayState): DayState {
   if (!canCast(state) || !state.selected) {
@@ -150,7 +181,7 @@ export function castSelected(state: DayState): DayState {
       {
         walletId: LOCAL_PLAYER_ID,
         optionId: state.selected,
-        extra: 0,
+        extra: state.extraInfluence,
         free: spent,
       },
     ],
@@ -160,7 +191,7 @@ export function castSelected(state: DayState): DayState {
 
 /**
  * Mock Extra purchase: `attemptBuy` from `@nova/shared`, no chain / no wallet.
- * Free Influence is never mixed into Extra.
+ * Free Influence is never mixed into Extra. After a cast, Extra sits on that pick.
  */
 export function buyPack(state: DayState, packId: PackId): DayState {
   const attempt = attemptBuy(packId, state.spentTodayMicro);
@@ -175,14 +206,31 @@ export function buyPack(state: DayState, packId: PackId): DayState {
       },
     };
   }
-  return {
+  const next: DayState = {
     ...state,
     extraInfluence: state.extraInfluence + attempt.extraInfluence,
     spentTodayMicro: attempt.spentAfter,
+    packsBought: [...state.packsBought, packId],
     lastBuy: {
       ok: true,
       packId,
       extraInfluence: attempt.extraInfluence,
     },
+  };
+  return placeExtraOnLatestCast(next, attempt.extraInfluence);
+}
+
+/** Mock claim. Primary CTA lives on Results; Profile is history-only. */
+export function claimPayout(state: DayState, snapshot: ClaimSnapshot): DayState {
+  if (state.claimStatus === "claimed") {
+    return state;
+  }
+  if (snapshot.total <= 0n) {
+    return state;
+  }
+  return {
+    ...state,
+    claimStatus: "claimed",
+    claim: snapshot,
   };
 }

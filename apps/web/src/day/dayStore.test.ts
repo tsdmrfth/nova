@@ -50,6 +50,27 @@ describe("in-memory day store", () => {
     ]);
   });
 
+  it("places bought Extra on the cast option without mixing Free", () => {
+    let state = createDayState(1, now);
+    state = buyPack(state, "spark");
+    state = selectChoice(state, "B");
+    state = castSelected(state);
+    expect(state.casts[0]).toEqual({
+      walletId: LOCAL_PLAYER_ID,
+      optionId: "B",
+      extra: 10,
+      free: 10,
+    });
+    expect(state.packsBought).toEqual(["spark"]);
+    expect(state.freeInfluence).toBe(0);
+
+    state = buyPack(state, "pulse");
+    expect(state.casts[0]?.extra).toBe(65);
+    expect(state.extraInfluence).toBe(65);
+    expect(state.freeInfluence).toBe(0);
+    expect(state.packsBought).toEqual(["spark", "pulse"]);
+  });
+
   it("clamps overspend, ignores casts without a tile, and locks after one cast", () => {
     let state = createDayState(1, now);
     expect(castSelected(state)).toEqual(state);

@@ -51,8 +51,8 @@ export {
 } from "./influence";
 export type { SpendResult } from "./influence";
 
-export { DAY_GOALS, dayGoalFor } from "./dayGoal";
-export type { DayGoal } from "./dayGoal";
+export { DAY_GOALS, dayGoalFor, pickWinningOption } from "./dayGoal";
+export type { DayGoal, FreeTallyCast } from "./dayGoal";
 
 export { buildDayPrizePool } from "./pool";
 export type { DayPrizePool } from "./pool";

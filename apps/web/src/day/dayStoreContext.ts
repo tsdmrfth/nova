@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import type { ChoiceId } from "@nova/assets";
 import type { PackId } from "@nova/shared";
-import type { DayState } from "./dayStore";
+import type { ClaimSnapshot, DayState } from "./dayStore";
 
 export type DayStoreValue = {
   state: DayState;
@@ -9,6 +9,7 @@ export type DayStoreValue = {
   setSpend(amount: number): void;
   cast(): void;
   buy(packId: PackId): void;
+  claim(snapshot: ClaimSnapshot): void;
 };
 
 export const DayStoreContext = createContext<DayStoreValue | null>(null);

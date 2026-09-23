@@ -5,6 +5,8 @@ import { DayStoreProvider } from "./day/DayStoreProvider";
 import { BuyPage } from "./pages/BuyPage";
 import { HomePage, VotePage } from "./pages/HomePage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
+import { ProfilePage } from "./pages/ProfilePage";
+import { ResultsPage } from "./pages/ResultsPage";
 import { PRODUCT_ROUTES, type ProductRouteId } from "./productRoutes";
 import "./App.css";
 
@@ -14,13 +16,18 @@ const pages: Record<ProductRouteId, ReactElement> = {
   vote: <VotePage />,
   buy: <BuyPage />,
   confirmation: <PlaceholderPage title="Confirmation" />,
-  results: <PlaceholderPage title="Results" />,
+  results: <ResultsPage />,
   neighborhood: <PlaceholderPage title="Nova/Neighborhood" />,
-  profile: <PlaceholderPage title="Profile" />,
+  profile: <ProfilePage />,
 };
 
 function isCinemaPath(pathname: string): boolean {
-  return pathname === "/" || pathname === "/vote" || pathname === "/buy";
+  return (
+    pathname === "/" ||
+    pathname === "/vote" ||
+    pathname === "/buy" ||
+    pathname === "/results"
+  );
 }
 
 function ProductNav({ compact }: { compact: boolean }) {

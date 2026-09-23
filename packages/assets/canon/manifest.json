@@ -203,6 +203,20 @@
       "createdAt": "2026-09-18T00:00:00.000Z",
       "approvedBy": "eng-p1-04",
       "pixelRatio": 1
+    },
+    {
+      "id": "badge_winner",
+      "path": "hud/badge-winner.svg",
+      "kind": "hud",
+      "screens": [
+        "results"
+      ],
+      "sha256": "d96e778de5794632493c8ff592a4601e09322265c678f5d22fe76f218fde10bb",
+      "license": "internal-placeholder",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-18T00:00:00.000Z",
+      "approvedBy": "eng-p1-05",
+      "pixelRatio": 1
     }
   ],
   "bundles": [
@@ -269,6 +283,15 @@
         {
           "alias": "pack_pulse",
           "src": "hud/pack-pulse.svg"
+        }
+      ]
+    },
+    {
+      "name": "results",
+      "assets": [
+        {
+          "alias": "badge_winner",
+          "src": "hud/badge-winner.svg"
         }
       ]
     }

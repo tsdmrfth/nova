@@ -43,6 +43,7 @@ export const canonAssetUrls = {
   ).href,
   pack_spark: new URL("../canon/hud/pack-spark.svg", import.meta.url).href,
   pack_pulse: new URL("../canon/hud/pack-pulse.svg", import.meta.url).href,
+  badge_winner: new URL("../canon/hud/badge-winner.svg", import.meta.url).href,
 } as const;
 
 export type CanonAssetId = keyof typeof canonAssetUrls;
