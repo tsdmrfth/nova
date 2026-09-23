@@ -10,10 +10,14 @@ import { useDayStore } from "../day/useDayStore";
 import { HomeHud } from "../hud/HomeHud";
 import { buildHudModel } from "../hud/homeHudModel";
 import { usePrefersReducedMotion } from "../hud/usePrefersReducedMotion";
+import { GrantToast } from "../onboarding/GrantToast";
+import { TutorialOverlay } from "../onboarding/TutorialOverlay";
+import { useOnboarding } from "../onboarding/useOnboarding";
 import { HomeSceneHost } from "../scene/HomeSceneHost";
 
 export function CastPage() {
   const { state, select, setSpend, cast } = useDayStore();
+  const onboarding = useOnboarding();
   const navigate = useNavigate();
   const goBuy = () => navigate("/buy");
   const { pack, missing } = useMemo(
@@ -63,6 +67,21 @@ export function CastPage() {
         onUsdcChip={goBuy}
         onBuyExtraPlus={goBuy}
       />
+      {onboarding.state.grantPending ? (
+        <GrantToast
+          firstDay
+          reducedMotion={reducedMotion}
+          onDismiss={onboarding.dismissGrant}
+        />
+      ) : null}
+      {!onboarding.state.grantPending &&
+      onboarding.onboarded &&
+      !onboarding.state.tutorialSeen ? (
+        <TutorialOverlay
+          onGotIt={onboarding.completeTutorial}
+          onSkip={onboarding.completeTutorial}
+        />
+      ) : null}
     </section>
   );
 }

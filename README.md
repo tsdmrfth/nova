@@ -1,6 +1,6 @@
 # Nova
 
-pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. This branch is **P1-05**: Results + offline day settle.
+pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. This branch is **P1-09**: first-run onboarding (Connect, disclaimer, mock wallet, grant toast, skippable tutorial, geo / wrong-network).
 
 There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@nova/shared`. Confirmation is a later slice.
 
@@ -13,14 +13,15 @@ There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@
 | **P1-02** | Canon asset ids + default day pack, abstract sunset-city Pixi layers, Home HUD chrome. |
 | **P1-03** | Day 1 Vote/Home cast shell: Stabilize / Expand / Route tiles, Free Influence spend into an in-memory day store, MOST/LEAST/MIDDLE goal stub. |
 | **P1-04** | `/buy` Extra Influence: Spark 1 USDC → 10 Extra, Pulse 5 USDC → 55 Extra via `quotePack` / `attemptBuy`. Mock pay, no chain. |
-| **P1-05 (current)** | `/results` offline settle via `pickWinningOption` / `buildDayPrizePool` / `settleDay` / `sparkForDay`. Claim CTA on Results; Profile is history-only. |
+| **P1-05** | `/results` offline settle via `pickWinningOption` / `buildDayPrizePool` / `settleDay` / `sparkForDay`. Claim CTA on Results; Profile is history-only. |
+| **P1-09 (current)** | `/connect` first-run: disclaimer, mock Connect / Continue, +10 Free grant toast, skippable tutorial, geo-block + Switch to Arc. Persists in localStorage. |
 | **P1-06 (next)** | Confirmation / pending — not started. |
 
 ## Workspace
 
 | Path | Package | Role |
 | --- | --- | --- |
-| `apps/web` | `@nova/web` | Vite + React + TypeScript, React Router, Home/Vote/Buy/Results cinema HUD |
+| `apps/web` | `@nova/web` | Vite + React + TypeScript, React Router, Connect/Home/Vote/Buy/Results cinema HUD |
 | `packages/shared` | `@nova/shared` | Pool math, packs, Influence caps, day-goal / W* scoring, SPARK constants, tests |
 | `packages/config` | `@nova/config` | Shared TypeScript config, app constants, color tokens |
 | `packages/assets` | `@nova/assets` | Canon manifest, day packs, placeholder plates (`drafts/` is unpublished) |
@@ -51,6 +52,26 @@ Vote links in with `Need more Extra Influence?` (and the USDC chip). Selected A/
 COPY-S1 B6: **Canon today**, day goal, paid/free share rows (hide 0), miss / roll-over, **Claim {n} USDC** as the primary CTA. Profile (`/profile`) shows cast + claim history only — no claim button. Optional winner badge art: canon id `badge_winner`.
 
 Day 1 demo crowd: MOST lands on **Expand / Say hello**.
+
+## First-run onboarding
+
+Unseen visitors are gated to `/connect` until they accept the locked disclaimer and mock-connect (or Continue — no real wallet). After that:
+
+1. Home Day 1 (`First light`) with a **+10 Free Influence** grant toast (first-day body, tap or ~4s dismiss)
+2. Skippable **How today works** overlay (MOST / LEAST / MIDDLE + Free vs Extra)
+3. Cast shell as in P1-03
+
+Flags persist in `localStorage`: `nova.onboarding.disclaimerAccepted`, `nova.onboarding.tutorialSeen`, `nova.onboarding.connected`.
+
+Edge faces (COPY-S1 / ONBOARDING-EDGE-COPY, locked EN):
+
+| Face | Preview | Copy |
+| --- | --- | --- |
+| Geo block | `/?edge=geo` or `/?geo=blocked` | Not available here yet |
+| Wrong network | `/connect?edge=network` | Switch to Arc · Retry |
+| Reject / locked wallet | `/connect?edge=reject` · `?edge=locked` | Try again / Open wallet |
+
+Force geo in a deploy with `VITE_GEO_BLOCKED=1`. No KYC, no Circle/Arc logo marks, no APR/odds claims.
 
 ## Pool math (`@nova/shared`)
 
@@ -89,7 +110,7 @@ Worked example (20 Spark + 8 Pulse): gross 60 → studio 6, P 54 → paid 48.6 /
 | Nova/Neighborhood | `/neighborhood` (`/nova` redirects here) |
 | Profile | `/profile` |
 
-Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout. Results is the day-settle + claim HUD. Profile is history-only. Connect / Confirmation / Neighborhood remain placeholders.
+Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout. Results is the day-settle + claim HUD. Profile is history-only. Connect is the first-run Welcome / disclaimer / mock wallet gate. Confirmation / Neighborhood remain placeholders.
 
 ## Setup
 

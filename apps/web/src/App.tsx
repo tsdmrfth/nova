@@ -2,7 +2,10 @@ import type { ReactElement } from "react";
 import { NavLink, Navigate, Route, Routes, useLocation } from "react-router";
 import { appConfig } from "@nova/config";
 import { DayStoreProvider } from "./day/DayStoreProvider";
+import { OnboardingProvider } from "./onboarding/OnboardingProvider";
+import { useOnboarding } from "./onboarding/useOnboarding";
 import { BuyPage } from "./pages/BuyPage";
+import { ConnectPage, GeoBlockPage } from "./pages/ConnectPage";
 import { HomePage, VotePage } from "./pages/HomePage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { ProfilePage } from "./pages/ProfilePage";
@@ -11,7 +14,7 @@ import { PRODUCT_ROUTES, type ProductRouteId } from "./productRoutes";
 import "./App.css";
 
 const pages: Record<ProductRouteId, ReactElement> = {
-  connect: <PlaceholderPage title="Connect" />,
+  connect: <ConnectPage />,
   home: <HomePage />,
   vote: <VotePage />,
   buy: <BuyPage />,
@@ -24,6 +27,7 @@ const pages: Record<ProductRouteId, ReactElement> = {
 function isCinemaPath(pathname: string): boolean {
   return (
     pathname === "/" ||
+    pathname === "/connect" ||
     pathname === "/vote" ||
     pathname === "/buy" ||
     pathname === "/results"
@@ -55,17 +59,28 @@ function ProductNav({ compact }: { compact: boolean }) {
   );
 }
 
+function PlayGate({ children }: { children: ReactElement }) {
+  const { onboarded } = useOnboarding();
+  if (!onboarded) {
+    return <Navigate to="/connect" replace />;
+  }
+  return children;
+}
+
 export function App() {
   return (
     <DayStoreProvider>
-      <AppLayout />
+      <OnboardingProvider>
+        <AppLayout />
+      </OnboardingProvider>
     </DayStoreProvider>
   );
 }
 
 function AppLayout() {
   const { pathname } = useLocation();
-  const cinema = isCinemaPath(pathname);
+  const { state } = useOnboarding();
+  const cinema = isCinemaPath(pathname) || state.geoBlocked;
 
   return (
     <div className={cinema ? "app-shell app-shell--cinema" : "app-shell"}>
@@ -74,17 +89,27 @@ function AppLayout() {
         <ProductNav compact={cinema} />
       </header>
       <main className={cinema ? "app-main app-main--cinema" : "app-main"}>
-        <Routes>
-          {PRODUCT_ROUTES.map((route) => (
-            <Route
-              key={route.id}
-              path={route.path}
-              element={pages[route.id]}
-            />
-          ))}
-          <Route path="/nova" element={<Navigate to="/neighborhood" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        {state.geoBlocked ? (
+          <GeoBlockPage />
+        ) : (
+          <Routes>
+            {PRODUCT_ROUTES.map((route) => (
+              <Route
+                key={route.id}
+                path={route.path}
+                element={
+                  route.id === "connect" ? (
+                    pages[route.id]
+                  ) : (
+                    <PlayGate>{pages[route.id]}</PlayGate>
+                  )
+                }
+              />
+            ))}
+            <Route path="/nova" element={<Navigate to="/neighborhood" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        )}
       </main>
     </div>
   );

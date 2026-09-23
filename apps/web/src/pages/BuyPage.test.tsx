@@ -1,14 +1,18 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../App";
+import { seedOnboarded } from "../onboarding/onboardingStorage";
 
 vi.mock("../scene/HomeSceneHost", () => ({
   HomeSceneHost: () => <div data-testid="scene-stage" />,
 }));
 
 describe("Buy Extra Influence", () => {
+  beforeEach(() => {
+    seedOnboarded();
+  });
   it("quotes Pulse 90/10, mock-buys Extra, and keeps Free separate", async () => {
     const user = userEvent.setup();
     render(

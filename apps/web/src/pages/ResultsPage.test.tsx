@@ -1,9 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { formatUsdc } from "@nova/shared";
 import { App } from "../App";
+import { seedOnboarded } from "../onboarding/onboardingStorage";
 import { settleOffline } from "../results/settleMock";
 import {
   buyPack,
@@ -17,6 +18,9 @@ vi.mock("../scene/HomeSceneHost", () => ({
 }));
 
 describe("Results + Profile mock loop", () => {
+  beforeEach(() => {
+    seedOnboarded();
+  });
   it("settles a correct Expand cast with Free share, SPARK, and claim CTA", async () => {
     const user = userEvent.setup();
     render(
