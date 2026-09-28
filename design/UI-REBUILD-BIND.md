@@ -2,7 +2,7 @@
 
 **Status:** Design-owned rebuild ticket contract · complementary to `research/ai-build/client-bind-contract.md`  
 **Do not delete** the Client bind doc — this is the rebuild claim packet.  
-**Date:** 2026-09-28 · Europe/Istanbul  
+**Date:** 2026-09-28 · Europe/Istanbul · **Updated:** 2026-09-29 (PR #10 follow-up commit map)  
 **Locks:** ART-DIRECTION-LOCK · FINAL-HOME · UI-REBUILD-SPEC · WORKING-SET
 
 ---
@@ -199,4 +199,77 @@ Per `eng/P1.5-GRANT-DEMO-SPEC.md` G-05:
 
 ---
 
-*Design · UI-REBUILD-BIND · 2026-09-28 · Istanbul*
+---
+
+## 9. PR #10 follow-up — Eng must **commit** these photographic plates
+
+**Source root (box / Design truth):** `/workspace/nova/design/reference/`  
+**Dest root (repo checkout):** `packages/assets/canon/`  
+**Action:** Replace current **SVG placeholders** with these **PNGs**. Update `packages/assets/canon/manifest.json` paths (`.svg` → `.png`), recompute `sha256`, set `license` to `internal-working-set` (or Design approved). **No Flux/MJ batch** — all required plates exist below.
+
+### 9.1 Must-commit for real Nova + city (Home / Vote / Confirm / Results / Buy / Onboarding)
+
+| Manifest id | Copy FROM (Design) | Commit TO (repo) | Notes |
+|-------------|--------------------|------------------|-------|
+| `scene_home_sunset_city` | `design/reference/scene-home-sunset-city-textless.png` | `packages/assets/canon/scene/scene-home-sunset-city.png` | Rename drop `-textless`; keep id |
+| `layer_sky_sunset` | `design/reference/parallax/layer-sky-sunset.png` | `packages/assets/canon/scene/layer-sky-sunset.png` | |
+| `layer_skyline` | `design/reference/parallax/layer-skyline.png` | `packages/assets/canon/scene/layer-skyline.png` | |
+| `layer_water_highways` | `design/reference/parallax/layer-water-highways.png` | `packages/assets/canon/scene/layer-water-highways.png` | |
+| `layer_platform` | `design/reference/parallax/layer-platform.png` | `packages/assets/canon/scene/layer-platform.png` | |
+| `nova_idle_stand_3q` | `design/reference/nova-idle-stand-3q.png` | `packages/assets/canon/character/nova-idle-stand-3q.png` | Primary Home/Connect |
+| `nova_wave` | `design/reference/nova-wave.png` | `packages/assets/canon/character/nova-wave.png` | **Add** to manifest (not in PR #10 yet) |
+| `nova_cheer` | `design/reference/nova-cheer.png` | `packages/assets/canon/character/nova-cheer.png` | **Add** · Results correct |
+| `nova_soft_sad` | `design/reference/nova-soft-sad.png` | `packages/assets/canon/character/nova-soft-sad.png` | **Add** · Results miss |
+| `tile_stabilize` | `design/reference/tiles/tile-stabilize.png` | `packages/assets/canon/tiles/tile-stabilize.png` | |
+| `tile_expand` | `design/reference/tiles/tile-expand.png` | `packages/assets/canon/tiles/tile-expand.png` | |
+| `tile_route` | `design/reference/tiles/tile-route.png` | `packages/assets/canon/tiles/tile-route.png` | |
+| `pack_spark` | `design/reference/buy/buy-pack-spark.png` | `packages/assets/canon/packs/buy-pack-spark.png` | Prefer `packs/` over `hud/pack-spark.svg` |
+| `pack_pulse` | `design/reference/buy/buy-pack-pulse.png` | `packages/assets/canon/packs/buy-pack-pulse.png` | |
+| `badge_winner` | `design/reference/share/results-winner-badge.png` | `packages/assets/canon/hud/badge-winner.png` | Or `share/` — update manifest path |
+
+**Delete or stop shipping (after PNG live):** matching `.svg` placeholders under `canon/scene/`, `canon/character/`, `canon/tiles/`, `canon/hud/pack-*.svg`.
+
+**Optional soft VFX (not blocking silhouette fix):**  
+`design/reference/vfx/vfx-light-dust.png` → `packages/assets/canon/vfx/vfx-light-dust.png` (+ core-pulse / cta-glow frames if Eng binds them).
+
+**Do not commit as runtime chrome:** `FINAL-HOME.png`, `nova-character-sheet.png`, `reference/rebuild/*-target.png` (look-lock / annotation only).
+
+### 9.2 Source SHA-256 (verify after copy · 2026-09-29)
+
+| File | sha256 |
+|------|--------|
+| `scene-home-sunset-city-textless.png` | `7284bbc5b7efac015b2e81e08490791639d8ad12c315204f9af51eeeb1726acc` |
+| `layer-sky-sunset.png` | `ec102c0f0d9c060d25b2d7e1bbb2831feed41c8be4294e24ff6e3a8cd75fecf9` |
+| `layer-skyline.png` | `6a088a296f959b2c175ce1766fff72c2a492b85b28543175ca845ab24052bfdd` |
+| `layer-water-highways.png` | `33c21a6e71e05c3a5c59205c8e8571f5617072b8bbccbd62792aaa29511c8ab4` |
+| `layer-platform.png` | `5892c3edc06359b2e8ccb4d99a2ff3770b35b2ad4f37bc20a5e21790c8f99c17` |
+| `nova-idle-stand-3q.png` | `998e644f3fdf7bdd9a4aa1c67371bb13623e6df4e8b07834f03b30aa0b694a12` |
+| `nova-wave.png` | `d610da429903e922a9dfc6e6a252e9299cdc5cb1a7bd429e9a719598187abde9` |
+| `nova-cheer.png` | `46581286749e6c96987a79f440d1a73b81266e74a8789834132e82554adb1eb8` |
+| `nova-soft-sad.png` | `51df679d398f6a2e97ad1980d95f85857ce639e63cd580e70b1364ce804b39a0` |
+| `tile-stabilize.png` | `18e05af64a6bc72d214a37ddeb66dbf392deb54c48e1f181e3ba5052ae4f0cc9` |
+| `tile-expand.png` | `b0808bf696ae8637a73c12215ba844448b9a9cc6bb350836720c2861ab6adda0` |
+| `tile-route.png` | `517174d69ccbca1fc974ffecef0e29fea6494846d2a4855ee1cb4826b1432b97` |
+| `buy-pack-spark.png` | `143298fe58ab5fb8be910ff6e29b38f438a29e4d3d4da9c523027e0adb906c05` |
+| `buy-pack-pulse.png` | `ea8abd71895896d0a00a927c19f8aeb96ae9897292058706fd69a1987d25a49c` |
+| `results-winner-badge.png` | `e3d8a8d5e51deecfe771f441b1738d9760060f1d0ad874ec1012b568cdd3f80b` |
+
+---
+
+## 10. PR #10 follow-up — gap table (Design)
+
+| # | Gap | Owner | Status | Flux needed? |
+|---|-----|-------|--------|--------------|
+| 1 | Photographic Nova + city (silhouette / SVG placeholders) | **Eng** commit §9.1 PNGs + remanifest | OPEN | **No** — WORKING-SET present |
+| 2 | Vote **Free/Extra spend split stepper** (SPEC G3 · vote-target) | **Eng** DOM | OPEN | No |
+| 3 | Confirmation primary CTA **`Back to Nova`** (SPEC G4 / BIND §6) | **Eng** DOM wire | OPEN | No |
+| 4 | `nova_wave` / `nova_cheer` / `nova_soft_sad` not in canon manifest | **Eng** add paths §9.1 | OPEN | **No** |
+| 5 | `layer_light_trails` / `layer_fog_haze` photographic | Optional | Soft | **Gap name only** — no WORKING-SET plates; keep SVG or omit; DOM/Pixi tint OK |
+| 6 | `tile_selected_glow_frame` bitmap | Optional | Soft | **Gap name only** — CSS glow OK per PR residual |
+| 7 | Dedicated vote/results/buy scene plates | Design later | Soft | No for this ticket — home plate + tint |
+
+**Eng claim packet for follow-up:** this BIND §9–§10 + `UI-REBUILD-SPEC` G3/G4 + `reference/rebuild/vote-target.png`.
+
+---
+
+*Design · UI-REBUILD-BIND · updated 2026-09-29 · Istanbul*

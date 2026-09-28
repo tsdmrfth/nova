@@ -1,1 +1,5 @@
-../../../../design/reference/hud/icon-free-influence.svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <circle cx="16" cy="16" r="10" fill="#2775CA" fill-opacity="0.2" stroke="#3B8EF0" stroke-width="1.75"/>
+  <circle cx="16" cy="16" r="5.5" fill="#3B8EF0" fill-opacity="0.85"/>
+  <circle cx="14" cy="14" r="2" fill="#FFFFFF" fill-opacity="0.55"/>
+</svg>

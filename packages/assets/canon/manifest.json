@@ -5,7 +5,7 @@
   "assets": [
     {
       "id": "scene_home_sunset_city",
-      "path": "scene/scene-home-sunset-city-textless.png",
+      "path": "scene/scene-home-sunset-city.png",
       "kind": "scene",
       "screens": [
         "home",
@@ -23,7 +23,7 @@
     },
     {
       "id": "layer_sky_sunset",
-      "path": "parallax/layer-sky-sunset.png",
+      "path": "scene/layer-sky-sunset.png",
       "kind": "scene",
       "screens": [
         "home",
@@ -41,7 +41,7 @@
     },
     {
       "id": "layer_skyline",
-      "path": "parallax/layer-skyline.png",
+      "path": "scene/layer-skyline.png",
       "kind": "scene",
       "screens": [
         "home",
@@ -59,7 +59,7 @@
     },
     {
       "id": "layer_water_highways",
-      "path": "parallax/layer-water-highways.png",
+      "path": "scene/layer-water-highways.png",
       "kind": "scene",
       "screens": [
         "home",
@@ -77,7 +77,7 @@
     },
     {
       "id": "layer_platform",
-      "path": "parallax/layer-platform.png",
+      "path": "scene/layer-platform.png",
       "kind": "scene",
       "screens": [
         "home",
@@ -325,36 +325,8 @@
       "pixelRatio": 1
     },
     {
-      "id": "buy_pack_spark",
-      "path": "buy/buy-pack-spark.png",
-      "kind": "hud",
-      "screens": [
-        "buy"
-      ],
-      "sha256": "143298fe58ab5fb8be910ff6e29b38f438a29e4d3d4da9c523027e0adb906c05",
-      "license": "internal-working-set",
-      "artLockVersion": "2026-09-17",
-      "createdAt": "2026-09-17T00:00:00.000Z",
-      "approvedBy": "working-set",
-      "pixelRatio": 1
-    },
-    {
-      "id": "buy_pack_pulse",
-      "path": "buy/buy-pack-pulse.png",
-      "kind": "hud",
-      "screens": [
-        "buy"
-      ],
-      "sha256": "ea8abd71895896d0a00a927c19f8aeb96ae9897292058706fd69a1987d25a49c",
-      "license": "internal-working-set",
-      "artLockVersion": "2026-09-17",
-      "createdAt": "2026-09-17T00:00:00.000Z",
-      "approvedBy": "working-set",
-      "pixelRatio": 1
-    },
-    {
       "id": "pack_spark",
-      "path": "buy/buy-pack-spark.png",
+      "path": "packs/buy-pack-spark.png",
       "kind": "hud",
       "screens": [
         "buy"
@@ -368,7 +340,7 @@
     },
     {
       "id": "pack_pulse",
-      "path": "buy/buy-pack-pulse.png",
+      "path": "packs/buy-pack-pulse.png",
       "kind": "hud",
       "screens": [
         "buy"
@@ -382,16 +354,16 @@
     },
     {
       "id": "badge_winner",
-      "path": "hud/badge-winner.svg",
+      "path": "hud/badge-winner.png",
       "kind": "hud",
       "screens": [
         "results"
       ],
-      "sha256": "d96e778de5794632493c8ff592a4601e09322265c678f5d22fe76f218fde10bb",
-      "license": "internal-placeholder",
+      "sha256": "e3d8a8d5e51deecfe771f441b1738d9760060f1d0ad874ec1012b568cdd3f80b",
+      "license": "internal-working-set",
       "artLockVersion": "2026-09-17",
       "createdAt": "2026-09-17T00:00:00.000Z",
-      "approvedBy": "eng-p1-02",
+      "approvedBy": "working-set",
       "pixelRatio": 1
     }
   ],
@@ -401,23 +373,23 @@
       "assets": [
         {
           "alias": "scene_home_sunset_city",
-          "src": "scene/scene-home-sunset-city-textless.png"
+          "src": "scene/scene-home-sunset-city.png"
         },
         {
           "alias": "layer_sky_sunset",
-          "src": "parallax/layer-sky-sunset.png"
+          "src": "scene/layer-sky-sunset.png"
         },
         {
           "alias": "layer_skyline",
-          "src": "parallax/layer-skyline.png"
+          "src": "scene/layer-skyline.png"
         },
         {
           "alias": "layer_water_highways",
-          "src": "parallax/layer-water-highways.png"
+          "src": "scene/layer-water-highways.png"
         },
         {
           "alias": "layer_platform",
-          "src": "parallax/layer-platform.png"
+          "src": "scene/layer-platform.png"
         },
         {
           "alias": "layer_light_trails",
@@ -465,12 +437,12 @@
       "name": "buy",
       "assets": [
         {
-          "alias": "buy_pack_spark",
-          "src": "buy/buy-pack-spark.png"
+          "alias": "pack_spark",
+          "src": "packs/buy-pack-spark.png"
         },
         {
-          "alias": "buy_pack_pulse",
-          "src": "buy/buy-pack-pulse.png"
+          "alias": "pack_pulse",
+          "src": "packs/buy-pack-pulse.png"
         }
       ]
     },
@@ -508,7 +480,7 @@
       "assets": [
         {
           "alias": "badge_winner",
-          "src": "hud/badge-winner.svg"
+          "src": "hud/badge-winner.png"
         }
       ]
     }

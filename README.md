@@ -36,7 +36,7 @@ Casting spends Free Influence through `@nova/shared` `grantDailyFree` / `spendIn
 
 ## Extra Influence buy
 
-`/buy` is a cinema HUD over the same sunset plate. Free and Extra balances stay on separate cards. Pack math is not duplicated in the UI: `quotePack` supplies Extra granted and the 90/8/2 USDC split; `attemptBuy` enforces the 10 USDC / day cap. **Buy with USDC** on this route is still mock pay (credits Extra in memory). The on-chain buy is `/demo`. Pulse is the default / Most chosen pack. Canon art ids: `buy_pack_spark`, `buy_pack_pulse`.
+`/buy` is a cinema HUD over the same sunset plate. Free and Extra balances stay on separate cards. Pack math is not duplicated in the UI: `quotePack` supplies Extra granted and the 90/8/2 USDC split; `attemptBuy` enforces the 10 USDC / day cap. **Buy with USDC** on this route is still mock pay (credits Extra in memory). The on-chain buy is `/demo`. Pulse is the default / Most chosen pack. Canon art ids: `pack_spark`, `pack_pulse`.
 
 Vote links in with `Need more Extra Influence?` (and the USDC chip). Selected A/B/C tiles stay selected when you return.
 

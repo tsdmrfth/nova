@@ -1,27 +1,25 @@
 /**
  * Vite-static URL map. Each `new URL` must be a string literal so the bundler
  * can emit hashed canon files. Never point these at `drafts/`.
- * Working-set plates are symlinked from `design/reference/` into `canon/`.
+ * Photographic plates are real copies under `canon/` per UI-REBUILD-BIND §9.
  */
 export const canonAssetUrls = {
   scene_home_sunset_city: new URL(
-    "../canon/scene/scene-home-sunset-city-textless.png",
+    "../canon/scene/scene-home-sunset-city.png",
     import.meta.url,
   ).href,
   layer_sky_sunset: new URL(
-    "../canon/parallax/layer-sky-sunset.png",
+    "../canon/scene/layer-sky-sunset.png",
     import.meta.url,
   ).href,
-  layer_skyline: new URL(
-    "../canon/parallax/layer-skyline.png",
-    import.meta.url,
-  ).href,
+  layer_skyline: new URL("../canon/scene/layer-skyline.png", import.meta.url)
+    .href,
   layer_water_highways: new URL(
-    "../canon/parallax/layer-water-highways.png",
+    "../canon/scene/layer-water-highways.png",
     import.meta.url,
   ).href,
   layer_platform: new URL(
-    "../canon/parallax/layer-platform.png",
+    "../canon/scene/layer-platform.png",
     import.meta.url,
   ).href,
   layer_light_trails: new URL(
@@ -66,17 +64,11 @@ export const canonAssetUrls = {
     import.meta.url,
   ).href,
   icon_plus: new URL("../canon/hud/icon-plus.svg", import.meta.url).href,
-  buy_pack_spark: new URL(
-    "../canon/buy/buy-pack-spark.png",
-    import.meta.url,
-  ).href,
-  buy_pack_pulse: new URL(
-    "../canon/buy/buy-pack-pulse.png",
-    import.meta.url,
-  ).href,
-  pack_spark: new URL("../canon/buy/buy-pack-spark.png", import.meta.url).href,
-  pack_pulse: new URL("../canon/buy/buy-pack-pulse.png", import.meta.url).href,
-  badge_winner: new URL("../canon/hud/badge-winner.svg", import.meta.url).href,
+  pack_spark: new URL("../canon/packs/buy-pack-spark.png", import.meta.url)
+    .href,
+  pack_pulse: new URL("../canon/packs/buy-pack-pulse.png", import.meta.url)
+    .href,
+  badge_winner: new URL("../canon/hud/badge-winner.png", import.meta.url).href,
 } as const;
 
 export type CanonAssetId = keyof typeof canonAssetUrls;

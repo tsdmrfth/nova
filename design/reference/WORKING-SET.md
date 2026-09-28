@@ -45,9 +45,9 @@ User saved set + Design P0 pack. Hard G1 not infinite — revise on feedback.
 - `vfx/vfx-cta-glow.png` + `f1` · `f3`
 - `vfx/README.md`
 
-## Runtime
-
-These files live here for review. `@nova/assets` canon entries are symlinks to them (no second copy). Public ids stay Design snake_case (`scene_home_sunset_city`, `nova_idle_stand_3q`, `buy_pack_spark`, `icon_day`, …). `FINAL-HOME.png` is look-lock only and is not a runtime texture.
-
 ## Status
 - `P0-CHECKLIST-STATUS.md`
+
+## Runtime canon
+
+Photographic plates are **copied** into `packages/assets/canon/` per `UI-REBUILD-BIND.md` §9 (real files, remanifested). `FINAL-HOME.png` and `rebuild/*-target.png` stay look-lock only.

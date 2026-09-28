@@ -38,8 +38,8 @@ export const BUY_COPY = {
 } as const;
 
 export const PACK_ART_IDS = {
-  spark: "buy_pack_spark",
-  pulse: "buy_pack_pulse",
+  spark: "pack_spark",
+  pulse: "pack_pulse",
 } as const;
 
 export const DEFAULT_PACK_ID = "pulse" as const;
