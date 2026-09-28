@@ -1,6 +1,7 @@
 import type { ChoiceId } from "@nova/assets";
 import { EFFECTIVE_EXTRA_CAP } from "@nova/shared";
 import { BUY_COPY } from "../buy/buyCopy";
+import { CONFIRMATION_COPY } from "../confirmation/confirmationCopy";
 import { canCast, formatLocalStamp, type DayState } from "../day/dayStore";
 
 export type HudChoice = {
@@ -32,6 +33,7 @@ export type HudModel = {
   castDetail: string;
   buyEntry: string | null;
   buyEntryToBuy: boolean;
+  confirmLabel: string | null;
   disclaimer: string;
 };
 
@@ -102,6 +104,8 @@ export function buildHudModel(
         : state.dayHint,
     buyEntry,
     buyEntryToBuy,
+    confirmLabel:
+      state.status === "cast" ? CONFIRMATION_COPY.reviewCta : null,
     disclaimer: RANK_CHROME.disclaimer,
   };
 }

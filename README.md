@@ -1,8 +1,8 @@
 # Nova
 
-pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. This branch is **P1-09**: first-run onboarding (Connect, disclaimer, mock wallet, grant toast, skippable tutorial, geo / wrong-network).
+pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. **P1-09** added first-run onboarding. This branch is **P1-07**: one in-memory fake day from Connect through Confirmation to Results, plus the daily Free Influence grant toast.
 
-There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@nova/shared`. Confirmation is a later slice.
+There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@nova/shared`.
 
 ## Status
 
@@ -14,8 +14,8 @@ There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@
 | **P1-03** | Day 1 Vote/Home cast shell: Stabilize / Expand / Route tiles, Free Influence spend into an in-memory day store, MOST/LEAST/MIDDLE goal stub. |
 | **P1-04** | `/buy` Extra Influence: Spark 1 USDC → 10 Extra, Pulse 5 USDC → 55 Extra via `quotePack` / `attemptBuy`. Mock pay, no chain. |
 | **P1-05** | `/results` offline settle via `pickWinningOption` / `buildDayPrizePool` / `settleDay` / `sparkForDay`. Claim CTA on Results; Profile is history-only. |
-| **P1-09 (current)** | `/connect` first-run: disclaimer, mock Connect / Continue, +10 Free grant toast, skippable tutorial, geo-block + Switch to Arc. Persists in localStorage. |
-| **P1-06 (next)** | Confirmation / pending — not started. |
+| **P1-09** | `/connect` first-run: disclaimer, mock Connect / Continue, +10 Free grant toast, skippable tutorial, geo-block + Switch to Arc. Persists in localStorage. |
+| **P1-07 (current)** | `/confirmation` reads the in-memory day (pick, Free vs Extra, close / publish stamps) and opens Results after a cast. Connect → Home → Vote → Buy → Confirmation → Results stays on one `DayState`. |
 
 ## Workspace
 
@@ -110,7 +110,9 @@ Worked example (20 Spark + 8 Pulse): gross 60 → studio 6, P 54 → paid 48.6 /
 | Nova/Neighborhood | `/neighborhood` (`/nova` redirects here) |
 | Profile | `/profile` |
 
-Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout. Results is the day-settle + claim HUD. Profile is history-only. Connect is the first-run Welcome / disclaimer / mock wallet gate. Confirmation / Neighborhood remain placeholders.
+Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout. Confirmation is the pending lock for the current fake day: cast summary, Free vs Extra lanes, and device-local voting-close / results-publish stamps. **See results** is offered once Influence is cast (this offline day does not wait on the clock). Results is the day-settle + claim HUD. Profile is history-only. Connect is the first-run Welcome / disclaimer / mock wallet gate. Neighborhood remains a placeholder.
+
+After a cast, Vote offers **Review confirmation**. Buy offers the same once the day is locked, so Extra bought after the cast shows up on that pick. Back links and the product menu only change the route — they do not reset the day store. PlayGate still sends anyone who has not finished Connect to `/connect`.
 
 ## Setup
 

@@ -20,6 +20,7 @@ export function CastPage() {
   const onboarding = useOnboarding();
   const navigate = useNavigate();
   const goBuy = () => navigate("/buy");
+  const goConfirm = () => navigate("/confirmation");
   const { pack, missing } = useMemo(
     () => resolvePack(canonManifest, state.day),
     [state.day],
@@ -66,10 +67,12 @@ export function CastPage() {
         onCast={cast}
         onUsdcChip={goBuy}
         onBuyExtraPlus={goBuy}
+        onConfirm={goConfirm}
       />
       {onboarding.state.grantPending ? (
         <GrantToast
           firstDay
+          freeInfluence={state.freeInfluence}
           reducedMotion={reducedMotion}
           onDismiss={onboarding.dismissGrant}
         />

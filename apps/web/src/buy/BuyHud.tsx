@@ -15,6 +15,7 @@ type BuyHudProps = {
   onSelectPack(id: PackId): void;
   onBuy(): void;
   onBack(): void;
+  onConfirm?(): void;
 };
 
 export function BuyHud({
@@ -23,6 +24,7 @@ export function BuyHud({
   onSelectPack,
   onBuy,
   onBack,
+  onConfirm,
 }: BuyHudProps) {
   return (
     <div className="buy-hud">
@@ -148,6 +150,16 @@ export function BuyHud({
           >
             {model.back}
           </button>
+          {model.confirmLabel ? (
+            <button
+              type="button"
+              className="buy-back"
+              data-testid="buy-confirm"
+              onClick={onConfirm}
+            >
+              {model.confirmLabel}
+            </button>
+          ) : null}
           {model.status ? (
             <p className="buy-status" data-testid="buy-status">
               {model.status}

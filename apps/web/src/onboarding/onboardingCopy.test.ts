@@ -1,4 +1,4 @@
-import { containsForbiddenFinanceTerm } from "@nova/shared";
+import { containsForbiddenFinanceTerm, grantDailyFree } from "@nova/shared";
 import { describe, expect, it } from "vitest";
 import { ONBOARDING_COPY } from "./onboardingCopy";
 
@@ -8,7 +8,7 @@ describe("onboarding copy lock", () => {
     expect(ONBOARDING_COPY.connectCta).toBe("Connect wallet");
     expect(ONBOARDING_COPY.continueCta).toBe("Continue");
     expect(ONBOARDING_COPY.checkbox).toBe("I accept the rules above");
-    expect(ONBOARDING_COPY.grantTitle).toBe("+10 Free Influence");
+    expect(ONBOARDING_COPY.grantTitle).toBe(`+${grantDailyFree()} Free Influence`);
     expect(ONBOARDING_COPY.grantFirstDay).toMatch(/skip Extra/);
     expect(ONBOARDING_COPY.tutorialTitle).toBe("How today works");
     expect(ONBOARDING_COPY.tutorialSteps[0]).toMatch(/MOST, LEAST, or MIDDLE/);

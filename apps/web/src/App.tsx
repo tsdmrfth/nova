@@ -5,6 +5,7 @@ import { DayStoreProvider } from "./day/DayStoreProvider";
 import { OnboardingProvider } from "./onboarding/OnboardingProvider";
 import { useOnboarding } from "./onboarding/useOnboarding";
 import { BuyPage } from "./pages/BuyPage";
+import { ConfirmationPage } from "./pages/ConfirmationPage";
 import { ConnectPage, GeoBlockPage } from "./pages/ConnectPage";
 import { HomePage, VotePage } from "./pages/HomePage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
@@ -18,7 +19,7 @@ const pages: Record<ProductRouteId, ReactElement> = {
   home: <HomePage />,
   vote: <VotePage />,
   buy: <BuyPage />,
-  confirmation: <PlaceholderPage title="Confirmation" />,
+  confirmation: <ConfirmationPage />,
   results: <ResultsPage />,
   neighborhood: <PlaceholderPage title="Nova/Neighborhood" />,
   profile: <ProfilePage />,
@@ -30,6 +31,7 @@ function isCinemaPath(pathname: string): boolean {
     pathname === "/connect" ||
     pathname === "/vote" ||
     pathname === "/buy" ||
+    pathname === "/confirmation" ||
     pathname === "/results"
   );
 }
