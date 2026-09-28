@@ -11,12 +11,13 @@ describe("buildDayPrizePool", () => {
       ],
     });
     expect(formatUsdc(day.gross)).toBe("60");
-    expect(formatUsdc(day.studioFee)).toBe("6");
+    expect(formatUsdc(day.studioNet)).toBe("4.8");
+    expect(formatUsdc(day.novaBudget)).toBe("1.2");
     expect(formatUsdc(day.prizePool)).toBe("54");
     expect(formatUsdc(day.paidWinnerBucket)).toBe("48.6");
     expect(formatUsdc(day.freeWinnerBucket)).toBe("5.4");
     expect(day.paidWinnerBucket + day.freeWinnerBucket).toBe(day.prizePool);
-    expect(day.studioFee + day.prizePool).toBe(day.gross);
+    expect(day.studioNet + day.novaBudget + day.prizePool).toBe(day.gross);
   });
 
   it("adds previous-day rollover into P before the 90/10 day split", () => {
@@ -35,7 +36,8 @@ describe("buildDayPrizePool", () => {
     const empty = buildDayPrizePool({ packs: [] });
     expect(empty.gross).toBe(0n);
     expect(empty.prizePool).toBe(0n);
-    expect(empty.studioFee).toBe(0n);
+    expect(empty.studioNet).toBe(0n);
+    expect(empty.novaBudget).toBe(0n);
 
     const rolled = buildDayPrizePool({
       packs: [],

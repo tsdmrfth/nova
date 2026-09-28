@@ -1,0 +1,93 @@
+.grant-demo {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0.5rem 0 2rem;
+}
+
+.grant-kicker {
+  margin: 0;
+  color: var(--color-glow);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.grant-demo h1 {
+  margin: 0.2rem 0 0;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  letter-spacing: -0.03em;
+}
+
+.grant-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
+  background: var(--color-navy-glass);
+  border: 1px solid var(--color-stroke);
+  border-radius: 1rem;
+  box-shadow: 0 0 28px color-mix(in srgb, var(--color-glow) 18%, transparent);
+}
+
+.grant-card p,
+.grant-note {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.grant-honesty {
+  color: var(--color-text);
+}
+
+.grant-split {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.grant-split div {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.grant-split dt {
+  color: var(--color-text);
+}
+
+.grant-split dd {
+  margin: 0;
+  text-align: right;
+}
+
+.grant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.grant-actions button {
+  cursor: pointer;
+  border: 1px solid var(--color-stroke);
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-accent) 28%, transparent);
+  font: inherit;
+}
+
+.grant-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.grant-links a {
+  display: inline-block;
+  margin-right: 0.8rem;
+}
+
+.grant-error {
+  color: var(--color-text);
+}

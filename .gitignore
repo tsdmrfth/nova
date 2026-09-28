@@ -9,3 +9,6 @@ coverage
 .vite
 *.tsbuildinfo
 agent-tools
+contracts/out/
+contracts/cache/
+contracts/broadcast/

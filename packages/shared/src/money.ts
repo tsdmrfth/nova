@@ -7,11 +7,14 @@ export const USDC_DECIMALS = 6;
 export const MICRO_USDC_PER_USDC = 1_000_000n;
 export const BPS_DENOMINATOR = 10_000;
 
-/** Purchase-time gross split (POOL-DISTRIBUTION §2). */
+/**
+ * Purchase-time gross split (POOL-DISTRIBUTION / Arc grant lock).
+ * 90% prize / 8% studio net / 2% Nova operating budget.
+ */
 export const BUY_SPLIT_BPS = {
   prizePool: 9_000,
-  studioFee: 1_000,
-  reserve: 0,
+  studioNet: 800,
+  novaBudget: 200,
 } as const;
 
 /** Settlement split of day prize pool P (POOL-DISTRIBUTION §3). */
@@ -56,23 +59,39 @@ export function formatUsdc(micro: MicroUsdc): string {
 export type BuySplit = {
   gross: MicroUsdc;
   prizePool: MicroUsdc;
-  studioFee: MicroUsdc;
-  reserve: MicroUsdc;
+  studioNet: MicroUsdc;
+  novaBudget: MicroUsdc;
 };
 
+export type BuySplitPercents = {
+  prizePool: number;
+  studioNet: number;
+  novaBudget: number;
+};
+
+/** Whole-number percents for copy. The USDC split itself stays in `splitGrossBuy`. */
+export function buySplitPercents(): BuySplitPercents {
+  const unit = BPS_DENOMINATOR / 100;
+  return {
+    prizePool: BUY_SPLIT_BPS.prizePool / unit,
+    studioNet: BUY_SPLIT_BPS.studioNet / unit,
+    novaBudget: BUY_SPLIT_BPS.novaBudget / unit,
+  };
+}
+
 /**
- * Purchase-time split: 90% prize pool / 10% studio fee / 0% reserve.
- * Dust from integer division (if any) stays in the prize pool so
- * studioFee never exceeds 10% and studioFee + prizePool + reserve === gross.
+ * Purchase-time split: 90% prize / 8% studio net / 2% Nova operating budget.
+ * Dust from integer division stays in the prize pool so studio net never
+ * exceeds 8%, the Nova budget never exceeds 2%, and the three parts sum to gross.
  */
 export function splitGrossBuy(gross: MicroUsdc): BuySplit {
   assertNonNegativeMicro(gross, "gross");
-  const studioFee =
-    (gross * BigInt(BUY_SPLIT_BPS.studioFee)) / BigInt(BPS_DENOMINATOR);
-  const reserve =
-    (gross * BigInt(BUY_SPLIT_BPS.reserve)) / BigInt(BPS_DENOMINATOR);
-  const prizePool = gross - studioFee - reserve;
-  return { gross, prizePool, studioFee, reserve };
+  const studioNet =
+    (gross * BigInt(BUY_SPLIT_BPS.studioNet)) / BigInt(BPS_DENOMINATOR);
+  const novaBudget =
+    (gross * BigInt(BUY_SPLIT_BPS.novaBudget)) / BigInt(BPS_DENOMINATOR);
+  const prizePool = gross - studioNet - novaBudget;
+  return { gross, prizePool, studioNet, novaBudget };
 }
 
 /**

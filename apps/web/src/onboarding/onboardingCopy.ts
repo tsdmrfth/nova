@@ -1,3 +1,7 @@
+import { buySplitPercents } from "@nova/shared";
+
+const buyPercents = buySplitPercents();
+
 /** COPY-S1 B1–B2 + C + E1 / ONBOARDING-EDGE-COPY / PRE-CODE-LOCKS. EN-first. */
 export const ONBOARDING_COPY = {
   headline: "Nova just woke up.",
@@ -14,7 +18,7 @@ export const ONBOARDING_COPY = {
   checkbox: "I accept the rules above",
   footerMicro: "Third-party on Arc · Not Circle Architects",
   feePool:
-    "90% of Extra purchases go to that day's prize pool; 10% is the platform service fee.",
+    `${buyPercents.prizePool}% of Extra purchases go to that day's prize pool; ${buyPercents.studioNet}% is studio net; ${buyPercents.novaBudget}% is the Nova operating budget.`,
   feeRisk: "No guaranteed reward. Soft launch geo may apply.",
   feeAffiliation:
     "Third-party game on Arc. Not affiliated with Circle's Architects program.",

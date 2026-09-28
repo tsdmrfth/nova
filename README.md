@@ -1,8 +1,6 @@
 # Nova
 
-pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. **P1-09** added first-run onboarding. This branch is **P1-07**: one in-memory fake day from Connect through Confirmation to Results, plus the daily Free Influence grant toast.
-
-There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@nova/shared`.
+pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. **P1-09** added first-run onboarding. **P1-07** added Confirmation for the in-memory day. This branch is **P1.5**: an Arc mainnet money-path demo (contracts + `/demo`). The game loop itself is still the offline day. Mainnet is not live in this repo — deploy keys, a public host, and a public GitHub repo are human steps.
 
 ## Status
 
@@ -15,16 +13,18 @@ There is still **no wallet** and **no on-chain**. Prize-pool formulas stay in `@
 | **P1-04** | `/buy` Extra Influence: Spark 1 USDC → 10 Extra, Pulse 5 USDC → 55 Extra via `quotePack` / `attemptBuy`. Mock pay, no chain. |
 | **P1-05** | `/results` offline settle via `pickWinningOption` / `buildDayPrizePool` / `settleDay` / `sparkForDay`. Claim CTA on Results; Profile is history-only. |
 | **P1-09** | `/connect` first-run: disclaimer, mock Connect / Continue, +10 Free grant toast, skippable tutorial, geo-block + Switch to Arc. Persists in localStorage. |
-| **P1-07 (current)** | `/confirmation` reads the in-memory day (pick, Free vs Extra, close / publish stamps) and opens Results after a cast. Connect → Home → Vote → Buy → Confirmation → Results stays on one `DayState`. |
+| **P1-07** | `/confirmation` reads the in-memory day (pick, Free vs Extra, close / publish stamps) and opens Results after a cast. Connect → Home → Vote → Buy → Confirmation → Results stays on one `DayState`. |
+| **P1.5 (current)** | Public Arc mainnet slice: `@nova/shared` buy split 90/8/2, Foundry `NovaDemoPool` + `NovaSignal`, deploy script, thin `/demo` page. Addresses are placeholders until a human broadcasts. |
 
 ## Workspace
 
 | Path | Package | Role |
 | --- | --- | --- |
-| `apps/web` | `@nova/web` | Vite + React + TypeScript, React Router, Connect/Home/Vote/Buy/Results cinema HUD |
+| `apps/web` | `@nova/web` | Vite + React + TypeScript, React Router, Connect/Home/Vote/Buy/Results cinema HUD, `/demo` |
 | `packages/shared` | `@nova/shared` | Pool math, packs, Influence caps, day-goal / W* scoring, SPARK constants, tests |
 | `packages/config` | `@nova/config` | Shared TypeScript config, app constants, color tokens |
 | `packages/assets` | `@nova/assets` | Canon manifest, day packs, placeholder plates (`drafts/` is unpublished) |
+| `contracts` | Foundry | `NovaDemoPool`, `NovaSignal`, Arc mainnet deploy script |
 
 ## Cast / Vote shell
 
@@ -36,7 +36,7 @@ Casting spends Free Influence through `@nova/shared` `grantDailyFree` / `spendIn
 
 ## Extra Influence buy
 
-`/buy` is a cinema HUD over the same sunset plate. Free and Extra balances stay on separate cards. Pack math is not duplicated in the UI: `quotePack` supplies Extra granted and the 90/10 USDC split; `attemptBuy` enforces the 10 USDC / day cap. **Buy with USDC** is mock pay (credits Extra in memory; no chain). Pulse is the default / Most chosen pack. Canon art ids: `pack_spark`, `pack_pulse`.
+`/buy` is a cinema HUD over the same sunset plate. Free and Extra balances stay on separate cards. Pack math is not duplicated in the UI: `quotePack` supplies Extra granted and the 90/8/2 USDC split; `attemptBuy` enforces the 10 USDC / day cap. **Buy with USDC** on this route is still mock pay (credits Extra in memory). The on-chain buy is `/demo`. Pulse is the default / Most chosen pack. Canon art ids: `pack_spark`, `pack_pulse`.
 
 Vote links in with `Need more Extra Influence?` (and the USDC chip). Selected A/B/C tiles stay selected when you return.
 
@@ -79,13 +79,13 @@ Canonical formulas (CEO lock). Amounts are **micro-USDC** (`bigint`, 6 decimals)
 
 | Rule | Formula |
 | --- | --- |
-| Extra buy split | 90% prize pool / 10% studio fee (0% reserve in S1) |
+| Extra buy split | 90% prize pool / 8% studio net / 2% Nova operating budget |
 | Day pool P | Σ(gross × 0.90) + previous-day rollover |
 | Day buckets | 90% of P → paid winners / 10% of P → free winners |
 | Paid share | `PaidBucket × effectiveExtra_i(W*) / Σ effectiveExtra(W*)` |
 | Free share | `FreeBucket × effectiveFree_i(W*) / Σ effectiveFree(W*)` |
-| Spark pack | 1 USDC → 10 Extra (pool 0.90 / fee 0.10) |
-| Pulse pack | 5 USDC → 55 Extra (pool 4.50 / fee 0.50) |
+| Spark pack | 1 USDC → 10 Extra (pool 0.90 / studio net 0.08 / Nova budget 0.02) |
+| Pulse pack | 5 USDC → 55 Extra (pool 4.50 / studio net 0.40 / Nova budget 0.10) |
 | Free grant | 10 / wallet / day; unused burns (no roll) |
 | Caps | `effectiveExtra = min(raw, 100)`; max 10 USDC Extra buy / day |
 | Empty lane | unused paid and/or free bucket rolls into next-day P |
@@ -95,7 +95,39 @@ Canonical formulas (CEO lock). Amounts are **micro-USDC** (`bigint`, 6 decimals)
 
 Import from `@nova/shared`: `quotePack`, `buildDayPrizePool`, `settleDay`, `pickWinningOption`, `effectiveExtra`, `spendInfluence`, `grantDailyFree`, `dayGoalFor`, `sparkForDay`, `SPARK_TABLE`, and related types.
 
-Worked example (20 Spark + 8 Pulse): gross 60 → studio 6, P 54 → paid 48.6 / free 5.4.
+Worked example (20 Spark + 8 Pulse): gross 60 → prize 54, studio net 4.8, Nova budget 1.2 → paid 48.6 / free 5.4. Day buckets of P stay 90/10. The Nova budget is not a second cut of P.
+
+## Arc mainnet demo (P1.5)
+
+Public route: `/demo` (not behind the Connect gate). It targets **Arc mainnet, chain id 5042**.
+
+What it is: a story, programmable USDC, and one real agent transaction after settle. The agent transaction is a public USDC **signal** from the 2% Nova operating budget to Nova's public Arc wallet, with an on-chain cap and caller allowlist. It does not top up the prize pool. It is not a general intelligence and it is not a Circle partnership. The page does not use official Circle, Arc, or USDC logo marks, and it does not state APR, odds, or RTP.
+
+What is in git:
+
+- `contracts/src/NovaDemoPool.sol` — `buyExtraInfluence` for Spark (`1`) and Pulse (`2`), `settleDay` (90/10 snapshot only), budget ledger. Invariant: prize + studio net + Nova budget, including amounts already paid out of studio net and the operating budget, equals gross.
+- `contracts/src/NovaSignal.sol` — post-settle `signal` to the configured wallet only.
+- `contracts/script/DeployArcMainnet.s.sol` — refuses every chain except 5042 unless `ALLOW_NON_MAINNET=true` (local rehearsal only).
+- `contracts/README.md` — broadcast commands. **Testnet-only is not a Microgrant submit.**
+
+What is still a placeholder (human):
+
+| Item | Status |
+| --- | --- |
+| GitHub repo visibility | Private until a human makes it public |
+| `NovaDemoPool` | `PENDING_HUMAN_DEPLOY` |
+| `NovaSignal` | `PENDING_HUMAN_DEPLOY` |
+| Nova public wallet | Set `NOVA_WALLET` at deploy. Not in git. |
+| Deployer USDC (gas + a tiny buy) | Human-funded. No key in git. |
+| Buy tx | `PENDING_HUMAN_BROADCAST` — explorer `https://explorer.arc.io/tx/<hash>` |
+| Signal tx | `PENDING_HUMAN_BROADCAST` — same explorer |
+| Live host URL | `PENDING_HUMAN_HOST` |
+
+USDC on Arc (public protocol address, Circle docs): `0x3600000000000000000000000000000000000000` (ERC-20, 6 decimals). RPC `https://rpc.mainnet.arc.io`. Explorer `https://explorer.arc.io`. Gas is also USDC; Arc drops transactions with `maxFeePerGas` below 20 gwei.
+
+After a human deploy, set `VITE_NOVA_POOL_ADDRESS` and `VITE_NOVA_SIGNAL_ADDRESS` on the host (see `.env.example`). Optional `VITE_DEMO_BUY_TX` and `VITE_DEMO_SIGNAL_TX` surface known hashes. Until then `/demo` shows the split and disables buy.
+
+`forge test` and `forge build` run in CI next to `pnpm quality`.
 
 ## Product routes
 
@@ -109,8 +141,9 @@ Worked example (20 Spark + 8 Pulse): gross 60 → studio 6, P 54 → paid 48.6 /
 | Results | `/results` |
 | Nova/Neighborhood | `/neighborhood` (`/nova` redirects here) |
 | Profile | `/profile` |
+| Arc demo | `/demo` (public; not one of the 8 game routes) |
 
-Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout. Confirmation is the pending lock for the current fake day: cast summary, Free vs Extra lanes, and device-local voting-close / results-publish stamps. **See results** is offered once Influence is cast (this offline day does not wait on the clock). Results is the day-settle + claim HUD. Profile is history-only. Connect is the first-run Welcome / disclaimer / mock wallet gate. Neighborhood remains a placeholder.
+Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout (mock pay, shared 90/8/2 quote). Confirmation is the pending lock for the current fake day: cast summary, Free vs Extra lanes, and device-local voting-close / results-publish stamps. **See results** is offered once Influence is cast (this offline day does not wait on the clock). Results is the day-settle + claim HUD. Profile is history-only. Connect is the first-run Welcome / disclaimer / mock wallet gate. Neighborhood remains a placeholder. `/demo` is the Arc mainnet money path and stays reachable when the geo gate or Connect gate is on.
 
 After a cast, Vote offers **Review confirmation**. Buy offers the same once the day is locked, so Extra bought after the cast shows up on that pick. Back links and the product menu only change the route — they do not reset the day store. PlayGate still sends anyone who has not finished Connect to `/connect`.
 
@@ -128,13 +161,19 @@ pnpm dev
 
 ## Scripts
 
-Run from the repo root:
+Run from the repo root. App gates:
 
 ```sh
 pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+```
+
+Contracts (from `contracts/`, Foundry on `PATH`):
+
+```sh
+forge test
 ```
 
 Same four gates as CI:
@@ -160,3 +199,4 @@ It runs on pushes to `main` and on pull requests:
 3. `pnpm typecheck`
 4. `pnpm test`
 5. `pnpm build`
+6. `forge test` and `forge build` in `contracts/`

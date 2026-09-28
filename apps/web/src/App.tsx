@@ -7,6 +7,7 @@ import { useOnboarding } from "./onboarding/useOnboarding";
 import { BuyPage } from "./pages/BuyPage";
 import { ConfirmationPage } from "./pages/ConfirmationPage";
 import { ConnectPage, GeoBlockPage } from "./pages/ConnectPage";
+import { GrantDemoPage } from "./demo/GrantDemoPage";
 import { HomePage, VotePage } from "./pages/HomePage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { ProfilePage } from "./pages/ProfilePage";
@@ -37,11 +38,16 @@ function isCinemaPath(pathname: string): boolean {
 }
 
 function ProductNav({ compact }: { compact: boolean }) {
-  const links = PRODUCT_ROUTES.map((route) => (
-    <NavLink key={route.id} to={route.path} end={route.path === "/"}>
-      {route.label}
-    </NavLink>
-  ));
+  const links = [
+    ...PRODUCT_ROUTES.map((route) => (
+      <NavLink key={route.id} to={route.path} end={route.path === "/"}>
+        {route.label}
+      </NavLink>
+    )),
+    <NavLink key="demo" to="/demo">
+      Demo
+    </NavLink>,
+  ];
 
   if (!compact) {
     return (
@@ -82,7 +88,8 @@ export function App() {
 function AppLayout() {
   const { pathname } = useLocation();
   const { state } = useOnboarding();
-  const cinema = isCinemaPath(pathname) || state.geoBlocked;
+  const grantDemo = pathname === "/demo";
+  const cinema = !grantDemo && (isCinemaPath(pathname) || state.geoBlocked);
 
   return (
     <div className={cinema ? "app-shell app-shell--cinema" : "app-shell"}>
@@ -91,10 +98,11 @@ function AppLayout() {
         <ProductNav compact={cinema} />
       </header>
       <main className={cinema ? "app-main app-main--cinema" : "app-main"}>
-        {state.geoBlocked ? (
+        {state.geoBlocked && !grantDemo ? (
           <GeoBlockPage />
         ) : (
           <Routes>
+            <Route path="/demo" element={<GrantDemoPage />} />
             {PRODUCT_ROUTES.map((route) => (
               <Route
                 key={route.id}
