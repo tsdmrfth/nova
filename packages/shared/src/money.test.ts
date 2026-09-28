@@ -38,26 +38,42 @@ describe("micro-USDC", () => {
 });
 
 describe("splitGrossBuy", () => {
-  it("uses 90/10/0 basis points", () => {
+  it("uses 90/8/2 basis points", () => {
     expect(BUY_SPLIT_BPS.prizePool).toBe(9_000);
-    expect(BUY_SPLIT_BPS.studioFee).toBe(1_000);
-    expect(BUY_SPLIT_BPS.reserve).toBe(0);
+    expect(BUY_SPLIT_BPS.studioNet).toBe(800);
+    expect(BUY_SPLIT_BPS.novaBudget).toBe(200);
     expect(
-      BUY_SPLIT_BPS.prizePool + BUY_SPLIT_BPS.studioFee + BUY_SPLIT_BPS.reserve,
+      BUY_SPLIT_BPS.prizePool +
+        BUY_SPLIT_BPS.studioNet +
+        BUY_SPLIT_BPS.novaBudget,
     ).toBe(BPS_DENOMINATOR);
   });
 
-  it("keeps studioFee + prizePool + reserve == gross", () => {
+  it("keeps prize + studio net + nova budget == gross", () => {
     for (const decimal of ["1", "5", "10", "60", "0.000001"]) {
       const split = splitGrossBuy(parseUsdc(decimal));
-      expect(split.studioFee + split.prizePool + split.reserve).toBe(split.gross);
-      expect(split.reserve).toBe(0n);
+      expect(split.studioNet + split.prizePool + split.novaBudget).toBe(
+        split.gross,
+      );
     }
   });
 
-  it("sends integer dust to the prize pool so studio never exceeds 10%", () => {
+  it("quotes Spark 0.90 / 0.08 / 0.02 and Pulse 4.50 / 0.40 / 0.10", () => {
+    const spark = splitGrossBuy(parseUsdc("1"));
+    expect(formatUsdc(spark.prizePool)).toBe("0.9");
+    expect(formatUsdc(spark.studioNet)).toBe("0.08");
+    expect(formatUsdc(spark.novaBudget)).toBe("0.02");
+
+    const pulse = splitGrossBuy(parseUsdc("5"));
+    expect(formatUsdc(pulse.prizePool)).toBe("4.5");
+    expect(formatUsdc(pulse.studioNet)).toBe("0.4");
+    expect(formatUsdc(pulse.novaBudget)).toBe("0.1");
+  });
+
+  it("sends integer dust to the prize pool so studio and budget never exceed their bps", () => {
     const split = splitGrossBuy(1n);
-    expect(split.studioFee).toBe(0n);
+    expect(split.studioNet).toBe(0n);
+    expect(split.novaBudget).toBe(0n);
     expect(split.prizePool).toBe(1n);
   });
 

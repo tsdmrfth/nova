@@ -1,9 +1,8 @@
 import {
-  BUY_SPLIT_BPS,
-  BPS_DENOMINATOR,
   EFFECTIVE_EXTRA_CAP,
   PACK_CATALOG,
   attemptBuy,
+  buySplitPercents,
   formatUsdc,
   quotePack,
   remainingDailyBuyMicro,
@@ -26,11 +25,8 @@ export function formatCheckoutUsdc(micro: MicroUsdc): string {
   return `${whole}.${frac.padEnd(2, "0")}`;
 }
 
-function splitPercents(): { pool: number; fee: number } {
-  return {
-    pool: BUY_SPLIT_BPS.prizePool / (BPS_DENOMINATOR / 100),
-    fee: BUY_SPLIT_BPS.studioFee / (BPS_DENOMINATOR / 100),
-  };
+function splitPercents() {
+  return buySplitPercents();
 }
 
 export type BuyPackCard = {
@@ -46,8 +42,10 @@ export type BuyBreakdown = {
   youPay: string;
   prizePool: string;
   prizePoolPct: string;
-  studioFee: string;
-  studioFeePct: string;
+  studioNet: string;
+  studioNetPct: string;
+  novaBudget: string;
+  novaBudgetPct: string;
   youReceive: string;
 };
 
@@ -111,9 +109,11 @@ export function buildBuyModel(
     breakdown: {
       youPay: `${formatCheckoutUsdc(quote.youPay)} USDC`,
       prizePool: `${formatCheckoutUsdc(quote.prizePool)} USDC`,
-      prizePoolPct: `${percents.pool}%`,
-      studioFee: `${formatCheckoutUsdc(quote.studioFee)} USDC`,
-      studioFeePct: `${percents.fee}%`,
+      prizePoolPct: `${percents.prizePool}%`,
+      studioNet: `${formatCheckoutUsdc(quote.studioNet)} USDC`,
+      studioNetPct: `${percents.studioNet}%`,
+      novaBudget: `${formatCheckoutUsdc(quote.novaBudget)} USDC`,
+      novaBudgetPct: `${percents.novaBudget}%`,
       youReceive: `${quote.extraInfluence} Extra Influence`,
     },
     cta: BUY_COPY.cta,

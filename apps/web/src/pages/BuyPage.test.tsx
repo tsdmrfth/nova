@@ -13,7 +13,7 @@ describe("Buy Extra Influence", () => {
   beforeEach(() => {
     seedOnboarded();
   });
-  it("quotes Pulse 90/10, mock-buys Extra, and keeps Free separate", async () => {
+  it("quotes Pulse 90/8/2, mock-buys Extra, and keeps Free separate", async () => {
     const user = userEvent.setup();
     render(
       <MemoryRouter initialEntries={["/buy"]}>
@@ -29,11 +29,16 @@ describe("Buy Extra Influence", () => {
     );
     expect(screen.getByTestId("buy-you-pay").textContent).toBe("5.00 USDC");
     expect(screen.getByTestId("buy-prize-pool").textContent).toBe("4.50 USDC");
-    expect(screen.getByTestId("buy-studio-fee").textContent).toBe("0.50 USDC");
+    expect(screen.getByTestId("buy-studio-net").textContent).toBe("0.40 USDC");
+    expect(screen.getByTestId("buy-nova-budget").textContent).toBe("0.10 USDC");
     expect(screen.getByTestId("buy-you-receive").textContent).toBe(
       "55 Extra Influence",
     );
-    expect(screen.getByText("90% prize pool · 10% platform service fee")).toBeTruthy();
+    expect(
+      screen.getByText(
+        "90% prize pool · 8% studio net · 2% Nova operating budget",
+      ),
+    ).toBeTruthy();
 
     await user.click(screen.getByTestId("buy-cta"));
     expect(screen.getByTestId("buy-extra-value").textContent).toBe("55");
@@ -45,7 +50,8 @@ describe("Buy Extra Influence", () => {
     await user.click(screen.getByTestId("buy-pack-spark"));
     expect(screen.getByTestId("buy-you-pay").textContent).toBe("1.00 USDC");
     expect(screen.getByTestId("buy-prize-pool").textContent).toBe("0.90 USDC");
-    expect(screen.getByTestId("buy-studio-fee").textContent).toBe("0.10 USDC");
+    expect(screen.getByTestId("buy-studio-net").textContent).toBe("0.08 USDC");
+    expect(screen.getByTestId("buy-nova-budget").textContent).toBe("0.02 USDC");
     expect(screen.getByTestId("buy-you-receive").textContent).toBe(
       "10 Extra Influence",
     );

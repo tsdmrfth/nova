@@ -29,23 +29,28 @@ describe("pack catalog", () => {
 });
 
 describe("quotePack", () => {
-  it("Spark: 1 USDC → 10 Extra, pool 0.90, fee 0.10", () => {
+  it("Spark: 1 USDC → 10 Extra, pool 0.90, studio net 0.08, nova budget 0.02", () => {
     const quote = quotePack("spark");
     expect(quote.extraInfluence).toBe(10);
     expect(formatUsdc(quote.youPay)).toBe("1");
     expect(formatUsdc(quote.prizePool)).toBe("0.9");
-    expect(formatUsdc(quote.studioFee)).toBe("0.1");
-    expect(quote.reserve).toBe(0n);
-    expect(quote.prizePool + quote.studioFee).toBe(quote.youPay);
+    expect(formatUsdc(quote.studioNet)).toBe("0.08");
+    expect(formatUsdc(quote.novaBudget)).toBe("0.02");
+    expect(quote.prizePool + quote.studioNet + quote.novaBudget).toBe(
+      quote.youPay,
+    );
   });
 
-  it("Pulse: 5 USDC → 55 Extra, pool 4.50, fee 0.50", () => {
+  it("Pulse: 5 USDC → 55 Extra, pool 4.50, studio net 0.40, nova budget 0.10", () => {
     const quote = quotePack("pulse");
     expect(quote.extraInfluence).toBe(55);
     expect(formatUsdc(quote.youPay)).toBe("5");
     expect(formatUsdc(quote.prizePool)).toBe("4.5");
-    expect(formatUsdc(quote.studioFee)).toBe("0.5");
-    expect(quote.prizePool + quote.studioFee).toBe(quote.youPay);
+    expect(formatUsdc(quote.studioNet)).toBe("0.4");
+    expect(formatUsdc(quote.novaBudget)).toBe("0.1");
+    expect(quote.prizePool + quote.studioNet + quote.novaBudget).toBe(
+      quote.youPay,
+    );
   });
 });
 
@@ -103,8 +108,12 @@ describe("summarizePurchases", () => {
     const summary = summarizePurchases(packs);
     expect(summary.counts).toEqual({ spark: 20, pulse: 8 });
     expect(formatUsdc(summary.gross)).toBe("60");
-    expect(formatUsdc(summary.studioFee)).toBe("6");
+    expect(formatUsdc(summary.studioNet)).toBe("4.8");
+    expect(formatUsdc(summary.novaBudget)).toBe("1.2");
     expect(formatUsdc(summary.prizePool)).toBe("54");
+    expect(
+      summary.prizePool + summary.studioNet + summary.novaBudget,
+    ).toBe(summary.gross);
     expect(summary.extraInfluence).toBe(20 * 10 + 8 * 55);
   });
 });

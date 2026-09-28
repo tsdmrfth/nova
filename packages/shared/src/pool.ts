@@ -8,8 +8,8 @@ export type DayPrizePool = {
   counts: PurchaseSummary["counts"];
   extraInfluence: number;
   gross: MicroUsdc;
-  studioFee: MicroUsdc;
-  reserve: MicroUsdc;
+  studioNet: MicroUsdc;
+  novaBudget: MicroUsdc;
   /** Σ(G × 0.90) from today's Extra buys. Free Influence adds 0. */
   purchasePool: MicroUsdc;
   rollover: MicroUsdc;
@@ -43,8 +43,8 @@ export function buildDayPrizePool(input: {
     counts: purchases.counts,
     extraInfluence: purchases.extraInfluence,
     gross: purchases.gross,
-    studioFee: purchases.studioFee,
-    reserve: purchases.reserve,
+    studioNet: purchases.studioNet,
+    novaBudget: purchases.novaBudget,
     purchasePool,
     rollover,
     prizePool,

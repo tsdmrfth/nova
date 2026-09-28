@@ -117,10 +117,17 @@ export function BuyHud({
             </div>
             <div className="buy-row">
               <dt>
-                {BUY_COPY.studioFee}
-                <span className="buy-pct">{model.breakdown.studioFeePct}</span>
+                {BUY_COPY.studioNet}
+                <span className="buy-pct">{model.breakdown.studioNetPct}</span>
               </dt>
-              <dd data-testid="buy-studio-fee">{model.breakdown.studioFee}</dd>
+              <dd data-testid="buy-studio-net">{model.breakdown.studioNet}</dd>
+            </div>
+            <div className="buy-row">
+              <dt>
+                {BUY_COPY.novaBudget}
+                <span className="buy-pct">{model.breakdown.novaBudgetPct}</span>
+              </dt>
+              <dd data-testid="buy-nova-budget">{model.breakdown.novaBudget}</dd>
             </div>
             <div className="buy-row buy-row--receive">
               <dt>{BUY_COPY.youReceive}</dt>

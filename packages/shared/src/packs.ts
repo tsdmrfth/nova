@@ -43,7 +43,7 @@ export type PackQuote = BuySplit & {
   youPay: MicroUsdc;
 };
 
-/** Quote a pack: Extra granted and the 90/10 USDC split. */
+/** Quote a pack: Extra granted and the 90/8/2 USDC split. */
 export function quotePack(packId: PackId): PackQuote {
   const pack = getPack(packId);
   const split = splitGrossBuy(pack.priceMicroUsdc);
@@ -104,8 +104,8 @@ export type PurchaseSummary = {
   extraInfluence: number;
   gross: MicroUsdc;
   prizePool: MicroUsdc;
-  studioFee: MicroUsdc;
-  reserve: MicroUsdc;
+  studioNet: MicroUsdc;
+  novaBudget: MicroUsdc;
 };
 
 export function summarizePurchases(
@@ -115,18 +115,25 @@ export function summarizePurchases(
   let extraInfluence = 0;
   let gross = 0n;
   let prizePool = 0n;
-  let studioFee = 0n;
-  let reserve = 0n;
+  let studioNet = 0n;
+  let novaBudget = 0n;
   for (const packId of packIds) {
     const quote = quotePack(packId);
     counts[packId] += 1;
     extraInfluence += quote.extraInfluence;
     gross += quote.gross;
     prizePool += quote.prizePool;
-    studioFee += quote.studioFee;
-    reserve += quote.reserve;
+    studioNet += quote.studioNet;
+    novaBudget += quote.novaBudget;
   }
-  return { counts, extraInfluence, gross, prizePool, studioFee, reserve };
+  return {
+    counts,
+    extraInfluence,
+    gross,
+    prizePool,
+    studioNet,
+    novaBudget,
+  };
 }
 
 export type SimulatedBuys = {

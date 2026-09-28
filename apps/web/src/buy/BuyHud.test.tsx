@@ -32,7 +32,8 @@ describe("BuyHud", () => {
     expect(screen.getByText("Most chosen")).toBeTruthy();
     expect(screen.getByTestId("buy-you-pay").textContent).toBe("5.00 USDC");
     expect(screen.getByTestId("buy-prize-pool").textContent).toBe("4.50 USDC");
-    expect(screen.getByTestId("buy-studio-fee").textContent).toBe("0.50 USDC");
+    expect(screen.getByTestId("buy-studio-net").textContent).toBe("0.40 USDC");
+    expect(screen.getByTestId("buy-nova-budget").textContent).toBe("0.10 USDC");
 
     await user.click(screen.getByTestId("buy-pack-spark"));
     expect(onSelectPack).toHaveBeenCalledWith("spark");

@@ -2,7 +2,7 @@
   "name": "nova",
   "version": "0.0.0",
   "private": true,
-  "description": "Nova monorepo — in-memory day loop (P1-07)",
+  "description": "Nova monorepo — Arc mainnet money-path demo (P1.5)",
   "type": "module",
   "packageManager": "pnpm@10.33.3",
   "engines": {

@@ -1,11 +1,10 @@
 import {
-  BPS_DENOMINATOR,
-  BUY_SPLIT_BPS,
-  PLATFORM_FEE_LABEL,
+  NOVA_BUDGET_LABEL,
+  STUDIO_NET_LABEL,
+  buySplitPercents,
 } from "@nova/shared";
 
-const poolPct = BUY_SPLIT_BPS.prizePool / (BPS_DENOMINATOR / 100);
-const feePct = BUY_SPLIT_BPS.studioFee / (BPS_DENOMINATOR / 100);
+const percents = buySplitPercents();
 
 /** Locked EN copy for Extra Influence checkout (BUY-INFLUENCE-UX / Hukuk). */
 export const BUY_COPY = {
@@ -18,13 +17,14 @@ export const BUY_COPY = {
   details: "Details",
   youPay: "You pay",
   prizePool: "Prize pool",
-  studioFee: "Studio fee",
+  studioNet: "Studio net",
+  novaBudget: "Nova operating budget",
   youReceive: "You receive",
   extraUnit: "Extra Influence",
   cta: "Buy with USDC",
   back: "Back to vote",
-  feeOneLiner: `${poolPct}% prize pool · ${feePct}% ${PLATFORM_FEE_LABEL}`,
-  feeExpand: `${poolPct}% of what you pay goes to today's prize pool; ${feePct}% is the ${PLATFORM_FEE_LABEL}.`,
+  feeOneLiner: `${percents.prizePool}% prize pool · ${percents.studioNet}% ${STUDIO_NET_LABEL} · ${percents.novaBudget}% ${NOVA_BUDGET_LABEL}`,
+  feeExpand: `${percents.prizePool}% of what you pay goes to today's prize pool; ${percents.studioNet}% is ${STUDIO_NET_LABEL}; ${percents.novaBudget}% is the ${NOVA_BUDGET_LABEL}.`,
   noGuarantee: "No guaranteed return.",
   contest:
     "Not financial advice. Contest / social prediction rules apply where available. Soft launch geo may exclude some regions.",

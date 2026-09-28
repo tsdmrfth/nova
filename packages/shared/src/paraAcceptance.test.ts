@@ -40,29 +40,35 @@ describe("PARA domain fixtures", () => {
     expect(burnUnusedFree(spent.remaining)).toEqual({ burned: 3, carried: 0 });
   });
 
-  it("P-SPARK: pay 1 USDC → 10 Extra; pool 0.90 / fee 0.10", () => {
+  it("P-SPARK: pay 1 USDC → 10 Extra; pool 0.90 / studio net 0.08 / nova budget 0.02", () => {
     const spark = quotePack("spark");
     expect(spark.extraInfluence).toBe(10);
     expect(formatUsdc(spark.youPay)).toBe("1");
     expect(formatUsdc(spark.prizePool)).toBe("0.9");
-    expect(formatUsdc(spark.studioFee)).toBe("0.1");
+    expect(formatUsdc(spark.studioNet)).toBe("0.08");
+    expect(formatUsdc(spark.novaBudget)).toBe("0.02");
   });
 
-  it("P-PULSE: pay 5 → 55 Extra; pool 4.50 / fee 0.50", () => {
+  it("P-PULSE: pay 5 → 55 Extra; pool 4.50 / studio net 0.40 / nova budget 0.10", () => {
     const pulse = quotePack("pulse");
     expect(pulse.extraInfluence).toBe(55);
     expect(formatUsdc(pulse.youPay)).toBe("5");
     expect(formatUsdc(pulse.prizePool)).toBe("4.5");
-    expect(formatUsdc(pulse.studioFee)).toBe("0.5");
+    expect(formatUsdc(pulse.studioNet)).toBe("0.4");
+    expect(formatUsdc(pulse.novaBudget)).toBe("0.1");
   });
 
-  it("SPLIT-BUY: gross → 90% prize pool / 10% studio fee (purchase-time)", () => {
+  it("SPLIT-BUY: gross → 90% prize / 8% studio net / 2% Nova operating budget", () => {
     const spark = quotePack("spark");
     const pulse = quotePack("pulse");
     expect((spark.prizePool * 10n) / spark.gross).toBe(9n);
-    expect((spark.studioFee * 10n) / spark.gross).toBe(1n);
+    expect((spark.studioNet * 100n) / spark.gross).toBe(8n);
+    expect((spark.novaBudget * 100n) / spark.gross).toBe(2n);
     expect((pulse.prizePool * 10n) / pulse.gross).toBe(9n);
-    expect((pulse.studioFee * 10n) / pulse.gross).toBe(1n);
+    expect((pulse.studioNet * 100n) / pulse.gross).toBe(8n);
+    expect((pulse.novaBudget * 100n) / pulse.gross).toBe(2n);
+    expect(spark.prizePool + spark.studioNet + spark.novaBudget).toBe(spark.gross);
+    expect(pulse.prizePool + pulse.studioNet + pulse.novaBudget).toBe(pulse.gross);
   });
 
   it("CAP-W: effectiveExtra = min(raw, 100) per wallet/day", () => {
@@ -229,6 +235,8 @@ describe("PARA anti-fixtures", () => {
       dayPool54(),
     );
     expect("studioFee" in result).toBe(false);
+    expect("novaBudget" in result).toBe(false);
+    expect("studioNet" in result).toBe(false);
   });
 
   it("there is no Pack C / third pack", () => {

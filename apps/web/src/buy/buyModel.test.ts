@@ -22,16 +22,18 @@ describe("checkout formatting", () => {
     const pulse = quotePack("pulse");
     expect(formatCheckoutUsdc(spark.youPay)).toBe("1.00");
     expect(formatCheckoutUsdc(spark.prizePool)).toBe("0.90");
-    expect(formatCheckoutUsdc(spark.studioFee)).toBe("0.10");
+    expect(formatCheckoutUsdc(spark.studioNet)).toBe("0.08");
+    expect(formatCheckoutUsdc(spark.novaBudget)).toBe("0.02");
     expect(formatCheckoutUsdc(pulse.youPay)).toBe("5.00");
     expect(formatCheckoutUsdc(pulse.prizePool)).toBe("4.50");
-    expect(formatCheckoutUsdc(pulse.studioFee)).toBe("0.50");
+    expect(formatCheckoutUsdc(pulse.studioNet)).toBe("0.40");
+    expect(formatCheckoutUsdc(pulse.novaBudget)).toBe("0.10");
     expect(formatCheckoutUsdc(parseUsdc("1"))).toBe("1.00");
   });
 });
 
 describe("buy HUD model", () => {
-  it("defaults to Pulse with a 90/10 Details breakdown from quotePack", () => {
+  it("defaults to Pulse with a 90/8/2 Details breakdown from quotePack", () => {
     const model = buildBuyModel(createDayState(1, now));
     expect(DEFAULT_PACK_ID).toBe("pulse");
     expect(model.selectedPackId).toBe("pulse");
@@ -42,8 +44,10 @@ describe("buy HUD model", () => {
     expect(model.breakdown.youPay).toBe("5.00 USDC");
     expect(model.breakdown.prizePool).toBe("4.50 USDC");
     expect(model.breakdown.prizePoolPct).toBe("90%");
-    expect(model.breakdown.studioFee).toBe("0.50 USDC");
-    expect(model.breakdown.studioFeePct).toBe("10%");
+    expect(model.breakdown.studioNet).toBe("0.40 USDC");
+    expect(model.breakdown.studioNetPct).toBe("8%");
+    expect(model.breakdown.novaBudget).toBe("0.10 USDC");
+    expect(model.breakdown.novaBudgetPct).toBe("2%");
     expect(model.breakdown.youReceive).toBe("55 Extra Influence");
     expect(model.ctaEnabled).toBe(true);
     expect(model.packs.map((pack) => pack.id)).toEqual(["spark", "pulse"]);
@@ -57,7 +61,8 @@ describe("buy HUD model", () => {
     expect(model.extraInfluence).toBe(10);
     expect(model.breakdown.youPay).toBe("1.00 USDC");
     expect(model.breakdown.prizePool).toBe("0.90 USDC");
-    expect(model.breakdown.studioFee).toBe("0.10 USDC");
+    expect(model.breakdown.studioNet).toBe("0.08 USDC");
+    expect(model.breakdown.novaBudget).toBe("0.02 USDC");
     expect(model.breakdown.youReceive).toBe("10 Extra Influence");
     expect(model.status).toMatch(/You received 10 Extra Influence/);
   });
