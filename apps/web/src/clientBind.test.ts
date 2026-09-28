@@ -27,7 +27,14 @@ describe("client bind contract", () => {
     ].join("\n");
     expect(css).toContain("#2775CA");
     expect(css).toContain("#3B8EF0");
-    expect(css.toLowerCase()).not.toMatch(/#f59e0b|#ffbf00|#f6ad55|#d69e2e|amber/);
+    expect(css).toContain("#0B1220");
+    expect(css).toContain("--color-world-gold");
+    expect(css).toContain("Fraunces");
+    expect(css).toContain("DM Sans");
+    expect(css).toContain("IBM Plex Mono");
+    expect(css.toLowerCase()).not.toMatch(
+      /#f7f3eb|#fff8ee|#d97706|#f59e0b|#ffbf00|#f6ad55|#d69e2e|amber/,
+    );
   });
 
   it("lets the cinema Home HUD scroll on small viewports", () => {

@@ -17,7 +17,7 @@
 .buy-panel {
   display: grid;
   gap: 1.1rem;
-  width: min(52rem, 100%);
+  width: min(var(--hud-column), 100%);
 }
 
 .buy-hero {
@@ -327,13 +327,8 @@
 }
 
 @media (max-width: 900px) {
-  .buy-balances,
-  .buy-packs {
-    grid-template-columns: 1fr;
-  }
-
   .buy-pack-art {
-    height: 8rem;
+    height: 7.5rem;
   }
 
   .buy-cta {

@@ -15,7 +15,7 @@ import { TutorialOverlay } from "../onboarding/TutorialOverlay";
 import { useOnboarding } from "../onboarding/useOnboarding";
 import { HomeSceneHost } from "../scene/HomeSceneHost";
 
-export function CastPage() {
+export function CastPage({ screen }: { screen: "home" | "vote" }) {
   const { state, select, setSpend, cast } = useDayStore();
   const onboarding = useOnboarding();
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ export function CastPage() {
   }, [missing]);
 
   return (
-    <section className="home-screen">
+    <section className={`home-screen home-screen--${screen}`}>
       <HomeSceneHost
         pack={pack}
         selected={state.selected}
@@ -90,9 +90,9 @@ export function CastPage() {
 }
 
 export function HomePage() {
-  return <CastPage />;
+  return <CastPage screen="home" />;
 }
 
 export function VotePage() {
-  return <CastPage />;
+  return <CastPage screen="vote" />;
 }

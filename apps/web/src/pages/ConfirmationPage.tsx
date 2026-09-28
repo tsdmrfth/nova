@@ -33,7 +33,7 @@ export function ConfirmationPage() {
   }, [missing]);
 
   return (
-    <section className="home-screen">
+    <section className="home-screen home-screen--confirm">
       <HomeSceneHost
         pack={pack}
         selected={state.selected}

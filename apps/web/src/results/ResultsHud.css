@@ -17,7 +17,7 @@
 .results-panel {
   display: grid;
   gap: 1.05rem;
-  width: min(40rem, 100%);
+  width: min(var(--hud-column), 100%);
   justify-items: center;
   text-align: center;
 }

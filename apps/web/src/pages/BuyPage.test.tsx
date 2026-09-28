@@ -36,7 +36,7 @@ describe("Buy Extra Influence", () => {
     );
     expect(
       screen.getByText(
-        "90% prize pool · 8% studio net · 2% Nova operating budget",
+        "90% prize pool · 8% platform service fee · 2% Nova operating budget",
       ),
     ).toBeTruthy();
 

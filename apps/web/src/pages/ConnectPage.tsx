@@ -31,7 +31,7 @@ export function ConnectPage() {
   }, [missing]);
 
   return (
-    <section className="home-screen">
+    <section className="home-screen home-screen--connect">
       <HomeSceneHost
         pack={pack}
         selected={state.selected}
@@ -57,7 +57,7 @@ export function GeoBlockPage() {
   );
 
   return (
-    <section className="home-screen">
+    <section className="home-screen home-screen--connect">
       <HomeSceneHost
         pack={pack}
         selected={null}

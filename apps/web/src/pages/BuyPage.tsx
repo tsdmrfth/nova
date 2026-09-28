@@ -38,7 +38,7 @@ export function BuyPage() {
   }, [missing]);
 
   return (
-    <section className="home-screen">
+    <section className="home-screen home-screen--buy">
       <HomeSceneHost
         pack={pack}
         selected={state.selected}

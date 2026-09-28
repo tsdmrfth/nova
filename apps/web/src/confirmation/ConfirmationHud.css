@@ -17,7 +17,7 @@
 .confirm-panel {
   display: grid;
   gap: 0.9rem;
-  width: min(40rem, 100%);
+  width: min(var(--hud-column), 100%);
   justify-items: center;
   text-align: center;
 }

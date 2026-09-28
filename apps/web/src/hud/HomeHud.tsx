@@ -65,7 +65,7 @@ export function HomeHud({
           </div>
         </div>
 
-        <div className="hud-meter">
+        <div className="hud-chip-row hud-chip-row--resources">
           <div
             className="hud-chip hud-chip--resource"
             data-testid="hud-free"
@@ -81,9 +81,6 @@ export function HomeHud({
               </span>
             </span>
           </div>
-          <span className="hud-plus" aria-hidden="true">
-            +
-          </span>
           <div className="hud-chip hud-chip--resource" data-testid="hud-extra">
             <span className="hud-chip-icon">
               <ExtraInfluenceIcon />
@@ -94,18 +91,23 @@ export function HomeHud({
                 {model.extraInfluence}
               </span>
             </span>
+            <button
+              type="button"
+              className="hud-chip-plus"
+              aria-label="Buy Extra Influence"
+              onClick={onBuyExtraPlus}
+            >
+              +
+            </button>
           </div>
-          <span className="hud-plus" aria-hidden="true">
-            +
-          </span>
           <button
             type="button"
             className="hud-chip hud-chip--usdc"
             data-testid="hud-usdc"
             onClick={onUsdcChip}
           >
-            <span className="hud-chip-label">{model.usdcLabel}</span>
             <UsdcIcon className="hud-usdc-mark" />
+            <span className="hud-chip-label">{model.usdcLabel}</span>
           </button>
         </div>
 
@@ -271,10 +273,6 @@ export function HomeHud({
           ) : null}
         </div>
 
-        <div className="hud-brand" aria-hidden="true">
-          <span className="hud-brand-name">Arc</span>
-          <span className="hud-brand-tag">People build brighter tomorrow</span>
-        </div>
       </div>
 
       <p className="hud-disclaimer">

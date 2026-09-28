@@ -1,4 +1,5 @@
 import {
+  PLATFORM_FEE_LABEL,
   buySplitPercents,
   formatUsdc,
   quotePack,
@@ -58,7 +59,7 @@ export function buildGrantDemoModel(config: DemoConfig): GrantDemoModel {
         pulse: money(pulse.prizePool),
       },
       {
-        label: "Studio net",
+        label: PLATFORM_FEE_LABEL,
         pct: `${percents.studioNet}%`,
         spark: money(spark.studioNet),
         pulse: money(pulse.studioNet),

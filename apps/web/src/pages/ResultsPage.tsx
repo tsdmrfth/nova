@@ -38,11 +38,19 @@ export function ResultsPage() {
   }, [missing]);
 
   return (
-    <section className="home-screen">
+    <section className="home-screen home-screen--results">
       <HomeSceneHost
         pack={pack}
         selected={state.selected}
-        phase={state.status === "cast" ? "pending" : "idle"}
+        phase={
+          state.status !== "cast"
+            ? "idle"
+            : model.correct
+              ? "win"
+              : model.miss
+                ? "miss"
+                : "reveal"
+        }
         reducedMotion={reducedMotion}
         dpr={dpr}
       />

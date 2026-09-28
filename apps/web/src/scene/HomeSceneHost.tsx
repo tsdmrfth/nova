@@ -119,7 +119,7 @@ export const HomeSceneHost = forwardRef(function HomeSceneHost(
         instance = new PixiApplication();
         appRef.current = instance;
         await instance.init({
-          background: 0x07111c,
+          background: 0x0b1220,
           antialias: true,
           autoDensity: true,
           resolution,

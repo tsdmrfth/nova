@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { quotePack } from "@nova/shared";
+import { PLATFORM_FEE_LABEL, quotePack } from "@nova/shared";
 import {
   connectAccount,
   ensureArcMainnet,
@@ -198,7 +198,7 @@ export function GrantDemoPage({
         <p>{model.signalBody}</p>
         {poolSnap ? (
           <p data-testid="grant-ledger">
-            {GRANT_DEMO_COPY.ledger}: prize {formatLedgerUsdc(poolSnap.prize)} · studio net{" "}
+            {GRANT_DEMO_COPY.ledger}: prize {formatLedgerUsdc(poolSnap.prize)} · {PLATFORM_FEE_LABEL}{" "}
             {formatLedgerUsdc(poolSnap.studioNet)} · budget {formatLedgerUsdc(poolSnap.novaBudget)}
           </p>
         ) : null}

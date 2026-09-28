@@ -18,8 +18,9 @@
 .oboard-panel {
   display: grid;
   gap: 1.05rem;
-  width: min(38rem, 100%);
-  justify-items: center;
+  width: min(var(--hud-column), 100%);
+  justify-items: stretch;
+  text-align: left;
   padding: 1.35rem 1.25rem 1.2rem;
   background: var(--color-navy-glass);
   border: 1px solid var(--color-stroke);
@@ -28,7 +29,6 @@
     0 0 0 1px color-mix(in srgb, var(--color-glow) 22%, transparent),
     0 18px 48px rgba(7, 17, 28, 0.42);
   backdrop-filter: blur(18px);
-  text-align: center;
 }
 
 .oboard-kicker {
@@ -107,7 +107,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.65rem;
-  width: min(28rem, 100%);
+  width: 100%;
   padding: 0.95rem 2rem;
   color: #fff;
   background: linear-gradient(180deg, #3B8EF0, var(--color-accent));
