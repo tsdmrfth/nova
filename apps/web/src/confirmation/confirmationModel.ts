@@ -21,6 +21,7 @@ export type ConfirmationModel = {
   closeLine: string;
   publishLine: string;
   resultsCta: string;
+  homeCta: string;
   castCta: string;
   back: string;
   buy: string;
@@ -61,6 +62,7 @@ export function buildConfirmationModel(state: DayState): ConfirmationModel {
     closeLine: `${CONFIRMATION_COPY.closeLabel} ${formatLocalStamp(state.schedule.voteCloseAt)}`,
     publishLine: `${CONFIRMATION_COPY.publishLabel} ${formatLocalStamp(state.schedule.publishAt)}`,
     resultsCta: CONFIRMATION_COPY.resultsCta,
+    homeCta: CONFIRMATION_COPY.homeCta,
     castCta: CONFIRMATION_COPY.castCta,
     back: CONFIRMATION_COPY.back,
     buy: CONFIRMATION_COPY.buy,

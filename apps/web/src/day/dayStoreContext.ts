@@ -7,6 +7,7 @@ export type DayStoreValue = {
   state: DayState;
   select(id: ChoiceId): void;
   setSpend(amount: number): void;
+  setExtraSpend(amount: number): void;
   cast(): void;
   buy(packId: PackId): void;
   claim(snapshot: ClaimSnapshot): void;

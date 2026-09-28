@@ -14,9 +14,10 @@ import { GrantToast } from "../onboarding/GrantToast";
 import { TutorialOverlay } from "../onboarding/TutorialOverlay";
 import { useOnboarding } from "../onboarding/useOnboarding";
 import { HomeSceneHost } from "../scene/HomeSceneHost";
+import { novaPoseId } from "../scene/novaPose";
 
 export function CastPage({ screen }: { screen: "home" | "vote" }) {
-  const { state, select, setSpend, cast } = useDayStore();
+  const { state, select, setSpend, setExtraSpend, cast } = useDayStore();
   const onboarding = useOnboarding();
   const navigate = useNavigate();
   const goBuy = () => navigate("/buy");
@@ -42,6 +43,12 @@ export function CastPage({ screen }: { screen: "home" | "vote" }) {
     () => buildHudModel(state, artByChoice),
     [state, artByChoice],
   );
+  const onboardingWave =
+    screen === "home" &&
+    onboarding.onboarded &&
+    !onboarding.state.grantPending &&
+    !onboarding.state.tutorialSeen;
+  const pose = screen === "vote" || onboardingWave ? novaPoseId("vote") : novaPoseId(screen);
 
   useEffect(() => {
     assertArtLockVersion(canonManifest.artLockVersion);
@@ -54,6 +61,7 @@ export function CastPage({ screen }: { screen: "home" | "vote" }) {
     <section className={`home-screen home-screen--${screen}`}>
       <HomeSceneHost
         pack={pack}
+        novaId={pose}
         selected={state.selected}
         phase={state.status === "cast" ? "pending" : "choosing"}
         reducedMotion={reducedMotion}
@@ -64,6 +72,7 @@ export function CastPage({ screen }: { screen: "home" | "vote" }) {
         selected={state.selected}
         onSelect={select}
         onSpend={setSpend}
+        onExtraSpend={setExtraSpend}
         onCast={cast}
         onUsdcChip={goBuy}
         onBuyExtraPlus={goBuy}

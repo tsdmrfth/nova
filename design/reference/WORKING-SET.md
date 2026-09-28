@@ -45,9 +45,9 @@ User saved set + Design P0 pack. Hard G1 not infinite — revise on feedback.
 - `vfx/vfx-cta-glow.png` + `f1` · `f3`
 - `vfx/README.md`
 
-## Runtime (Eng)
+## Runtime
 
-Photographic plates listed above are the Design working set. They are not duplicated in this repo. The client resolves the same ids through `@nova/assets` canon (`packages/assets/canon`): `scene_home_sunset_city`, parallax layers, `nova_idle_stand_3q`, `tile_stabilize` / `tile_expand` / `tile_route`, `pack_spark` / `pack_pulse`, `badge_winner`. Missing pose and scene variants stay on the gap list (tint or sprite fallback). Do not import `drafts/`.
+These files live here for review. `@nova/assets` canon entries are symlinks to them (no second copy). Public ids stay Design snake_case (`scene_home_sunset_city`, `nova_idle_stand_3q`, `buy_pack_spark`, `icon_day`, …). `FINAL-HOME.png` is look-lock only and is not a runtime texture.
 
 ## Status
 - `P0-CHECKLIST-STATUS.md`

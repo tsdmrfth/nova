@@ -10,6 +10,7 @@ import { buildConfirmationModel } from "../confirmation/confirmationModel";
 import { useDayStore } from "../day/useDayStore";
 import { usePrefersReducedMotion } from "../hud/usePrefersReducedMotion";
 import { HomeSceneHost } from "../scene/HomeSceneHost";
+import { novaPoseId } from "../scene/novaPose";
 
 export function ConfirmationPage() {
   const { state } = useDayStore();
@@ -36,6 +37,7 @@ export function ConfirmationPage() {
     <section className="home-screen home-screen--confirm">
       <HomeSceneHost
         pack={pack}
+        novaId={novaPoseId("confirm")}
         selected={state.selected}
         phase={state.status === "cast" ? "pending" : "idle"}
         reducedMotion={reducedMotion}
@@ -43,6 +45,7 @@ export function ConfirmationPage() {
       />
       <ConfirmationHud
         model={model}
+        onHome={() => navigate("/")}
         onResults={() => navigate("/results")}
         onVote={() => navigate("/vote")}
         onBuy={() => navigate("/buy")}

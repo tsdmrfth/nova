@@ -18,6 +18,8 @@ export type HudModel = {
   freeInfluence: number;
   extraInfluence: number;
   spendAmount: number;
+  extraSpendAmount: number;
+  spendCapHint: string;
   usdcLabel: string;
   rankTitle: string;
   rankXp: { current: number; next: number };
@@ -40,6 +42,7 @@ export type HudModel = {
 export type HudCallbacks = {
   onSelect(id: ChoiceId): void;
   onSpend(amount: number): void;
+  onExtraSpend(amount: number): void;
   onCast(): void;
   onBuyFreePlus(): void;
   onBuyExtraPlus(): void;
@@ -82,6 +85,8 @@ export function buildHudModel(
     freeInfluence: state.freeInfluence,
     extraInfluence: state.extraInfluence,
     spendAmount: state.spendAmount,
+    extraSpendAmount: state.extraSpendAmount,
+    spendCapHint: BUY_COPY.capHint,
     ...RANK_CHROME,
     heroTitle: state.roundTitle,
     heroSub: `Day goal ${state.goal}`,

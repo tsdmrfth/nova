@@ -12,6 +12,7 @@ import {
   FillGradient,
   Graphics,
   Sprite,
+  Texture,
   type Application,
 } from "pixi.js";
 import type { ScenePhase } from "./sceneTypes";
@@ -372,6 +373,41 @@ function layerSpecs(pack: DayScenePack): Array<{
   ];
 }
 
+function coverSprite(sprite: Sprite, width: number, height: number): void {
+  const texW = sprite.texture.width || 1;
+  const texH = sprite.texture.height || 1;
+  const scale = Math.max(width / texW, height / texH);
+  sprite.anchor.set(0.5);
+  sprite.scale.set(scale);
+  sprite.position.set(width / 2, height / 2);
+}
+
+/** Soft right-edge fade so an opaque pose plate blends into the city. */
+function novaFadeTexture(): Texture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return Texture.WHITE;
+  }
+  const horizontal = ctx.createLinearGradient(0, 0, 512, 0);
+  horizontal.addColorStop(0, "rgba(255,255,255,1)");
+  horizontal.addColorStop(0.46, "rgba(255,255,255,1)");
+  horizontal.addColorStop(0.84, "rgba(255,255,255,0)");
+  ctx.fillStyle = horizontal;
+  ctx.fillRect(0, 0, 512, 512);
+  const vertical = ctx.createLinearGradient(0, 0, 0, 512);
+  vertical.addColorStop(0, "rgba(255,255,255,0)");
+  vertical.addColorStop(0.08, "rgba(255,255,255,1)");
+  vertical.addColorStop(0.92, "rgba(255,255,255,1)");
+  vertical.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.globalCompositeOperation = "destination-in";
+  ctx.fillStyle = vertical;
+  ctx.fillRect(0, 0, 512, 512);
+  return Texture.from(canvas);
+}
+
 async function trySprite(id: string): Promise<Sprite | null> {
   if (!assertCanon(id)) {
     return null;
@@ -392,6 +428,7 @@ async function trySprite(id: string): Promise<Sprite | null> {
 export async function mountHomeWorld(
   app: Application,
   pack: DayScenePack,
+  novaId = pack.nova.spriteId ?? "nova_idle_stand_3q",
 ): Promise<HomeWorldHandle> {
   collectPackIds(listPackAssetIds(pack));
 
@@ -427,14 +464,25 @@ export async function mountHomeWorld(
   const novaContainer = new Container();
   const novaGraphics = new Graphics();
   novaContainer.addChild(novaGraphics);
-  const novaId = pack.nova.spriteId ?? "nova_idle_stand_3q";
   const novaSprite = await trySprite(novaId);
+  const novaMask = new Sprite(novaFadeTexture());
+  novaMask.anchor.set(0, 0.5);
   if (novaSprite) {
-    novaSprite.anchor.set(0.5, 1);
+    novaSprite.anchor.set(0, 0.5);
     novaGraphics.visible = false;
     novaContainer.addChild(novaSprite);
+    novaContainer.addChild(novaMask);
+    novaContainer.mask = novaMask;
   }
   root.addChild(novaContainer);
+
+  let masterSprite: Sprite | null = null;
+  if (pack.masterPlate) {
+    masterSprite = await trySprite(pack.masterPlate);
+    if (masterSprite) {
+      root.addChildAt(masterSprite, layers.length);
+    }
+  }
 
   const dust = new Container();
   const dustRng = mulberry32(0x51a7e);
@@ -489,31 +537,46 @@ export async function mountHomeWorld(
     viewH = height;
     for (const layer of layers) {
       if (layer.sprite) {
-        layer.sprite.width = width;
-        layer.sprite.height = height;
+        coverSprite(layer.sprite, width, height);
         layer.graphics.visible = false;
-      } else {
+        layer.sprite.visible = !masterSprite;
+      } else if (!masterSprite) {
         layer.graphics.visible = true;
         layer.graphics.clear();
         layer.recipe(layer.graphics, width, height);
+      } else {
+        layer.graphics.visible = false;
       }
+    }
+    if (masterSprite) {
+      coverSprite(masterSprite, width, height);
     }
 
     const portrait = height > width * 1.08;
-    const novaScale = portrait
-      ? Math.min(width * 0.9, height * 0.42)
-      : Math.min(width * 0.42, height * 0.72);
-    novaContainer.position.set(
-      portrait ? width * 0.5 : width * 0.27,
-      portrait ? height * 0.46 : height * 0.835,
-    );
-    if (novaSprite) {
+    const novaH = portrait ? height * 0.62 : height * 0.78;
+    novaContainer.position.set(0, 0);
+    novaContainer.scale.set(1);
+    if (novaSprite?.texture?.width) {
       novaGraphics.visible = false;
-      novaSprite.height = novaScale;
-      novaSprite.scale.x = novaSprite.scale.y;
+      const scale = novaH / novaSprite.texture.height;
+      novaSprite.scale.set(scale);
+      novaSprite.position.set(
+        portrait ? -width * 0.06 : width * 0.04,
+        portrait ? height * 0.46 : height * 0.58,
+      );
+      novaMask.width = novaSprite.texture.width * scale;
+      novaMask.height = novaSprite.texture.height * scale;
+      novaMask.position.copyFrom(novaSprite.position);
     } else {
+      const novaScale = portrait
+        ? Math.min(width * 0.9, height * 0.42)
+        : Math.min(width * 0.42, height * 0.72);
       novaGraphics.visible = true;
       novaGraphics.clear();
+      novaGraphics.position.set(
+        portrait ? width * 0.22 : width * 0.2,
+        portrait ? height * 0.5 : height * 0.72,
+      );
       drawNovaRobot(novaGraphics, novaScale, novaScale);
     }
     if (!reducedMotion) {

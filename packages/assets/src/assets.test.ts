@@ -81,11 +81,23 @@ describe("day packs", () => {
 
 describe("buy pack plates", () => {
   it("exposes Spark and Pulse as buy-screen canon ids", () => {
-    expect(getAssetUrl("pack_spark")).toBeTruthy();
-    expect(getAssetUrl("pack_pulse")).toBeTruthy();
+    expect(getAssetUrl("buy_pack_spark")).toBeTruthy();
+    expect(getAssetUrl("buy_pack_pulse")).toBeTruthy();
+    expect(getAsset("buy_pack_spark")?.path).toMatch(/buy-pack-spark\.png$/);
+    expect(getAsset("buy_pack_pulse")?.path).toMatch(/buy-pack-pulse\.png$/);
     expect(getAsset("pack_spark")?.screens).toContain("buy");
     expect(getAsset("pack_pulse")?.screens).toContain("buy");
     expect(getAsset("pack_spark")?.path).not.toMatch(/drafts/);
+  });
+
+  it("serves working-set plates and nova poses from canon", () => {
+    expect(getAsset("scene_home_sunset_city")?.path).toMatch(/textless\.png$/);
+    expect(getAsset("nova_idle_stand_3q")?.path).toMatch(/\.png$/);
+    expect(getAssetUrl("nova_wave")).toBeTruthy();
+    expect(getAssetUrl("nova_cheer")).toBeTruthy();
+    expect(getAssetUrl("nova_soft_sad")).toBeTruthy();
+    expect(getAsset("icon_usdc")?.path).toMatch(/icon-usdc\.svg$/);
+    expect(getAsset("tile_stabilize")?.path).toMatch(/tile-stabilize\.png$/);
   });
 });
 

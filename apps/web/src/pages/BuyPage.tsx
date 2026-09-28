@@ -11,6 +11,7 @@ import { DEFAULT_PACK_ID, buildBuyModel } from "../buy/buyModel";
 import { useDayStore } from "../day/useDayStore";
 import { usePrefersReducedMotion } from "../hud/usePrefersReducedMotion";
 import { HomeSceneHost } from "../scene/HomeSceneHost";
+import { novaPoseId } from "../scene/novaPose";
 
 export function BuyPage() {
   const { state, buy } = useDayStore();
@@ -41,6 +42,7 @@ export function BuyPage() {
     <section className="home-screen home-screen--buy">
       <HomeSceneHost
         pack={pack}
+        novaId={novaPoseId("buy")}
         selected={state.selected}
         phase={state.status === "cast" ? "pending" : "idle"}
         reducedMotion={reducedMotion}

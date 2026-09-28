@@ -1,10 +1,12 @@
 import { getAssetUrl } from "@nova/assets";
 import type { ChoiceId } from "@nova/assets";
 import {
+  CastInfluenceIcon,
   DayIcon,
   ExtraInfluenceIcon,
   FreeInfluenceIcon,
   GoalIcon,
+  PlusIcon,
   RankIcon,
   ShieldIcon,
   UsdcIcon,
@@ -19,6 +21,7 @@ type HomeHudProps = Pick<
   model: HudModel;
   selected: ChoiceId | null;
   onConfirm?(): void;
+  onExtraSpend?(amount: number): void;
 };
 
 function padDay(day: number): string {
@@ -30,6 +33,7 @@ export function HomeHud({
   selected,
   onSelect,
   onSpend,
+  onExtraSpend,
   onCast,
   onUsdcChip,
   onBuyExtraPlus,
@@ -97,7 +101,7 @@ export function HomeHud({
               aria-label="Buy Extra Influence"
               onClick={onBuyExtraPlus}
             >
-              +
+              <PlusIcon className="hud-chip-plus-icon" />
             </button>
           </div>
           <button
@@ -199,37 +203,76 @@ export function HomeHud({
         </div>
 
         <div className="cast-panel">
-          <div className="spend-control" data-testid="spend-free">
-            <span className="spend-label">Free to cast</span>
-            <div className="spend-stepper">
-              <button
-                type="button"
-                className="spend-button"
-                data-testid="spend-decrease"
-                aria-label="Decrease Free Influence"
-                disabled={spendLocked || model.spendAmount <= 1}
-                onClick={() => onSpend(model.spendAmount - 1)}
-              >
-                −
-              </button>
-              <span
-                className="spend-value"
-                data-testid="spend-amount"
-                aria-live="polite"
-              >
-                {model.spendAmount}
-              </span>
-              <button
-                type="button"
-                className="spend-button"
-                data-testid="spend-increase"
-                aria-label="Increase Free Influence"
-                disabled={spendLocked || model.spendAmount >= model.freeInfluence}
-                onClick={() => onSpend(model.spendAmount + 1)}
-              >
-                +
-              </button>
+          <div className="spend-lanes" data-testid="spend-split">
+            <div className="spend-control" data-testid="spend-free">
+              <span className="spend-label">Free to cast</span>
+              <div className="spend-stepper">
+                <button
+                  type="button"
+                  className="spend-button"
+                  data-testid="spend-decrease"
+                  aria-label="Decrease Free Influence"
+                  disabled={spendLocked || model.spendAmount <= 0}
+                  onClick={() => onSpend(model.spendAmount - 1)}
+                >
+                  −
+                </button>
+                <span
+                  className="spend-value"
+                  data-testid="spend-amount"
+                  aria-live="polite"
+                >
+                  {model.spendAmount}
+                </span>
+                <button
+                  type="button"
+                  className="spend-button"
+                  data-testid="spend-increase"
+                  aria-label="Increase Free Influence"
+                  disabled={spendLocked || model.spendAmount >= model.freeInfluence}
+                  onClick={() => onSpend(model.spendAmount + 1)}
+                >
+                  +
+                </button>
+              </div>
             </div>
+            <div className="spend-control" data-testid="spend-extra">
+              <span className="spend-label">Extra to cast</span>
+              <div className="spend-stepper">
+                <button
+                  type="button"
+                  className="spend-button"
+                  data-testid="spend-extra-decrease"
+                  aria-label="Decrease Extra Influence"
+                  disabled={spendLocked || model.extraSpendAmount <= 0}
+                  onClick={() => onExtraSpend?.(model.extraSpendAmount - 1)}
+                >
+                  −
+                </button>
+                <span
+                  className="spend-value"
+                  data-testid="spend-extra-amount"
+                  aria-live="polite"
+                >
+                  {model.extraSpendAmount}
+                </span>
+                <button
+                  type="button"
+                  className="spend-button"
+                  data-testid="spend-extra-increase"
+                  aria-label="Increase Extra Influence"
+                  disabled={
+                    spendLocked || model.extraSpendAmount >= model.extraInfluence
+                  }
+                  onClick={() => onExtraSpend?.(model.extraSpendAmount + 1)}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <p className="spend-cap" data-testid="spend-cap">
+              {model.spendCapHint}
+            </p>
           </div>
 
           <button
@@ -241,6 +284,7 @@ export function HomeHud({
             aria-describedby="cast-preview-hint"
             onClick={onCast}
           >
+            <CastInfluenceIcon className="cast-button-icon" />
             Cast Influence
             <span aria-hidden="true">›</span>
           </button>

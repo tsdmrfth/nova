@@ -60,9 +60,11 @@
 }
 
 .hud-chip-icon svg,
+.hud-chip-icon img,
 .hud-usdc-mark {
   width: 16px;
   height: 16px;
+  display: block;
 }
 
 .hud-chip-icon--glow {
@@ -328,6 +330,19 @@
   gap: var(--space-3);
 }
 
+.spend-lanes {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.spend-cap {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-label);
+  line-height: 16px;
+  text-align: center;
+}
+
 .spend-control {
   display: flex;
   align-items: center;
@@ -437,6 +452,17 @@
   cursor: default;
   opacity: 0.45;
   box-shadow: none;
+}
+
+.cast-button-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.hud-chip-plus-icon {
+  width: 14px;
+  height: 14px;
+  display: block;
 }
 
 .cast-button span {

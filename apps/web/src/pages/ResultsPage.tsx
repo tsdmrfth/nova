@@ -8,6 +8,7 @@ import {
 import { useDayStore } from "../day/useDayStore";
 import { usePrefersReducedMotion } from "../hud/usePrefersReducedMotion";
 import { HomeSceneHost } from "../scene/HomeSceneHost";
+import { novaPoseId } from "../scene/novaPose";
 import { ResultsHud } from "../results/ResultsHud";
 import { buildResultsModel } from "../results/resultsModel";
 import { settleOffline, snapshotFromSettle } from "../results/settleMock";
@@ -41,6 +42,14 @@ export function ResultsPage() {
     <section className="home-screen home-screen--results">
       <HomeSceneHost
         pack={pack}
+        novaId={novaPoseId(
+          "results",
+          state.status !== "cast"
+            ? "idle"
+            : model.correct
+              ? "correct"
+              : "miss",
+        )}
         selected={state.selected}
         phase={
           state.status !== "cast"

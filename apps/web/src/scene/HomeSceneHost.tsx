@@ -15,6 +15,7 @@ export type { SceneStageHandle, SceneStageProps } from "./sceneTypes";
 export const HomeSceneHost = forwardRef(function HomeSceneHost(
   {
     pack,
+    novaId,
     selected,
     phase,
     reducedMotion,
@@ -134,7 +135,11 @@ export const HomeSceneHost = forwardRef(function HomeSceneHost(
 
         instance.stage.eventMode = "none";
         instance.stage.interactiveChildren = false;
-        const world = await mountHomeWorld(instance, pack);
+        const world = await mountHomeWorld(
+          instance,
+          pack,
+          novaId ?? pack.nova.spriteId ?? "nova_idle_stand_3q",
+        );
         if (stale()) {
           world.destroy();
           teardown();
@@ -197,7 +202,7 @@ export const HomeSceneHost = forwardRef(function HomeSceneHost(
       mountGenRef.current += 1;
       teardown();
     };
-  }, [pack, dpr, onReady]);
+  }, [pack, novaId, dpr, onReady]);
 
   return (
     <div
