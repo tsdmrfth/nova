@@ -73,13 +73,15 @@
 .page-jump summary {
   list-style: none;
   cursor: pointer;
-  padding: 0.38rem 0.8rem;
+  min-height: 40px;
+  padding: 0.45rem 0.9rem;
   color: var(--color-text);
-  background: var(--color-navy-glass);
-  border: 1px solid var(--color-stroke);
-  border-radius: 999px;
-  box-shadow: 0 0 18px color-mix(in srgb, var(--color-glow) 18%, transparent);
-  backdrop-filter: blur(16px);
+  background: var(--color-surface-chip);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--elevation-glass);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;

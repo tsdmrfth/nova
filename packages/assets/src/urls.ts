@@ -8,6 +8,10 @@ export const canonAssetUrls = {
     "../canon/scene/scene-home-sunset-city.png",
     import.meta.url,
   ).href,
+  scene_home_bg_city_nova: new URL(
+    "../canon/scene/home-bg-city-nova.png",
+    import.meta.url,
+  ).href,
   layer_sky_sunset: new URL(
     "../canon/scene/layer-sky-sunset.png",
     import.meta.url,

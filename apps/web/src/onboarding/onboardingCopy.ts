@@ -25,6 +25,7 @@ export const ONBOARDING_COPY = {
   grantTitle: "+10 Free Influence",
   grantBody: "Yours for today. Unused Free burns when the day ends.",
   grantFirstDay: "Use it on today's three choices. You can skip Extra.",
+  tutorialKicker: "First light",
   tutorialTitle: "How today works",
   tutorialSteps: [
     "Goal of the day: MOST, LEAST, or MIDDLE — match the crowd's Influence.",

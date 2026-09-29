@@ -1,11 +1,17 @@
 :root {
   --color-bg: #0B1220;
-  --color-surface: rgba(10, 22, 44, 0.72);
-  --color-border: #1E3A5F;
+  --color-surface: rgba(14, 23, 43, 0.72);
+  --color-surface-chip: rgba(38, 42, 53, 0.78);
+  --color-surface-dense: rgba(14, 23, 43, 0.88);
+  --color-border: #25395C;
+  --color-border-soft: rgba(59, 142, 240, 0.35);
   --color-text: #FFFFFF;
-  --color-text-muted: #A8B3C7;
+  --color-text-muted: #A2A4A8;
   --color-accent: #2775CA;
   --color-accent-glow: #3B8EF0;
+  --color-accent-cta: #477FD6;
+  --color-link: #528CE9;
+  --color-scrim: rgba(5, 10, 20, 0.45);
   --color-world-gold: #F0B45A;
 
   --color-navy: #0A162C;
@@ -42,7 +48,13 @@
   --text-mono: 11px;
 
   --hud-column: 430px;
-  --elevation-cta: 0 0 24px rgba(59, 142, 240, 0.25);
+  --elevation-cta:
+    0 0 24px rgba(59, 142, 240, 0.45),
+    0 0 48px rgba(39, 117, 202, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  --elevation-glass:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 32px rgba(0, 0, 0, 0.35);
 
   --motion-fast: 120ms;
   --motion-base: 200ms;

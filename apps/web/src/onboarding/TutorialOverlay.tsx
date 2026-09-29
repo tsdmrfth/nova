@@ -15,7 +15,7 @@ export function TutorialOverlay({ onGotIt, onSkip }: TutorialOverlayProps) {
         aria-modal="true"
         aria-labelledby="tutorial-title"
       >
-        <p className="oboard-kicker">Day 1</p>
+        <p className="oboard-kicker">{ONBOARDING_COPY.tutorialKicker}</p>
         <h1 className="oboard-title" id="tutorial-title">
           {ONBOARDING_COPY.tutorialTitle}
         </h1>

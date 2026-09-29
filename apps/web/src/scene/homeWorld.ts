@@ -373,12 +373,23 @@ function layerSpecs(pack: DayScenePack): Array<{
   ];
 }
 
-function coverSprite(sprite: Sprite, width: number, height: number): void {
+function coverSprite(
+  sprite: Sprite,
+  width: number,
+  height: number,
+  bias: "center" | "left" = "center",
+): void {
   const texW = sprite.texture.width || 1;
   const texH = sprite.texture.height || 1;
   const scale = Math.max(width / texW, height / texH);
-  sprite.anchor.set(0.5);
   sprite.scale.set(scale);
+  const drawnW = texW * scale;
+  if (bias === "left" && drawnW > width) {
+    sprite.anchor.set(0, 0.5);
+    sprite.position.set(0, height / 2);
+    return;
+  }
+  sprite.anchor.set(0.5);
   sprite.position.set(width / 2, height / 2);
 }
 
@@ -429,6 +440,7 @@ export async function mountHomeWorld(
   app: Application,
   pack: DayScenePack,
   novaId = pack.nova.spriteId ?? "nova_idle_stand_3q",
+  plateId?: string,
 ): Promise<HomeWorldHandle> {
   collectPackIds(listPackAssetIds(pack));
 
@@ -484,6 +496,14 @@ export async function mountHomeWorld(
     }
   }
 
+  let composite: Sprite | null = null;
+  if (plateId) {
+    composite = await trySprite(plateId);
+    if (composite) {
+      root.addChildAt(composite, 0);
+    }
+  }
+
   const dust = new Container();
   const dustRng = mulberry32(0x51a7e);
   const motes = Array.from({ length: 18 }, () => {
@@ -536,6 +556,13 @@ export async function mountHomeWorld(
     viewW = width;
     viewH = height;
     for (const layer of layers) {
+      if (composite) {
+        if (layer.sprite) {
+          layer.sprite.visible = false;
+        }
+        layer.graphics.visible = false;
+        continue;
+      }
       if (layer.sprite) {
         coverSprite(layer.sprite, width, height);
         layer.graphics.visible = false;
@@ -548,8 +575,18 @@ export async function mountHomeWorld(
         layer.graphics.visible = false;
       }
     }
-    if (masterSprite) {
+    if (composite) {
+      coverSprite(composite, width, height, "left");
+      if (masterSprite) {
+        masterSprite.visible = false;
+      }
+      novaContainer.visible = false;
+    } else if (masterSprite) {
+      masterSprite.visible = true;
       coverSprite(masterSprite, width, height);
+      novaContainer.visible = true;
+    } else {
+      novaContainer.visible = true;
     }
 
     const portrait = height > width * 1.08;

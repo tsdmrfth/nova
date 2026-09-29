@@ -62,6 +62,7 @@ export function CastPage({ screen }: { screen: "home" | "vote" }) {
       <HomeSceneHost
         pack={pack}
         novaId={pose}
+        plateId={screen === "home" ? "scene_home_bg_city_nova" : undefined}
         selected={state.selected}
         phase={state.status === "cast" ? "pending" : "choosing"}
         reducedMotion={reducedMotion}

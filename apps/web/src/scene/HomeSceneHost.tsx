@@ -16,6 +16,7 @@ export const HomeSceneHost = forwardRef(function HomeSceneHost(
   {
     pack,
     novaId,
+    plateId,
     selected,
     phase,
     reducedMotion,
@@ -139,6 +140,7 @@ export const HomeSceneHost = forwardRef(function HomeSceneHost(
           instance,
           pack,
           novaId ?? pack.nova.spriteId ?? "nova_idle_stand_3q",
+          plateId,
         );
         if (stale()) {
           world.destroy();
@@ -202,7 +204,7 @@ export const HomeSceneHost = forwardRef(function HomeSceneHost(
       mountGenRef.current += 1;
       teardown();
     };
-  }, [pack, novaId, dpr, onReady]);
+  }, [pack, novaId, plateId, dpr, onReady]);
 
   return (
     <div

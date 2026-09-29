@@ -112,6 +112,15 @@ describe("buy pack plates", () => {
     expect(getAsset("scene_home_sunset_city")?.license).toBe(
       "internal-working-set",
     );
+    expect(getAsset("scene_home_bg_city_nova")?.path).toBe(
+      "scene/home-bg-city-nova.png",
+    );
+    expect(getAsset("scene_home_bg_city_nova")?.sha256).toBe(
+      "555def6ebd39ba32cc13a4e625b40306710e6f285ff20b00384b0e42f05f4fea",
+    );
+    expect(getAsset("scene_home_bg_city_nova")?.license).toBe(
+      "internal-working-set",
+    );
   });
 });
 
