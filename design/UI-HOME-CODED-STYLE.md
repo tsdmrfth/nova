@@ -284,9 +284,11 @@ User directive (2026-09-29): city + Nova from the Home screen may ship as **one 
 
 | File | Size | Use |
 |------|------|-----|
-| `design/reference/scene/home-bg-city-nova.png` | 1920×1080 | **Primary** underlay (landscape / cover-crop) |
-| `design/reference/rebuild/home-bg-city-nova-landscape.png` | 1920×1080 | Same bytes alias for rebuild pack |
+| `design/reference/scene/home-bg-city-nova.png` | 1920×1080 | **Primary** underlay — **FINAL-HOME** white archipelago + Nova idle (not dark megacity) |
+| `design/reference/rebuild/home-bg-city-nova-landscape.png` | 1672×941 | Rebuild copy of the stripped FINAL-HOME strip (same bytes as `home-bg-from-final-home.png`, not the 1920 runtime plate) |
 | `design/reference/rebuild/home-bg-city-nova-portrait.png` | 780×1688 | Portrait cover crop (~9:16) for mobile targets |
+| `design/reference/rebuild/home-bg-from-final-home.png` | 1672×941 | Stripped FINAL-HOME look-lock — **do not** ship as runtime BG |
+| `design/reference/rebuild/home-bg-city-nova-PREV-dark-megacity.png` | 1920×1080 | Rejected dark megacity archive — **do not** use as runtime |
 | `design/reference/rebuild/eng-home-coded.png` | 3840×2222 | Coded HUD reference only — **do not** ship as runtime BG |
 
 **Canon commit (Eng):**
@@ -300,7 +302,7 @@ User directive (2026-09-29): city + Nova from the Home screen may ship as **one 
 2. Optional advanced: parallax layers + separate Nova sprites from WORKING-SET (idle/wave/cheer/soft_sad) — still valid per BIND §9.  
 3. Do **not** use `eng-home-coded.png` as the plate (HUD baked in).
 
-**Pose on plate:** Nova wave (friendly raised hand), blue chest core, pixel visor, sunset city, metal platform — matches coded Home mood.
+**Pose on plate:** Nova idle (standing, arms at sides), blue chest core, pixel visor, white archipelago, metal platform — matches FINAL-HOME. Not the rejected dark megacity.
 
 ---
 

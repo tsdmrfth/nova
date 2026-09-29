@@ -116,7 +116,7 @@ describe("buy pack plates", () => {
       "scene/home-bg-city-nova.png",
     );
     expect(getAsset("scene_home_bg_city_nova")?.sha256).toBe(
-      "555def6ebd39ba32cc13a4e625b40306710e6f285ff20b00384b0e42f05f4fea",
+      "09e0620bc5751e2791aa176362d6459d9610fc22813312b0c548018a7ef43281",
     );
     expect(getAsset("scene_home_bg_city_nova")?.license).toBe(
       "internal-working-set",

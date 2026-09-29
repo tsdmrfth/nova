@@ -281,6 +281,8 @@ Per `eng/P1.5-GRANT-DEMO-SPEC.md` G-05:
 
 User: city + Nova may be **one** background image; HUD stays DOM.
 
+**2026-09-29 refresh:** Plate replaced to match **FINAL-HOME** white archipelago + Nova idle (user rejected prior dark megacity gen). Source look-lock: `FINAL-HOME.png` / `rebuild/home-bg-from-final-home.png`.
+
 | Manifest id | FROM (Design) | TO (repo) | Notes |
 |-------------|---------------|-----------|-------|
 | `scene_home_bg_city_nova` | `design/reference/scene/home-bg-city-nova.png` (1920×1080) | `packages/assets/canon/scene/home-bg-city-nova.png` | Primary underlay; cover-crop |
@@ -289,8 +291,8 @@ User: city + Nova may be **one** background image; HUD stays DOM.
 **SHA-256**
 | File | sha256 |
 |------|--------|
-| `scene/home-bg-city-nova.png` | `555def6ebd39ba32cc13a4e625b40306710e6f285ff20b00384b0e42f05f4fea` |
-| `rebuild/home-bg-city-nova-portrait.png` | `813cc2cd6b0fdf73ce15bddd081cfdcfa46d4db758abfd51b6d3a531f899972c` |
+| `scene/home-bg-city-nova.png` | `09e0620bc5751e2791aa176362d6459d9610fc22813312b0c548018a7ef43281` |
+| `rebuild/home-bg-city-nova-portrait.png` | `00da3ad3b82d63fe8b818e1857cdab7deceaca678ef72a2d269dc40b1d5c78f5` |
 
 **Runtime:** Prefer this composite for Home fast path. Layered parallax + separate Nova sprites (§9.1) remain valid. Never use `eng-home-coded.png` as runtime plate (HUD baked in).
 
