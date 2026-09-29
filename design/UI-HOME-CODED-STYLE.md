@@ -21,7 +21,7 @@ Floating **navy glassmorphism HUD** (translucent deep navy + thin luminous blue 
 
 | Z (back → front) | Layer | Implementation |
 |------------------|-------|----------------|
-| 0 | App underlay | `#0B1220` solid (letterbox / load) |
+| 0 | App underlay | `#081329` solid (letterbox / load · sampled) |
 | 1 | **Background plate** | Single PNG: city + Nova (+ platform). See §11. Pixi sprite cover-crop OR CSS `background-size: cover` |
 | 2 | Optional readability scrim | Very soft vertical vignette / bottom darken only if copy fails WCAG — max ~12% black, never cream wash |
 | 3 | Floating HUD chips + MENU | DOM glass pills |

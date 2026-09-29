@@ -27,7 +27,8 @@ describe("client bind contract", () => {
     ].join("\n");
     expect(css).toContain("#2775CA");
     expect(css).toContain("#3B8EF0");
-    expect(css).toContain("#0B1220");
+    expect(css).toContain("#081329");
+    expect(css).toContain("#4880D6");
     expect(css).toContain("--color-world-gold");
     expect(css).toContain("Fraunces");
     expect(css).toContain("DM Sans");

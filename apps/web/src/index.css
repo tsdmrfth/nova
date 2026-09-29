@@ -1,5 +1,5 @@
 :root {
-  --color-bg: #0B1220;
+  --color-bg: #081329;
   --color-surface: rgba(14, 23, 43, 0.72);
   --color-surface-chip: rgba(38, 42, 53, 0.78);
   --color-surface-dense: rgba(14, 23, 43, 0.88);
@@ -9,7 +9,7 @@
   --color-text-muted: #A2A4A8;
   --color-accent: #2775CA;
   --color-accent-glow: #3B8EF0;
-  --color-accent-cta: #477FD6;
+  --color-accent-cta: #4880D6;
   --color-link: #528CE9;
   --color-scrim: rgba(5, 10, 20, 0.45);
   --color-world-gold: #F0B45A;
