@@ -43,7 +43,9 @@ describe("client bind contract", () => {
     const hud = readFileSync("apps/web/src/hud/HomeHud.css", "utf8");
     expect(css).toMatch(/max-width: 900px/);
     expect(css).toMatch(/overflow-y:\s*auto/);
-    expect(hud).toMatch(/grid-template-rows:\s*auto auto auto auto/);
+    expect(hud).toMatch(/flex-direction:\s*column/);
+    expect(hud).toMatch(/height:\s*100dvh/);
+    expect(hud).toMatch(/overflow-y:\s*auto/);
   });
 
   it("exposes Playwright test ids on the Home HUD", () => {

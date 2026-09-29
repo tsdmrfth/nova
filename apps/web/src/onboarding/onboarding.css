@@ -207,7 +207,7 @@
 }
 
 .oboard-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 40;
   display: grid;
@@ -308,9 +308,12 @@
 }
 
 @media (max-width: 640px) {
-  .oboard-hud,
-  .oboard-overlay {
+  .oboard-hud {
     padding: 3.4rem 0.75rem 0.85rem;
+  }
+
+  .oboard-overlay {
+    padding: 0.75rem;
   }
 
   .oboard-cta {
