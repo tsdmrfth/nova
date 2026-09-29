@@ -9,7 +9,7 @@ export const canonAssetUrls = {
     import.meta.url,
   ).href,
   scene_home_bg_city_nova: new URL(
-    "../canon/scene/home-bg-city-nova.png",
+    "../canon/scene/home-bg-city-nova.webp",
     import.meta.url,
   ).href,
   layer_sky_sunset: new URL(
@@ -34,6 +34,14 @@ export const canonAssetUrls = {
     .href,
   nova_idle_stand_3q: new URL(
     "../canon/character/nova-idle-stand-3q.png",
+    import.meta.url,
+  ).href,
+  nova_idle_stand_front: new URL(
+    "../canon/character/nova-idle-stand-front.webp",
+    import.meta.url,
+  ).href,
+  nova_idle_stand_front_cutout: new URL(
+    "../canon/character/nova-idle-stand-front-cutout.webp",
     import.meta.url,
   ).href,
   nova_wave: new URL("../canon/character/nova-wave.png", import.meta.url).href,

@@ -113,10 +113,22 @@ describe("buy pack plates", () => {
       "internal-working-set",
     );
     expect(getAsset("scene_home_bg_city_nova")?.path).toBe(
-      "scene/home-bg-city-nova.png",
+      "scene/home-bg-city-nova.webp",
     );
     expect(getAsset("scene_home_bg_city_nova")?.sha256).toBe(
-      "09e0620bc5751e2791aa176362d6459d9610fc22813312b0c548018a7ef43281",
+      "1a49f4ba2ec5441c420391b59f295621fce607b94eba85d9906788a65eb42dec",
+    );
+    expect(getAsset("nova_idle_stand_front")?.path).toBe(
+      "character/nova-idle-stand-front.webp",
+    );
+    expect(getAsset("nova_idle_stand_front")?.sha256).toBe(
+      "b8b6513cb395104bcac35675d6c791e5b61876091357dae376ebdc1811e3bf34",
+    );
+    expect(getAsset("nova_idle_stand_front_cutout")?.path).toBe(
+      "character/nova-idle-stand-front-cutout.webp",
+    );
+    expect(getAsset("nova_idle_stand_front_cutout")?.sha256).toBe(
+      "2c049f71b5dd5bbe75729a73282c68a36b729eeac60e38d4144c606ffd8a9cb2",
     );
     expect(getAsset("scene_home_bg_city_nova")?.license).toBe(
       "internal-working-set",

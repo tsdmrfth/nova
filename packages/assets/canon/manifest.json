@@ -23,12 +23,12 @@
     },
     {
       "id": "scene_home_bg_city_nova",
-      "path": "scene/home-bg-city-nova.png",
+      "path": "scene/home-bg-city-nova.webp",
       "kind": "scene",
       "screens": [
         "home"
       ],
-      "sha256": "09e0620bc5751e2791aa176362d6459d9610fc22813312b0c548018a7ef43281",
+      "sha256": "1a49f4ba2ec5441c420391b59f295621fce607b94eba85d9906788a65eb42dec",
       "license": "internal-working-set",
       "artLockVersion": "2026-09-17",
       "createdAt": "2026-09-29T00:00:00.000Z",
@@ -147,6 +147,34 @@
       "license": "internal-working-set",
       "artLockVersion": "2026-09-17",
       "createdAt": "2026-09-17T00:00:00.000Z",
+      "approvedBy": "working-set",
+      "pixelRatio": 1
+    },
+    {
+      "id": "nova_idle_stand_front",
+      "path": "character/nova-idle-stand-front.webp",
+      "kind": "character",
+      "screens": [
+        "home"
+      ],
+      "sha256": "b8b6513cb395104bcac35675d6c791e5b61876091357dae376ebdc1811e3bf34",
+      "license": "internal-working-set",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-29T00:00:00.000Z",
+      "approvedBy": "working-set",
+      "pixelRatio": 1
+    },
+    {
+      "id": "nova_idle_stand_front_cutout",
+      "path": "character/nova-idle-stand-front-cutout.webp",
+      "kind": "character",
+      "screens": [
+        "home"
+      ],
+      "sha256": "2c049f71b5dd5bbe75729a73282c68a36b729eeac60e38d4144c606ffd8a9cb2",
+      "license": "internal-working-set",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-09-29T00:00:00.000Z",
       "approvedBy": "working-set",
       "pixelRatio": 1
     },
@@ -391,7 +419,7 @@
         },
         {
           "alias": "scene_home_bg_city_nova",
-          "src": "scene/home-bg-city-nova.png"
+          "src": "scene/home-bg-city-nova.webp"
         },
         {
           "alias": "layer_sky_sunset",

@@ -72,6 +72,7 @@ Paths relative to `design/reference/` unless noted. Manifest ids = Design snake_
 | Manifest id | File | Screens |
 |-------------|------|---------|
 | `nova_idle_stand_3q` | `nova-idle-stand-3q.png` | Home · Connect · Confirm |
+| `nova_idle_stand_front` | `nova-idle-stand-front.webp` (+ `.png`) | Layered / sprite alt · user drop 2026-09-29 |
 | `nova_wave` | `nova-wave.png` | Vote · Onboarding |
 | `nova_cheer` | `nova-cheer.png` | Results correct |
 | `nova_soft_sad` | `nova-soft-sad.png` | Results miss |
@@ -281,22 +282,29 @@ Per `eng/P1.5-GRANT-DEMO-SPEC.md` G-05:
 
 User: city + Nova may be **one** background image; HUD stays DOM.
 
-**2026-09-29 refresh:** Plate replaced to match **FINAL-HOME** white archipelago + Nova idle (user rejected prior dark megacity gen). Source look-lock: `FINAL-HOME.png` / `rebuild/home-bg-from-final-home.png`.
+**2026-09-29 user drop (final plate):** User-supplied HUD-less white archipelago + Nova idle (left). Converted to **WebP** for design/runtime; PNG masters kept for remanifest parity. Prior interim gen archived as `rebuild/home-bg-city-nova-PREV-interim-09e0620.png`.
 
 | Manifest id | FROM (Design) | TO (repo) | Notes |
 |-------------|---------------|-----------|-------|
-| `scene_home_bg_city_nova` | `design/reference/scene/home-bg-city-nova.png` (1920×1080) | `packages/assets/canon/scene/home-bg-city-nova.png` | Primary underlay; cover-crop |
-| *(portrait target only)* | `design/reference/rebuild/home-bg-city-nova-portrait.png` (780×1688) | optional `scene/home-bg-city-nova-portrait.png` | Mobile art target; or cover-crop landscape |
+| `scene_home_bg_city_nova` | `design/reference/scene/home-bg-city-nova.webp` (1672×941) · PNG master same stem | `packages/assets/canon/scene/home-bg-city-nova.webp` (or `.png`) | **Primary** underlay; cover-crop |
+| *(portrait target only)* | `design/reference/rebuild/home-bg-city-nova-portrait.webp` (780×1688) | optional portrait stem | Mobile art target; or cover-crop landscape |
+| `nova_idle_stand_front` | `design/reference/nova-idle-stand-front.webp` (1024×1536 RGBA) | `packages/assets/canon/character/nova-idle-stand-front.webp` | User front Nova on black; layered / sprite |
+| `nova_idle_stand_front_cutout` | `design/reference/nova-idle-stand-front-cutout.webp` | same under `character/` | Near-black → alpha helper for Pixi |
 
 **SHA-256**
 | File | sha256 |
 |------|--------|
-| `scene/home-bg-city-nova.png` | `09e0620bc5751e2791aa176362d6459d9610fc22813312b0c548018a7ef43281` |
-| `rebuild/home-bg-city-nova-portrait.png` | `00da3ad3b82d63fe8b818e1857cdab7deceaca678ef72a2d269dc40b1d5c78f5` |
+| `scene/home-bg-city-nova.webp` | `1a49f4ba2ec5441c420391b59f295621fce607b94eba85d9906788a65eb42dec` |
+| `scene/home-bg-city-nova.png` | `4359ce21cf7b5ecb9206c4891bb46fdf047f20443605a805857680a803432b40` |
+| `rebuild/home-bg-city-nova-portrait.webp` | `c2e8c56f278c08913f1da7f1a2deee3f2f596d04441baae8973a7364653e9c11` |
+| `rebuild/home-bg-city-nova-portrait.png` | `396db67f650e7afcebb286c45b7293a3b4d2ad256b80338ec0d0cd6e10f48bbf` |
+| `nova-idle-stand-front.webp` | `b8b6513cb395104bcac35675d6c791e5b61876091357dae376ebdc1811e3bf34` |
+| `nova-idle-stand-front.png` | `52248d0999529c5a489f20fe1238aaa049830cb2ebb7691cc8fc9f53ac766bf9` |
+| `nova-idle-stand-front-cutout.webp` | `2c049f71b5dd5bbe75729a73282c68a36b729eeac60e38d4144c606ffd8a9cb2` |
 
-**Runtime:** Prefer this composite for Home fast path. Layered parallax + separate Nova sprites (§9.1) remain valid. Never use `eng-home-coded.png` as runtime plate (HUD baked in).
+**Runtime:** Prefer WebP composite `scene_home_bg_city_nova` for Home fast path. Do not stack `nova_idle_stand_front` on that plate (Nova is already in the image). Cutout is for a separate layered path only. §9.1 idle/wave/cheer sprites remain for other screens. Never use `eng-home-coded.png` or `FINAL-HOME.png` as a runtime plate.
 
 ---
 
-*Design · UI-REBUILD-BIND · updated 2026-09-29 (coded style + composite BG) · Istanbul*
+*Design · UI-REBUILD-BIND · updated 2026-09-29 (user WebP plate + front Nova) · Istanbul*
 

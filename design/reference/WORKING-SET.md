@@ -10,6 +10,7 @@ User saved set + Design P0 pack. Hard G1 not infinite — revise on feedback.
 ## Character
 - `nova-character-sheet.png`
 - `nova-idle-stand-3q.png`
+- `nova-idle-stand-front.webp` (+ `.png` master) · `nova-idle-stand-front-cutout.webp` (alpha)
 - `nova-wave.png` · `nova-cheer.png` · `nova-soft-sad.png`
 
 ## Scene
@@ -48,11 +49,12 @@ User saved set + Design P0 pack. Hard G1 not infinite — revise on feedback.
 ## Status
 - `P0-CHECKLIST-STATUS.md`
 
-## Home composite BG (2026-09-29)
-- `scene/home-bg-city-nova.png` — FINAL-HOME white archipelago + Nova idle, no HUD (primary underlay) · sha256 `09e0620bc5751e2791aa176362d6459d9610fc22813312b0c548018a7ef43281`
-- `rebuild/home-bg-city-nova-portrait.png` — 9:16 crop for mobile targets · sha256 `00da3ad3b82d63fe8b818e1857cdab7deceaca678ef72a2d269dc40b1d5c78f5`
-- `rebuild/home-bg-from-final-home.png` — stripped FINAL-HOME look-lock (not runtime)
+## Home composite BG (2026-09-29) — user WebP lock
+- `scene/home-bg-city-nova.webp` — **primary** underlay (user HUD-less white archipelago + Nova idle) · sha256 `1a49f4ba2ec5441c420391b59f295621fce607b94eba85d9906788a65eb42dec` · PNG master alongside
+- `rebuild/home-bg-city-nova-portrait.webp` — 9:16 crop for mobile targets · sha256 `c2e8c56f278c08913f1da7f1a2deee3f2f596d04441baae8973a7364653e9c11`
+- Character: `nova-idle-stand-front.webp` (black BG) · sha256 `b8b6513cb395104bcac35675d6c791e5b61876091357dae376ebdc1811e3bf34` · `nova-idle-stand-front-cutout.webp` · sha256 `2c049f71b5dd5bbe75729a73282c68a36b729eeac60e38d4144c606ffd8a9cb2`
 - `rebuild/home-bg-city-nova-PREV-dark-megacity.png` — rejected dark megacity archive (not runtime)
+- `rebuild/home-bg-city-nova-PREV-interim-09e0620.png` — interim plate archive (not runtime)
 - Style bible: `../UI-HOME-CODED-STYLE.md`
 - Coded HUD ref only: `rebuild/eng-home-coded.png` (do not ship as BG)
 

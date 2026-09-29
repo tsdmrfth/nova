@@ -22,7 +22,7 @@ Floating **navy glassmorphism HUD** (translucent deep navy + thin luminous blue 
 | Z (back → front) | Layer | Implementation |
 |------------------|-------|----------------|
 | 0 | App underlay | `#081329` solid (letterbox / load · sampled) |
-| 1 | **Background plate** | Single PNG: city + Nova (+ platform). See §11. Pixi sprite cover-crop OR CSS `background-size: cover` |
+| 1 | **Background plate** | Single WebP: city + Nova (+ platform). See §11. Pixi sprite cover-crop OR CSS `background-size: cover` |
 | 2 | Optional readability scrim | Very soft vertical vignette / bottom darken only if copy fails WCAG — max ~12% black, never cream wash |
 | 3 | Floating HUD chips + MENU | DOM glass pills |
 | 4 | Bottom cast chrome (stepper + Cast CTA + disclaimer) | DOM — visible when tutorial closed |
@@ -284,25 +284,29 @@ User directive (2026-09-29): city + Nova from the Home screen may ship as **one 
 
 | File | Size | Use |
 |------|------|-----|
-| `design/reference/scene/home-bg-city-nova.png` | 1920×1080 | **Primary** underlay — **FINAL-HOME** white archipelago + Nova idle (not dark megacity) |
-| `design/reference/rebuild/home-bg-city-nova-landscape.png` | 1672×941 | Rebuild copy of the stripped FINAL-HOME strip (same bytes as `home-bg-from-final-home.png`, not the 1920 runtime plate) |
-| `design/reference/rebuild/home-bg-city-nova-portrait.png` | 780×1688 | Portrait cover crop (~9:16) for mobile targets |
+| `design/reference/scene/home-bg-city-nova.webp` | 1672×941 | **Primary** underlay — user drop white archipelago + Nova idle (WebP; PNG master same stem) |
+| `design/reference/rebuild/home-bg-city-nova-portrait.webp` | 780×1688 | Portrait cover crop (~9:16) for mobile targets |
+| `design/reference/nova-idle-stand-front.webp` | 1024×1536 | Front Nova on black — layered sprite only, not stacked on the Home plate |
+| `design/reference/nova-idle-stand-front-cutout.webp` | — | Near-black → alpha helper for a separate layered path |
 | `design/reference/rebuild/home-bg-from-final-home.png` | 1672×941 | Stripped FINAL-HOME look-lock — **do not** ship as runtime BG |
 | `design/reference/rebuild/home-bg-city-nova-PREV-dark-megacity.png` | 1920×1080 | Rejected dark megacity archive — **do not** use as runtime |
+| `design/reference/rebuild/home-bg-city-nova-PREV-interim-09e0620.png` | 1920×1080 | Interim plate archive — **do not** use as runtime |
 | `design/reference/rebuild/eng-home-coded.png` | 3840×2222 | Coded HUD reference only — **do not** ship as runtime BG |
 
 **Canon commit (Eng):**
 
 | From Design | To `packages/assets/canon/` |
 |-------------|----------------------------|
-| `design/reference/scene/home-bg-city-nova.png` | `scene/home-bg-city-nova.png` (new id `scene_home_bg_city_nova`) |
+| `design/reference/scene/home-bg-city-nova.webp` | `scene/home-bg-city-nova.webp` (id `scene_home_bg_city_nova`) |
+| `design/reference/nova-idle-stand-front.webp` | `character/nova-idle-stand-front.webp` |
+| `design/reference/nova-idle-stand-front-cutout.webp` | `character/nova-idle-stand-front-cutout.webp` |
 
 **Runtime preference**
-1. Prefer single plate `scene_home_bg_city_nova` for Home underlay (fast path).  
-2. Optional advanced: parallax layers + separate Nova sprites from WORKING-SET (idle/wave/cheer/soft_sad) — still valid per BIND §9.  
-3. Do **not** use `eng-home-coded.png` as the plate (HUD baked in).
+1. Prefer WebP plate `scene_home_bg_city_nova` for Home underlay (fast path). Nova is already in the plate — do not draw `nova_idle_stand_front` on top.  
+2. Optional advanced: parallax layers + separate Nova sprites from WORKING-SET (idle/wave/cheer/soft_sad) — still valid per BIND §9. Cutout is for that layered path only.  
+3. Do **not** use `eng-home-coded.png` or `FINAL-HOME.png` as the plate (HUD baked in).
 
-**Pose on plate:** Nova idle (standing, arms at sides), blue chest core, pixel visor, white archipelago, metal platform — matches FINAL-HOME. Not the rejected dark megacity.
+**Pose on plate:** Nova idle (standing, arms at sides), blue chest core, pixel visor, white archipelago, metal platform. Not the rejected dark megacity.
 
 ---
 
