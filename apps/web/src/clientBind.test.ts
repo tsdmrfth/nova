@@ -27,7 +27,15 @@ describe("client bind contract", () => {
     ].join("\n");
     expect(css).toContain("#2775CA");
     expect(css).toContain("#3B8EF0");
-    expect(css.toLowerCase()).not.toMatch(/#f59e0b|#ffbf00|#f6ad55|#d69e2e|amber/);
+    expect(css).toContain("#081329");
+    expect(css).toContain("#4880D6");
+    expect(css).toContain("--color-world-gold");
+    expect(css).toContain("Fraunces");
+    expect(css).toContain("DM Sans");
+    expect(css).toContain("IBM Plex Mono");
+    expect(css.toLowerCase()).not.toMatch(
+      /#f7f3eb|#fff8ee|#d97706|#f59e0b|#ffbf00|#f6ad55|#d69e2e|amber/,
+    );
   });
 
   it("lets the cinema Home HUD scroll on small viewports", () => {
@@ -35,7 +43,9 @@ describe("client bind contract", () => {
     const hud = readFileSync("apps/web/src/hud/HomeHud.css", "utf8");
     expect(css).toMatch(/max-width: 900px/);
     expect(css).toMatch(/overflow-y:\s*auto/);
-    expect(hud).toMatch(/grid-template-rows:\s*auto auto auto auto/);
+    expect(hud).toMatch(/flex-direction:\s*column/);
+    expect(hud).toMatch(/height:\s*100dvh/);
+    expect(hud).toMatch(/overflow-y:\s*auto/);
   });
 
   it("exposes Playwright test ids on the Home HUD", () => {

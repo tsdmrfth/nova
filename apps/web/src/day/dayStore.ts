@@ -57,6 +57,8 @@ export type DayState = {
   lastBuy: LastBuy | null;
   selected: ChoiceId | null;
   spendAmount: number;
+  /** Extra Influence the stepper will place on the pick. Separate from Free. */
+  extraSpendAmount: number;
   casts: LocalCast[];
   status: CastStatus;
   schedule: VoteSchedule;
@@ -107,6 +109,7 @@ export function createDayState(
     lastBuy: null,
     selected: null,
     spendAmount: freeInfluence,
+    extraSpendAmount: 0,
     casts: [],
     status: "open",
     schedule: stubVoteSchedule(now),
@@ -136,12 +139,24 @@ export function setSpendAmount(state: DayState, amount: number): DayState {
   return { ...state, spendAmount: clampSpend(state.freeInfluence, amount) };
 }
 
+export function setExtraSpendAmount(state: DayState, amount: number): DayState {
+  if (state.status !== "open") {
+    return state;
+  }
+  return {
+    ...state,
+    extraSpendAmount: clampSpend(state.extraInfluence, amount),
+  };
+}
+
 export function canCast(state: DayState): boolean {
+  const placing = state.spendAmount > 0 || state.extraSpendAmount > 0;
   return (
     state.status === "open" &&
     state.selected !== null &&
-    state.spendAmount > 0 &&
-    state.spendAmount <= state.freeInfluence
+    placing &&
+    state.spendAmount <= state.freeInfluence &&
+    state.extraSpendAmount <= state.extraInfluence
   );
 }
 
@@ -172,16 +187,18 @@ export function castSelected(state: DayState): DayState {
     state.freeInfluence,
     state.spendAmount,
   );
+  const extraPlaced = Math.min(state.extraSpendAmount, state.extraInfluence);
   return {
     ...state,
     freeInfluence: remaining,
     spendAmount: remaining,
+    extraSpendAmount: extraPlaced,
     casts: [
       ...state.casts,
       {
         walletId: LOCAL_PLAYER_ID,
         optionId: state.selected,
-        extra: state.extraInfluence,
+        extra: extraPlaced,
         free: spent,
       },
     ],
@@ -209,6 +226,10 @@ export function buyPack(state: DayState, packId: PackId): DayState {
   const next: DayState = {
     ...state,
     extraInfluence: state.extraInfluence + attempt.extraInfluence,
+    extraSpendAmount:
+      state.status === "open"
+        ? state.extraInfluence + attempt.extraInfluence
+        : state.extraSpendAmount,
     spentTodayMicro: attempt.spentAfter,
     packsBought: [...state.packsBought, packId],
     lastBuy: {

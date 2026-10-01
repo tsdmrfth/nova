@@ -17,7 +17,7 @@
 .buy-panel {
   display: grid;
   gap: 1.1rem;
-  width: min(52rem, 100%);
+  width: min(var(--hud-column), 100%);
 }
 
 .buy-hero {
@@ -251,7 +251,7 @@
   width: min(28rem, 100%);
   padding: 0.95rem 2rem;
   color: #fff;
-  background: linear-gradient(180deg, #3b8ef0, var(--color-accent));
+  background: var(--color-accent-cta);
   border: 0;
   border-radius: 999px;
   box-shadow:
@@ -266,9 +266,14 @@
 
 .buy-cta:hover,
 .buy-cta:focus-visible {
+  background: var(--color-accent-glow);
   box-shadow:
     0 0 0 1px #fff,
     0 10px 36px color-mix(in srgb, var(--color-glow) 70%, transparent);
+}
+
+.buy-cta:active {
+  background: var(--color-accent);
 }
 
 .buy-cta:disabled {
@@ -327,13 +332,8 @@
 }
 
 @media (max-width: 900px) {
-  .buy-balances,
-  .buy-packs {
-    grid-template-columns: 1fr;
-  }
-
   .buy-pack-art {
-    height: 8rem;
+    height: 7.5rem;
   }
 
   .buy-cta {

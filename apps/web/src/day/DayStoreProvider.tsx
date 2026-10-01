@@ -8,6 +8,7 @@ import {
   claimPayout,
   createDayState,
   selectChoice,
+  setExtraSpendAmount,
   setSpendAmount,
   type ClaimSnapshot,
 } from "./dayStore";
@@ -23,6 +24,10 @@ export function DayStoreProvider({ children }: { children: ReactNode }) {
     setState((current) => setSpendAmount(current, amount));
   }, []);
 
+  const setExtraSpend = useCallback((amount: number) => {
+    setState((current) => setExtraSpendAmount(current, amount));
+  }, []);
+
   const cast = useCallback(() => {
     setState((current) => castSelected(current));
   }, []);
@@ -36,8 +41,8 @@ export function DayStoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ state, select, setSpend, cast, buy, claim }),
-    [state, select, setSpend, cast, buy, claim],
+    () => ({ state, select, setSpend, setExtraSpend, cast, buy, claim }),
+    [state, select, setSpend, setExtraSpend, cast, buy, claim],
   );
 
   return (

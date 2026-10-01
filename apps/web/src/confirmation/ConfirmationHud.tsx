@@ -3,6 +3,7 @@ import "./ConfirmationHud.css";
 
 type ConfirmationHudProps = {
   model: ConfirmationModel;
+  onHome(): void;
   onResults(): void;
   onVote(): void;
   onBuy(): void;
@@ -10,6 +11,7 @@ type ConfirmationHudProps = {
 
 export function ConfirmationHud({
   model,
+  onHome,
   onResults,
   onVote,
   onBuy,
@@ -64,27 +66,25 @@ export function ConfirmationHud({
         </div>
 
         <div className="confirm-actions">
+          <button
+            type="button"
+            className="confirm-cta"
+            data-testid="confirmation-home"
+            onClick={onHome}
+          >
+            {model.homeCta}
+            <span aria-hidden="true">›</span>
+          </button>
           {model.resultsReady ? (
             <button
               type="button"
-              className="confirm-cta"
+              className="confirm-link"
               data-testid="confirmation-results"
               onClick={onResults}
             >
               {model.resultsCta}
-              <span aria-hidden="true">›</span>
             </button>
-          ) : (
-            <button
-              type="button"
-              className="confirm-cta"
-              data-testid="confirmation-cast"
-              onClick={onVote}
-            >
-              {model.castCta}
-              <span aria-hidden="true">›</span>
-            </button>
-          )}
+          ) : null}
           <div className="confirm-secondary">
             <button
               type="button"

@@ -1,4 +1,4 @@
-import { buySplitPercents } from "@nova/shared";
+import { NOVA_BUDGET_LABEL, PLATFORM_FEE_LABEL, buySplitPercents } from "@nova/shared";
 
 const buyPercents = buySplitPercents();
 
@@ -18,13 +18,14 @@ export const ONBOARDING_COPY = {
   checkbox: "I accept the rules above",
   footerMicro: "Third-party on Arc · Not Circle Architects",
   feePool:
-    `${buyPercents.prizePool}% of Extra purchases go to that day's prize pool; ${buyPercents.studioNet}% is studio net; ${buyPercents.novaBudget}% is the Nova operating budget.`,
+    `${buyPercents.prizePool}% of Extra purchases go to that day's prize pool; ${buyPercents.studioNet}% is the ${PLATFORM_FEE_LABEL}; ${buyPercents.novaBudget}% is the ${NOVA_BUDGET_LABEL}.`,
   feeRisk: "No guaranteed reward. Soft launch geo may apply.",
   feeAffiliation:
     "Third-party game on Arc. Not affiliated with Circle's Architects program.",
   grantTitle: "+10 Free Influence",
   grantBody: "Yours for today. Unused Free burns when the day ends.",
   grantFirstDay: "Use it on today's three choices. You can skip Extra.",
+  tutorialKicker: "First light",
   tutorialTitle: "How today works",
   tutorialSteps: [
     "Goal of the day: MOST, LEAST, or MIDDLE — match the crowd's Influence.",

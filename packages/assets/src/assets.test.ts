@@ -83,9 +83,56 @@ describe("buy pack plates", () => {
   it("exposes Spark and Pulse as buy-screen canon ids", () => {
     expect(getAssetUrl("pack_spark")).toBeTruthy();
     expect(getAssetUrl("pack_pulse")).toBeTruthy();
+    expect(getAsset("pack_spark")?.path).toBe("packs/buy-pack-spark.png");
+    expect(getAsset("pack_pulse")?.path).toBe("packs/buy-pack-pulse.png");
     expect(getAsset("pack_spark")?.screens).toContain("buy");
-    expect(getAsset("pack_pulse")?.screens).toContain("buy");
-    expect(getAsset("pack_spark")?.path).not.toMatch(/drafts/);
+    expect(getAsset("pack_pulse")?.license).toBe("internal-working-set");
+    expect(getAsset("pack_spark")?.path).not.toMatch(/drafts|\.svg$/);
+  });
+
+  it("serves BIND §9.1 plates from canon copies", () => {
+    expect(getAsset("scene_home_sunset_city")?.path).toBe(
+      "scene/scene-home-sunset-city.png",
+    );
+    expect(getAsset("layer_sky_sunset")?.path).toBe("scene/layer-sky-sunset.png");
+    expect(getAsset("nova_idle_stand_3q")?.path).toBe(
+      "character/nova-idle-stand-3q.png",
+    );
+    expect(getAsset("nova_wave")?.path).toBe("character/nova-wave.png");
+    expect(getAsset("nova_cheer")?.path).toBe("character/nova-cheer.png");
+    expect(getAsset("nova_soft_sad")?.path).toBe("character/nova-soft-sad.png");
+    expect(getAsset("tile_stabilize")?.path).toBe("tiles/tile-stabilize.png");
+    expect(getAsset("badge_winner")?.path).toBe("hud/badge-winner.png");
+    expect(getAsset("scene_home_sunset_city")?.sha256).toBe(
+      "7284bbc5b7efac015b2e81e08490791639d8ad12c315204f9af51eeeb1726acc",
+    );
+    expect(getAsset("badge_winner")?.sha256).toBe(
+      "e3d8a8d5e51deecfe771f441b1738d9760060f1d0ad874ec1012b568cdd3f80b",
+    );
+    expect(getAsset("scene_home_sunset_city")?.license).toBe(
+      "internal-working-set",
+    );
+    expect(getAsset("scene_home_bg_city_nova")?.path).toBe(
+      "scene/home-bg-city-nova.webp",
+    );
+    expect(getAsset("scene_home_bg_city_nova")?.sha256).toBe(
+      "1a49f4ba2ec5441c420391b59f295621fce607b94eba85d9906788a65eb42dec",
+    );
+    expect(getAsset("nova_idle_stand_front")?.path).toBe(
+      "character/nova-idle-stand-front.webp",
+    );
+    expect(getAsset("nova_idle_stand_front")?.sha256).toBe(
+      "b8b6513cb395104bcac35675d6c791e5b61876091357dae376ebdc1811e3bf34",
+    );
+    expect(getAsset("nova_idle_stand_front_cutout")?.path).toBe(
+      "character/nova-idle-stand-front-cutout.webp",
+    );
+    expect(getAsset("nova_idle_stand_front_cutout")?.sha256).toBe(
+      "2c049f71b5dd5bbe75729a73282c68a36b729eeac60e38d4144c606ffd8a9cb2",
+    );
+    expect(getAsset("scene_home_bg_city_nova")?.license).toBe(
+      "internal-working-set",
+    );
   });
 });
 
@@ -93,7 +140,7 @@ describe("results badge", () => {
   it("exposes the winner badge as a results-screen canon id", () => {
     expect(getAssetUrl("badge_winner")).toBeTruthy();
     expect(getAsset("badge_winner")?.screens).toContain("results");
-    expect(getAsset("badge_winner")?.path).not.toMatch(/drafts/);
+    expect(getAsset("badge_winner")?.path).toBe("hud/badge-winner.png");
   });
 });
 

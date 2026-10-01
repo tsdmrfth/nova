@@ -57,7 +57,10 @@ describe("Confirmation + offline day loop", () => {
     );
     expect(screen.queryByTestId("confirmation-results")).toBeNull();
 
-    await user.click(screen.getByTestId("confirmation-cast"));
+    expect(screen.getByTestId("confirmation-home").textContent).toMatch(
+      /^Back to Nova/,
+    );
+    await user.click(screen.getByTestId("confirmation-home"));
     expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
     expect(screen.getByTestId("hud-free-value").textContent).toBe(
       String(grantDailyFree()),

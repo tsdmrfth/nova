@@ -8,6 +8,7 @@ import {
 import { useDayStore } from "../day/useDayStore";
 import { usePrefersReducedMotion } from "../hud/usePrefersReducedMotion";
 import { HomeSceneHost } from "../scene/HomeSceneHost";
+import { novaPoseId } from "../scene/novaPose";
 import { ConnectHud, GeoBlockHud } from "../onboarding/ConnectHud";
 
 export function ConnectPage() {
@@ -31,9 +32,10 @@ export function ConnectPage() {
   }, [missing]);
 
   return (
-    <section className="home-screen">
+    <section className="home-screen home-screen--connect">
       <HomeSceneHost
         pack={pack}
+        novaId={novaPoseId("connect")}
         selected={state.selected}
         phase="idle"
         reducedMotion={reducedMotion}
@@ -57,9 +59,10 @@ export function GeoBlockPage() {
   );
 
   return (
-    <section className="home-screen">
+    <section className="home-screen home-screen--connect">
       <HomeSceneHost
         pack={pack}
+        novaId={novaPoseId("connect")}
         selected={null}
         phase="idle"
         reducedMotion={reducedMotion}

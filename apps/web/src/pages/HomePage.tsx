@@ -14,9 +14,10 @@ import { GrantToast } from "../onboarding/GrantToast";
 import { TutorialOverlay } from "../onboarding/TutorialOverlay";
 import { useOnboarding } from "../onboarding/useOnboarding";
 import { HomeSceneHost } from "../scene/HomeSceneHost";
+import { novaPoseId } from "../scene/novaPose";
 
-export function CastPage() {
-  const { state, select, setSpend, cast } = useDayStore();
+export function CastPage({ screen }: { screen: "home" | "vote" }) {
+  const { state, select, setSpend, setExtraSpend, cast } = useDayStore();
   const onboarding = useOnboarding();
   const navigate = useNavigate();
   const goBuy = () => navigate("/buy");
@@ -42,6 +43,12 @@ export function CastPage() {
     () => buildHudModel(state, artByChoice),
     [state, artByChoice],
   );
+  const onboardingWave =
+    screen === "home" &&
+    onboarding.onboarded &&
+    !onboarding.state.grantPending &&
+    !onboarding.state.tutorialSeen;
+  const pose = screen === "vote" || onboardingWave ? novaPoseId("vote") : novaPoseId(screen);
 
   useEffect(() => {
     assertArtLockVersion(canonManifest.artLockVersion);
@@ -51,9 +58,11 @@ export function CastPage() {
   }, [missing]);
 
   return (
-    <section className="home-screen">
+    <section className={`home-screen home-screen--${screen}`}>
       <HomeSceneHost
         pack={pack}
+        novaId={pose}
+        plateId={screen === "home" ? "scene_home_bg_city_nova" : undefined}
         selected={state.selected}
         phase={state.status === "cast" ? "pending" : "choosing"}
         reducedMotion={reducedMotion}
@@ -64,6 +73,7 @@ export function CastPage() {
         selected={state.selected}
         onSelect={select}
         onSpend={setSpend}
+        onExtraSpend={setExtraSpend}
         onCast={cast}
         onUsdcChip={goBuy}
         onBuyExtraPlus={goBuy}
@@ -90,9 +100,9 @@ export function CastPage() {
 }
 
 export function HomePage() {
-  return <CastPage />;
+  return <CastPage screen="home" />;
 }
 
 export function VotePage() {
-  return <CastPage />;
+  return <CastPage screen="vote" />;
 }

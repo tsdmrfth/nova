@@ -14,6 +14,7 @@ export const CONFIRMATION_COPY = {
   closeLabel: "Voting closes",
   publishLabel: "Results publish",
   resultsCta: "See results",
+  homeCta: "Back to Nova",
   castCta: "Cast Influence",
   reviewCta: "Review confirmation",
   back: "Back to vote",

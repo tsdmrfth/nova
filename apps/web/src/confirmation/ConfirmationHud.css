@@ -17,7 +17,7 @@
 .confirm-panel {
   display: grid;
   gap: 0.9rem;
-  width: min(40rem, 100%);
+  width: min(var(--hud-column), 100%);
   justify-items: center;
   text-align: center;
 }
@@ -123,7 +123,7 @@
   width: min(28rem, 100%);
   padding: 0.95rem 2rem;
   color: #fff;
-  background: linear-gradient(180deg, #3b8ef0, var(--color-accent));
+  background: var(--color-accent-cta);
   border: 0;
   border-radius: 999px;
   box-shadow:
@@ -138,9 +138,14 @@
 
 .confirm-cta:hover,
 .confirm-cta:focus-visible {
+  background: var(--color-accent-glow);
   box-shadow:
     0 0 0 1px #fff,
     0 10px 36px color-mix(in srgb, var(--color-glow) 70%, transparent);
+}
+
+.confirm-cta:active {
+  background: var(--color-accent);
 }
 
 .confirm-cta span {

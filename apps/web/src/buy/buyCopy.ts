@@ -1,6 +1,6 @@
 import {
   NOVA_BUDGET_LABEL,
-  STUDIO_NET_LABEL,
+  PLATFORM_FEE_LABEL,
   buySplitPercents,
 } from "@nova/shared";
 
@@ -17,14 +17,14 @@ export const BUY_COPY = {
   details: "Details",
   youPay: "You pay",
   prizePool: "Prize pool",
-  studioNet: "Studio net",
+  studioNet: PLATFORM_FEE_LABEL,
   novaBudget: "Nova operating budget",
   youReceive: "You receive",
   extraUnit: "Extra Influence",
   cta: "Buy with USDC",
   back: "Back to vote",
-  feeOneLiner: `${percents.prizePool}% prize pool · ${percents.studioNet}% ${STUDIO_NET_LABEL} · ${percents.novaBudget}% ${NOVA_BUDGET_LABEL}`,
-  feeExpand: `${percents.prizePool}% of what you pay goes to today's prize pool; ${percents.studioNet}% is ${STUDIO_NET_LABEL}; ${percents.novaBudget}% is the ${NOVA_BUDGET_LABEL}.`,
+  feeOneLiner: `${percents.prizePool}% prize pool · ${percents.studioNet}% ${PLATFORM_FEE_LABEL} · ${percents.novaBudget}% ${NOVA_BUDGET_LABEL}`,
+  feeExpand: `${percents.prizePool}% of what you pay goes to today's prize pool; ${percents.studioNet}% is the ${PLATFORM_FEE_LABEL}; ${percents.novaBudget}% is the ${NOVA_BUDGET_LABEL}.`,
   noGuarantee: "No guaranteed return.",
   contest:
     "Not financial advice. Contest / social prediction rules apply where available. Soft launch geo may exclude some regions.",

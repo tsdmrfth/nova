@@ -1,79 +1,39 @@
+import { getAssetUrl } from "@nova/assets";
+
 type IconProps = {
   className?: string;
 };
 
+function CanonIcon({ id, className }: { id: string; className?: string }) {
+  const url = getAssetUrl(id);
+  if (!url) {
+    return null;
+  }
+  return <img className={className} src={url} alt="" draggable={false} />;
+}
+
 export function DayIcon({ className }: IconProps) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-      <rect
-        x="3"
-        y="5"
-        width="18"
-        height="16"
-        rx="3"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      <path
-        d="M8 3.5v4M16 3.5v4M3.5 10h17"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
+  return <CanonIcon id="icon_day" className={className} />;
 }
 
 export function FreeInfluenceIcon({ className }: IconProps) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="8.5" fill="currentColor" opacity="0.25" />
-      <circle cx="12" cy="12" r="5" fill="currentColor" />
-    </svg>
-  );
+  return <CanonIcon id="icon_free_influence" className={className} />;
 }
 
 export function ExtraInfluenceIcon({ className }: IconProps) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-      <circle
-        cx="12"
-        cy="12"
-        r="7.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <circle cx="12" cy="12" r="2.2" fill="currentColor" />
-    </svg>
-  );
+  return <CanonIcon id="icon_extra_influence" className={className} />;
 }
 
 export function UsdcIcon({ className }: IconProps) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-      <circle
-        cx="12"
-        cy="12"
-        r="9"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-      />
-      <text
-        x="12"
-        y="16"
-        textAnchor="middle"
-        fontSize="12"
-        fontWeight="700"
-        fill="currentColor"
-      >
-        $
-      </text>
-    </svg>
-  );
+  return <CanonIcon id="icon_usdc" className={className} />;
+}
+
+export function CastInfluenceIcon({ className }: IconProps) {
+  return <CanonIcon id="icon_cast_influence" className={className} />;
+}
+
+export function PlusIcon({ className }: IconProps) {
+  return <CanonIcon id="icon_plus" className={className} />;
 }
 
 export function RankIcon({ className }: IconProps) {

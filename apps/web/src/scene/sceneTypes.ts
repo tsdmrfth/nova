@@ -10,6 +10,10 @@ export type ScenePhase =
 
 export type SceneStageProps = {
   pack: DayScenePack;
+  /** Working-set pose id. Defaults to the pack sprite. */
+  novaId?: string;
+  /** Single city+Nova plate. When it loads, layered plates stay in the graph but hidden. */
+  plateId?: string;
   selected: ChoiceId | null;
   phase: ScenePhase;
   reducedMotion: boolean;

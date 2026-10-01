@@ -15,6 +15,8 @@ export type { SceneStageHandle, SceneStageProps } from "./sceneTypes";
 export const HomeSceneHost = forwardRef(function HomeSceneHost(
   {
     pack,
+    novaId,
+    plateId,
     selected,
     phase,
     reducedMotion,
@@ -119,7 +121,7 @@ export const HomeSceneHost = forwardRef(function HomeSceneHost(
         instance = new PixiApplication();
         appRef.current = instance;
         await instance.init({
-          background: 0x07111c,
+          background: 0x081329,
           antialias: true,
           autoDensity: true,
           resolution,
@@ -134,7 +136,12 @@ export const HomeSceneHost = forwardRef(function HomeSceneHost(
 
         instance.stage.eventMode = "none";
         instance.stage.interactiveChildren = false;
-        const world = await mountHomeWorld(instance, pack);
+        const world = await mountHomeWorld(
+          instance,
+          pack,
+          novaId ?? pack.nova.spriteId ?? "nova_idle_stand_3q",
+          plateId,
+        );
         if (stale()) {
           world.destroy();
           teardown();
@@ -197,7 +204,7 @@ export const HomeSceneHost = forwardRef(function HomeSceneHost(
       mountGenRef.current += 1;
       teardown();
     };
-  }, [pack, dpr, onReady]);
+  }, [pack, novaId, plateId, dpr, onReady]);
 
   return (
     <div

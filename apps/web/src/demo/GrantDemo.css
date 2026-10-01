@@ -1,7 +1,7 @@
 .grant-demo {
   display: grid;
   gap: 1.25rem;
-  max-width: 40rem;
+  max-width: var(--hud-column);
   margin: 0 auto;
   padding: 0.5rem 0 2rem;
 }
@@ -70,12 +70,15 @@
 
 .grant-actions button {
   cursor: pointer;
-  border: 1px solid var(--color-stroke);
-  border-radius: 999px;
-  padding: 0.55rem 0.95rem;
+  min-height: 48px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  padding: 0.7rem 1.1rem;
   color: var(--color-text);
-  background: color-mix(in srgb, var(--color-accent) 28%, transparent);
+  background: linear-gradient(180deg, var(--color-accent-glow), var(--color-accent));
+  box-shadow: var(--elevation-cta);
   font: inherit;
+  font-weight: 700;
 }
 
 .grant-actions button:disabled {

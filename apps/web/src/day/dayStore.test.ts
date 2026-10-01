@@ -8,6 +8,7 @@ import {
   LOCAL_PLAYER_ID,
   buyPack,
   selectChoice,
+  setExtraSpendAmount,
   setSpendAmount,
   stubVoteSchedule,
 } from "./dayStore";
@@ -69,6 +70,20 @@ describe("in-memory day store", () => {
     expect(state.extraInfluence).toBe(65);
     expect(state.freeInfluence).toBe(0);
     expect(state.packsBought).toEqual(["spark", "pulse"]);
+  });
+
+  it("places only the Extra stepper amount and leaves the Free lane separate", () => {
+    let state = createDayState(1, now);
+    state = buyPack(state, "spark");
+    expect(state.extraSpendAmount).toBe(10);
+    expect(state.spendAmount).toBe(10);
+    state = setExtraSpendAmount(state, 4);
+    state = setSpendAmount(state, 2);
+    state = selectChoice(state, "C");
+    state = castSelected(state);
+    expect(state.casts[0]).toMatchObject({ free: 2, extra: 4, optionId: "C" });
+    expect(state.freeInfluence).toBe(8);
+    expect(state.extraInfluence).toBe(10);
   });
 
   it("clamps overspend, ignores casts without a tile, and locks after one cast", () => {
