@@ -1,13 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { App } from "../App";
 import { seedOnboarded } from "../onboarding/onboardingStorage";
-
-vi.mock("../scene/HomeSceneHost", () => ({
-  HomeSceneHost: () => <div data-testid="scene-stage" />,
-}));
 
 describe("Buy Extra Influence", () => {
   beforeEach(() => {
@@ -21,9 +17,9 @@ describe("Buy Extra Influence", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("heading", { name: "Extra Influence" })).toBeTruthy();
-    expect(screen.getByTestId("buy-free-value").textContent).toBe("10");
+    expect(screen.getByRole("heading", { name: "Add Extra Influence" })).toBeTruthy();
     expect(screen.getByTestId("buy-extra-value").textContent).toBe("0");
+    expect(screen.getByTestId("buy-cta").textContent).toBe("Confirm buy · 5.00 USDC");
     expect(screen.getByTestId("buy-pack-pulse").getAttribute("aria-pressed")).toBe(
       "true",
     );
@@ -34,15 +30,13 @@ describe("Buy Extra Influence", () => {
     expect(screen.getByTestId("buy-you-receive").textContent).toBe(
       "55 Extra Influence",
     );
-    expect(
-      screen.getByText(
-        "90% prize pool · 8% platform service fee · 2% Nova operating budget",
-      ),
-    ).toBeTruthy();
+    expect(screen.getByTestId("buy-breakdown").getAttribute("aria-label")).toBe(
+      "90% prize pool · 8% platform service fee · 2% Nova operating budget",
+    );
+    expect(screen.getByTestId("buy-breakdown").textContent).toMatch(/Platform service fee · 8%/);
 
     await user.click(screen.getByTestId("buy-cta"));
     expect(screen.getByTestId("buy-extra-value").textContent).toBe("55");
-    expect(screen.getByTestId("buy-free-value").textContent).toBe("10");
     expect(screen.getByTestId("buy-status").textContent).toMatch(
       /You received 55 Extra Influence/,
     );
@@ -57,7 +51,7 @@ describe("Buy Extra Influence", () => {
     );
   });
 
-  it("disables Buy with USDC after 10 USDC mock spend and returns Extra to Vote", async () => {
+  it("disables Confirm buy after 10 USDC mock spend and returns Extra to Vote", async () => {
     const user = userEvent.setup();
     render(
       <MemoryRouter initialEntries={["/buy"]}>
@@ -71,10 +65,13 @@ describe("Buy Extra Influence", () => {
     expect(screen.getByTestId("buy-cta")).toHaveProperty("disabled", true);
 
     await user.click(screen.getByTestId("buy-back"));
-    expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
+    expect(screen.getByTestId("vote-screen")).toBeTruthy();
     expect(screen.getByTestId("hud-extra-value").textContent).toBe("110");
     expect(screen.getByTestId("hud-free-value").textContent).toBe("10");
-    expect(screen.getByTestId("choice-A")).toBeTruthy();
+    // Bought Extra lands on the Extra stepper; Free stays in its own lane.
+    expect(screen.getByTestId("spend-extra-amount").textContent).toBe("110");
+    expect(screen.getByTestId("spend-extra-decrease")).toHaveProperty("disabled", false);
+    expect(screen.getByTestId("spend-amount").textContent).toBe("10");
   });
 
   it("opens Buy from the Vote Extra prompt and keeps the selected tile", async () => {
@@ -90,7 +87,7 @@ describe("Buy Extra Influence", () => {
       /Need more Extra Influence/,
     );
     await user.click(screen.getByTestId("buy-entry"));
-    expect(screen.getByRole("heading", { name: "Extra Influence" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Add Extra Influence" })).toBeTruthy();
 
     await user.click(screen.getByTestId("buy-cta"));
     await user.click(screen.getByTestId("buy-back"));

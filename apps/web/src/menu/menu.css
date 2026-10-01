@@ -1,0 +1,79 @@
+/* Screen 13. */
+
+.menu-sheet {
+  gap: 14px;
+  min-height: 100%;
+  padding: 16px;
+}
+
+.menu-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-head__copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menu-head__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.menu-head__sub {
+  font-size: 12px;
+  color: var(--nova-muted);
+}
+
+.menu-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--nova-r-chip);
+  border: 1px solid var(--nova-border);
+  background: var(--nova-chip-fill);
+  cursor: pointer;
+}
+
+.menu-section .nv-kicker {
+  margin-bottom: 2px;
+}
+
+.menu-empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--nova-muted);
+}
+
+.menu-history {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-history__row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--nova-r-chip);
+  border: 1px solid var(--nova-border-soft);
+  background: var(--nova-cta2-fill);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.menu-history__gain {
+  color: var(--nova-blue-light);
+}

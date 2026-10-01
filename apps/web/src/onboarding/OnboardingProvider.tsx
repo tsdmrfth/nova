@@ -6,12 +6,15 @@ import {
   completeTutorial as completeTutorialState,
   continueOnboarding,
   createOnboardingSnapshot,
+  disconnect as disconnectState,
   dismissGrant as dismissGrantState,
+  enterNova as enterNovaState,
   isOnboarded,
   mockConnect,
   openWallet as openWalletState,
   parseOnboardingSearch,
   retryConnect as retryConnectState,
+  restoreFace,
   retryWallet as retryWalletState,
   setRulesChecked,
   switchToArc as switchToArcState,
@@ -37,8 +40,11 @@ type Action =
   | { type: "retry" }
   | { type: "retryWallet" }
   | { type: "openWallet" }
+  | { type: "enter" }
+  | { type: "disconnect" }
   | { type: "dismissGrant" }
-  | { type: "completeTutorial" };
+  | { type: "completeTutorial" }
+  | { type: "reopenTutorial" };
 
 function envGeoBlocked(): boolean {
   return import.meta.env.VITE_GEO_BLOCKED === "1";
@@ -64,7 +70,7 @@ function readInitial(search: string): OnboardingSnapshot {
     geoBlocked: envGeoBlocked() || readSessionGeoBlocked(),
     network: readSessionNetwork(),
   });
-  return applyEdgeQuery(snapshot, parseOnboardingSearch(search));
+  return restoreFace(applyEdgeQuery(snapshot, parseOnboardingSearch(search)));
 }
 
 function reducer(state: OnboardingSnapshot, action: Action): OnboardingSnapshot {
@@ -85,8 +91,14 @@ function reducer(state: OnboardingSnapshot, action: Action): OnboardingSnapshot 
       return retryWalletState(state);
     case "openWallet":
       return openWalletState(state);
+    case "enter":
+      return enterNovaState(state);
+    case "disconnect":
+      return disconnectState(state);
     case "dismissGrant":
       return dismissGrantState(state);
+    case "reopenTutorial":
+      return { ...state, tutorialSeen: false };
     case "completeTutorial":
       return completeTutorialState(state);
     default:
@@ -139,6 +151,16 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     [run],
   );
 
+  const enterNova = useCallback(() => isOnboarded(run({ type: "enter" })), [run]);
+
+  const disconnect = useCallback(() => {
+    run({ type: "disconnect" });
+  }, [run]);
+
+  const reopenTutorial = useCallback(() => {
+    run({ type: "reopenTutorial" });
+  }, [run]);
+
   const dismissGrant = useCallback(() => {
     run({ type: "dismissGrant" });
   }, [run]);
@@ -158,8 +180,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       retryConnect,
       retryWallet,
       openWallet,
+      enterNova,
+      disconnect,
       dismissGrant,
       completeTutorial,
+      reopenTutorial,
     }),
     [
       state,
@@ -170,8 +195,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       retryConnect,
       retryWallet,
       openWallet,
+      enterNova,
+      disconnect,
       dismissGrant,
       completeTutorial,
+      reopenTutorial,
     ],
   );
 

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { ChoiceId } from "@nova/assets";
 import type { PackId } from "@nova/shared";
 import { DayStoreContext } from "./dayStoreContext";
@@ -6,15 +6,40 @@ import {
   buyPack,
   castSelected,
   claimPayout,
+  confirmClaim,
   createDayState,
+  failClaim,
   selectChoice,
   setExtraSpendAmount,
   setSpendAmount,
   type ClaimSnapshot,
 } from "./dayStore";
 
+/** Offline stand-in for onchain confirmation time. */
+export const CLAIM_CONFIRM_MS = 1500;
+
+/** QA: `?claim=fail` makes the mock claim fail once it "confirms". */
+function claimShouldFail(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  return new URLSearchParams(window.location.search).get("claim") === "fail";
+}
+
 export function DayStoreProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState(() => createDayState(1));
+  // Read once: in-app navigation drops the query string before the claim settles.
+  const [failClaims] = useState(claimShouldFail);
+
+  useEffect(() => {
+    if (state.claimStatus !== "pending") {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setState((current) => (failClaims ? failClaim(current) : confirmClaim(current)));
+    }, CLAIM_CONFIRM_MS);
+    return () => window.clearTimeout(timer);
+  }, [state.claimStatus, failClaims]);
 
   const select = useCallback((id: ChoiceId) => {
     setState((current) => selectChoice(current, id));

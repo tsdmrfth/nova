@@ -1,49 +1,46 @@
+import type { DayGoal } from "@nova/shared";
+import { Button, GlassSheet, Kicker, StoryTitle } from "../ui";
 import { ONBOARDING_COPY } from "./onboardingCopy";
-import "./onboarding.css";
 
 type TutorialOverlayProps = {
+  goal: DayGoal;
   onGotIt(): void;
   onSkip(): void;
 };
 
-export function TutorialOverlay({ onGotIt, onSkip }: TutorialOverlayProps) {
+/** Screen 04. Shown once after the toast; reopen from Menu › Help. */
+export function TutorialOverlay({ goal, onGotIt, onSkip }: TutorialOverlayProps) {
   return (
-    <div className="oboard-overlay" data-testid="tutorial-overlay">
-      <section
-        className="oboard-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="tutorial-title"
-      >
-        <p className="oboard-kicker">{ONBOARDING_COPY.tutorialKicker}</p>
-        <h1 className="oboard-title" id="tutorial-title">
+    <GlassSheet
+      variant="modal"
+      testId="tutorial-overlay"
+      role="dialog"
+      ariaModal
+      labelledBy="tutorial-title"
+      className="oboard-tutorial"
+    >
+      <div className="nv-stack">
+        <Kicker>{ONBOARDING_COPY.tutorialKicker}</Kicker>
+        <StoryTitle size="md" id="tutorial-title">
           {ONBOARDING_COPY.tutorialTitle}
-        </h1>
-        <ol className="oboard-steps">
-          {ONBOARDING_COPY.tutorialSteps.map((step) => (
-            <li key={step}>{step}</li>
-          ))}
-        </ol>
-        <div className="oboard-actions">
-          <button
-            type="button"
-            className="oboard-cta"
-            data-testid="tutorial-got-it"
-            onClick={onGotIt}
-          >
-            {ONBOARDING_COPY.tutorialGotIt}
-            <span aria-hidden="true">›</span>
-          </button>
-          <button
-            type="button"
-            className="oboard-secondary"
-            data-testid="tutorial-skip"
-            onClick={onSkip}
-          >
-            {ONBOARDING_COPY.tutorialSkip}
-          </button>
-        </div>
-      </section>
-    </div>
+        </StoryTitle>
+      </div>
+      <ol className="oboard-steps">
+        {ONBOARDING_COPY.tutorialSteps(goal).map((step, index) => (
+          <li key={step}>
+            <span className="oboard-steps__n">{index + 1}</span>
+            <span>{step}</span>
+          </li>
+        ))}
+      </ol>
+      <div className="nv-grid-1-2">
+        <Button variant="tertiary" testId="tutorial-skip" onClick={onSkip}>
+          {ONBOARDING_COPY.tutorialSkip}
+        </Button>
+        <Button testId="tutorial-got-it" onClick={onGotIt}>
+          {ONBOARDING_COPY.tutorialGotIt}
+        </Button>
+      </div>
+    </GlassSheet>
   );
 }

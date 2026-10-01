@@ -25,7 +25,7 @@ describe("BuyHud", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { name: "Extra Influence" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Add Extra Influence" })).toBeTruthy();
     expect(screen.getByTestId("buy-pack-pulse").getAttribute("aria-pressed")).toBe(
       "true",
     );
@@ -45,7 +45,7 @@ describe("BuyHud", () => {
     expect(onBack).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps Buy with USDC disabled when the model says so", () => {
+  it("keeps Confirm buy disabled when the model says so", () => {
     const model = {
       ...buildBuyModel(createDayState(1, now), "pulse"),
       ctaEnabled: false,

@@ -1,5 +1,7 @@
 # Nova — Coded Home UI Style Guide (Eng implementation)
 
+> **Superseded for chrome (2026-10-02):** tokens, type, layout and screen structure now come from [`UI-KIT-V2.md`](UI-KIT-V2.md). Product locks in this doc still apply.
+
 **Status:** AUTHORITATIVE fine-detail for matching the coded Home look  
 **Owner:** Nova · Design  
 **Audience:** Eng (read end-to-end before polishing HUD CSS)  

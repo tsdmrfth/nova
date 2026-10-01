@@ -1,5 +1,7 @@
 # Nova — Full UI Rebuild SPEC
 
+> **Superseded for chrome (2026-10-02):** tokens, type, layout and screen structure now come from [`UI-KIT-V2.md`](UI-KIT-V2.md). Product locks in this doc still apply.
+
 **Status:** AUTHORITATIVE for rebuild · CEO GO 2026-09-28  
 **Owner:** Nova · Design  
 **Audience:** CEO glance → Eng claim  

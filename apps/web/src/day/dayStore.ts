@@ -13,7 +13,7 @@ export const LOCAL_PLAYER_ID = "local";
 
 export type CastStatus = "open" | "cast";
 
-export type ClaimStatus = "idle" | "pending" | "claimed";
+export type ClaimStatus = "idle" | "pending" | "claimed" | "failed";
 
 export type LocalCast = {
   walletId: typeof LOCAL_PLAYER_ID;
@@ -85,6 +85,15 @@ export function formatLocalStamp(at: number): string {
   return new Date(at).toLocaleString(undefined, {
     dateStyle: "medium",
     timeStyle: "short",
+  });
+}
+
+/** Short clock time for chips and CTAs ("18:00"). */
+export function formatLocalTime(at: number): string {
+  return new Date(at).toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
   });
 }
 
@@ -241,9 +250,9 @@ export function buyPack(state: DayState, packId: PackId): DayState {
   return placeExtraOnLatestCast(next, attempt.extraInfluence);
 }
 
-/** Mock claim. Primary CTA lives on Results; Profile is history-only. */
+/** Mock claim submit. Primary CTA lives on Results; settles via confirm/fail. */
 export function claimPayout(state: DayState, snapshot: ClaimSnapshot): DayState {
-  if (state.claimStatus === "claimed") {
+  if (state.claimStatus === "claimed" || state.claimStatus === "pending") {
     return state;
   }
   if (snapshot.total <= 0n) {
@@ -251,7 +260,23 @@ export function claimPayout(state: DayState, snapshot: ClaimSnapshot): DayState 
   }
   return {
     ...state,
-    claimStatus: "claimed",
+    claimStatus: "pending",
     claim: snapshot,
   };
+}
+
+/** Onchain confirmation landed (offline: after CLAIM_CONFIRM_MS). */
+export function confirmClaim(state: DayState): DayState {
+  if (state.claimStatus !== "pending") {
+    return state;
+  }
+  return { ...state, claimStatus: "claimed" };
+}
+
+/** Claim didn't go through; Retry submits again. */
+export function failClaim(state: DayState): DayState {
+  if (state.claimStatus !== "pending") {
+    return state;
+  }
+  return { ...state, claimStatus: "failed" };
 }

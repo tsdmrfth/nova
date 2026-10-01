@@ -27,15 +27,16 @@ Vite reads env from `apps/web` (the directory with `vite.config.ts`). Leave `VIT
 
 A first visit to Home, Vote, Buy, Confirmation, or Results sends you to `/connect`. `/demo` stays open without that gate.
 
-1. http://127.0.0.1:43123/connect — check **I accept the rules above**, then **Continue**. No real wallet.
-2. Home `/` — dismiss the +10 Free toast (or let it time out). **Skip** or **Got it** on How today works.
-3. Vote `/vote` — pick Stabilize, Expand, or Route, then **Cast Influence**.
-4. **Review confirmation** (`/confirmation`) — cast summary, then **See results**.
-5. Results `/results` — offline day settle and the claim HUD.
-6. Buy `/buy` — Spark and Pulse show the 90/8/2 quote. **Buy with USDC** on this page is mock pay (in-memory Extra), not a chain transaction.
-7. `/demo` — next section. Menu **Demo**, or open the URL directly. It works if you skip Connect.
+1. http://127.0.0.1:43123/connect — **Connect Arc wallet** (mock; no real wallet). The soft-launch notice opens: check **I understand this is a soft launch**, then **Enter Nova**.
+2. Home `/` — the Free Influence +10 toast holds ~2.4s (tap to dismiss). **Skip** or **Got it** on How today works.
+3. Tap a choice card (or **Choose and vote**) to open Vote `/vote`. Set the Free and Extra steppers, then **Cast Influence on {pick}**.
+4. Vote locked (`/confirmation`) — spent/remaining per lane and close/publish times, then **See results**.
+5. Results `/results` — Matched or Not this round, then **Claim** → Claim pending → USDC claimed (~1.5s mock). Add `?claim=fail` to the first URL you open to see **Claim didn't go through** + **Retry**.
+6. Buy `/buy` — tap the **EXTRA** chip on Home/Vote. Spark and Pulse show the 90/8/2 quote. **Confirm buy** is mock pay (in-memory Extra), not a chain transaction.
+7. **MENU** chip on Home — day history, Daily reminder / Calm motion toggles, Help (tutorial, pools, soft-launch notice), Disconnect.
+8. `/demo` — next section. Open the URL directly (dev builds also show a **Routes** jumper bottom-left). It works if you skip Connect.
 
-Back links and the product menu only change the route. They do not reset the day.
+Back links and the dev route jumper only change the route. They do not reset the day.
 
 ## `/demo` with empty addresses
 

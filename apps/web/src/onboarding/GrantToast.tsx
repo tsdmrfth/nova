@@ -1,21 +1,16 @@
 import { useEffect, useState } from "react";
+import { GlassSheet } from "../ui";
 import { GRANT_TOAST_MS, ONBOARDING_COPY } from "./onboardingCopy";
-import "./onboarding.css";
 
 type GrantToastProps = {
-  firstDay?: boolean;
   /** Day-store Free balance when the daily grant toast is shown. */
   freeInfluence: number;
   reducedMotion: boolean;
   onDismiss(): void;
 };
 
-export function GrantToast({
-  firstDay = false,
-  freeInfluence,
-  reducedMotion,
-  onDismiss,
-}: GrantToastProps) {
+/** Screen 03. Slides down 240ms, holds 2.4s, tap to dismiss early. */
+export function GrantToast({ freeInfluence, reducedMotion, onDismiss }: GrantToastProps) {
   const [granted] = useState(freeInfluence);
 
   useEffect(() => {
@@ -26,16 +21,17 @@ export function GrantToast({
   return (
     <button
       type="button"
-      className={
-        reducedMotion ? "oboard-toast" : "oboard-toast oboard-toast--motion"
-      }
+      className={reducedMotion ? "oboard-toast" : "oboard-toast oboard-toast--motion"}
       data-testid="grant-toast"
       onClick={onDismiss}
     >
-      <p className="oboard-toast-title">{`+${granted} Free Influence`}</p>
-      <p className="oboard-toast-body">
-        {firstDay ? ONBOARDING_COPY.grantFirstDay : ONBOARDING_COPY.grantBody}
-      </p>
+      <GlassSheet variant="toast">
+        <span className="nv-orb-sm">{`+${granted}`}</span>
+        <span className="oboard-toast__copy">
+          <span className="oboard-toast__title">{`Free Influence +${granted}`}</span>
+          <span className="oboard-toast__body">{ONBOARDING_COPY.grantBody}</span>
+        </span>
+      </GlassSheet>
     </button>
   );
 }

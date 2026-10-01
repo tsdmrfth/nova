@@ -1,0 +1,919 @@
+/* Nova UI Kit v2 primitives. Values come from design/ui-kit-v2; tokens from styles/tokens.css. */
+
+/* ---------- Frame + plate ---------- */
+
+.nv-screen {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--nova-underlay);
+  font-family: var(--nova-font);
+  color: var(--nova-text);
+}
+
+.nv-screen__backdrop {
+  position: fixed;
+  inset: -40px;
+  width: calc(100% + 80px);
+  height: calc(100% + 80px);
+  object-fit: cover;
+  filter: blur(28px) saturate(110%) brightness(0.45);
+  pointer-events: none;
+}
+
+.nv-screen__frame {
+  position: relative;
+  width: min(var(--nova-column), 100%);
+  height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+@media (min-width: 600px) {
+  .nv-screen__frame {
+    box-shadow: 0 0 0 1px rgba(113, 185, 255, 0.22), 0 30px 80px rgba(0, 0, 0, 0.55);
+  }
+}
+
+.nv-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--nova-navy);
+  pointer-events: none;
+}
+
+.nv-scene__plate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.nv-scene__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(4, 17, 40, 0.05) 20%, rgba(4, 17, 40, 0.1) 50%, rgba(4, 17, 40, 0.38)),
+    linear-gradient(90deg, rgba(4, 17, 40, 0.34), rgba(4, 17, 40, 0) 60%);
+}
+
+.nv-scene__dim {
+  position: absolute;
+  inset: 0;
+  background: var(--nova-overlay);
+  backdrop-filter: blur(3px);
+}
+
+.nv-screen__hud {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding:
+    max(52px, calc(env(safe-area-inset-top) + 12px))
+    var(--nova-gutter)
+    max(24px, calc(env(safe-area-inset-bottom) + 12px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.nv-screen__hud::-webkit-scrollbar {
+  display: none;
+}
+
+.nv-top {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nv-top__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nv-spacer {
+  flex: 1;
+}
+
+.nv-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nv-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nv-stack--10 {
+  gap: 10px;
+}
+
+.nv-stack--12 {
+  gap: 12px;
+}
+
+.nv-grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.nv-grid-1-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 10px;
+}
+
+/* ---------- Overlays ---------- */
+
+.nv-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  padding: var(--nova-gutter);
+  overflow-y: auto;
+}
+
+/* The dim itself comes from ScreenFrame `dim`, so overlays never double it. */
+.nv-overlay--center {
+  align-items: center;
+}
+
+.nv-overlay--center > * {
+  margin: auto 0;
+  width: 100%;
+}
+
+.nv-overlay--top {
+  align-items: flex-start;
+  padding-top: max(56px, calc(env(safe-area-inset-top) + 16px));
+  pointer-events: none;
+}
+
+.nv-overlay--top > * {
+  pointer-events: auto;
+  width: 100%;
+}
+
+.nv-overlay--fill {
+  padding-top: max(52px, calc(env(safe-area-inset-top) + 12px));
+}
+
+.nv-overlay--fill > * {
+  width: 100%;
+}
+
+/* ---------- Type ---------- */
+
+.nv-wordmark {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  line-height: 1;
+}
+
+.nv-story-title {
+  margin: 0;
+  font-family: var(--nova-story-font);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.nv-story-title--sm {
+  font-size: 28px;
+}
+
+.nv-story-title--md {
+  font-size: 32px;
+}
+
+.nv-story-title--lg {
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+.nv-kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nv-kicker--accent {
+  color: var(--nova-blue-light);
+}
+
+.nv-kicker--muted {
+  color: var(--nova-muted);
+}
+
+.nv-body {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.nv-muted {
+  color: var(--nova-muted);
+}
+
+.nv-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.nv-icon-accent {
+  flex: none;
+  color: var(--nova-blue-light);
+}
+
+.nv-plate-copy {
+  text-shadow: 0 2px 12px rgba(0, 9, 28, 0.7);
+}
+
+.nv-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--nova-muted);
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.nv-info {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--nova-muted);
+}
+
+.nv-info__icon {
+  margin-top: 1px;
+}
+
+.nv-info--boxed {
+  padding: 12px 14px;
+  border-radius: var(--nova-r-card);
+  background: var(--nova-cta2-fill);
+  border: 1px solid var(--nova-border-soft);
+  line-height: 1.55;
+}
+
+/* ---------- Buttons ---------- */
+
+.nv-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--nova-cta2-h);
+  padding: 0 18px;
+  border-radius: var(--nova-r-card);
+  border: 1px solid var(--nova-border);
+  background: var(--nova-cta2-fill);
+  color: var(--nova-text);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: filter 120ms ease, box-shadow 180ms ease;
+}
+
+.nv-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.nv-btn:active:not(:disabled) {
+  filter: brightness(1.18);
+}
+
+.nv-btn--primary {
+  min-height: var(--nova-cta-h);
+  border-color: var(--nova-blue-light);
+  background: var(--nova-cta-fill);
+  box-shadow: var(--nova-cta-shadow);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.nv-btn--secondary {
+  border-color: var(--nova-blue-light);
+  color: var(--nova-blue-light);
+}
+
+a.nv-btn--secondary:hover {
+  color: var(--nova-blue-light);
+}
+
+.nv-btn--compact {
+  min-height: 40px;
+  font-weight: 400;
+}
+
+.nv-btn:disabled,
+.nv-btn--pending {
+  cursor: not-allowed;
+}
+
+.nv-btn--primary:disabled,
+.nv-btn--primary.nv-btn--pending {
+  border-color: rgba(72, 128, 214, 0.4);
+  background: var(--nova-cta-disabled);
+  box-shadow: none;
+  color: var(--nova-cta-disabled-text);
+}
+
+.nv-btn--secondary:disabled,
+.nv-btn--tertiary:disabled {
+  border-color: var(--nova-border-soft);
+  color: var(--nova-subtle);
+}
+
+/* ---------- Chips ---------- */
+
+.nv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--nova-r-chip);
+  border: 1px solid var(--nova-border);
+  background: var(--nova-chip-fill);
+  backdrop-filter: blur(16px);
+  color: var(--nova-text);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+button.nv-chip {
+  cursor: pointer;
+}
+
+.nv-chip--pill {
+  gap: 6px;
+  border-radius: 999px;
+  color: var(--nova-blue-light);
+}
+
+.nv-chip--pill b {
+  color: var(--nova-text);
+  font-weight: 600;
+}
+
+.nv-chip--grow {
+  flex: 1;
+  min-width: 0;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.nv-chip__sep {
+  width: 1px;
+  height: 16px;
+  background: var(--nova-border);
+}
+
+.nv-tag {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--nova-border);
+  background: var(--nova-chip-fill);
+  color: var(--nova-blue-light);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.nv-balance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: var(--nova-r-chip);
+  border: 1px solid var(--nova-border);
+  background: var(--nova-chip-fill);
+  backdrop-filter: blur(16px);
+  color: var(--nova-text);
+  text-align: left;
+}
+
+button.nv-balance {
+  cursor: pointer;
+}
+
+.nv-balance__label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.nv-balance__value {
+  margin-left: auto;
+  font-size: 22px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Choice cards ---------- */
+
+.nv-letter {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--nova-blue-light);
+  background: var(--nova-letter-fill);
+  font-size: 17px;
+}
+
+.nv-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 14px;
+  border-radius: var(--nova-r-card);
+  border: 1px solid var(--nova-border);
+  background: var(--nova-glass-fill);
+  box-shadow: var(--nova-shadow);
+  backdrop-filter: blur(16px);
+  color: var(--nova-text);
+  font-size: 15px;
+  text-align: left;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+button.nv-choice {
+  cursor: pointer;
+}
+
+button.nv-choice:disabled {
+  cursor: default;
+}
+
+.nv-choice--compact {
+  min-height: 52px;
+}
+
+.nv-choice--selected {
+  border-color: var(--nova-blue-light);
+  background: var(--nova-selected-fill);
+  box-shadow: var(--nova-selected-shadow);
+}
+
+.nv-choice__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.nv-choice__tag {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--nova-blue-light);
+}
+
+.nv-check-dot {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--nova-blue-light);
+  background: var(--nova-blue-bright);
+  color: #fff;
+}
+
+/* ---------- Stepper ---------- */
+
+.nv-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nv-stepper__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.nv-stepper__label {
+  flex: 1;
+  letter-spacing: 0.06em;
+}
+
+.nv-stepper__meta {
+  color: var(--nova-muted);
+}
+
+.nv-stepper__row {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 12px;
+  /* Right padding keeps the + clear of Nova on the plate. */
+  padding: 0 60px 0 30px;
+}
+
+.nv-stepper__value {
+  text-align: center;
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nv-step {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--nova-r-step);
+  border: 1px solid var(--nova-blue);
+  background: var(--nova-step-fill);
+  box-shadow: inset 0 1px 0 rgba(165, 215, 255, 0.2);
+  color: #fff;
+  cursor: pointer;
+}
+
+.nv-step:active:not(:disabled) {
+  filter: brightness(1.2);
+}
+
+.nv-step:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- Toggle + checkbox ---------- */
+
+.nv-toggle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.nv-toggle__track {
+  display: flex;
+  width: 38px;
+  height: 22px;
+  padding: 2px;
+  border-radius: 999px;
+  border: 1px solid var(--nova-border);
+  background: var(--nova-track-off);
+  transition: background 180ms ease;
+}
+
+.nv-toggle__track--on {
+  justify-content: flex-end;
+  background: var(--nova-blue-bright);
+}
+
+.nv-toggle__thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e3efff;
+}
+
+.nv-checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.nv-checkbox input {
+  position: absolute;
+  opacity: 0;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  left: -11px;
+  cursor: pointer;
+}
+
+.nv-checkbox__box {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid var(--nova-border);
+  background: var(--nova-cta2-fill);
+  color: transparent;
+}
+
+.nv-checkbox input:checked + .nv-checkbox__box {
+  border-color: var(--nova-blue-light);
+  background: var(--nova-blue-bright);
+  color: #fff;
+}
+
+.nv-checkbox input:focus-visible + .nv-checkbox__box {
+  outline: 2px solid var(--nova-blue-light);
+  outline-offset: 2px;
+}
+
+/* ---------- Sheets ---------- */
+
+.nv-sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 16px 16px;
+  border-radius: var(--nova-radius);
+  border: 1px solid var(--nova-border);
+  background: var(--nova-glass-fill);
+  box-shadow: var(--nova-shadow);
+  backdrop-filter: blur(20px) saturate(125%);
+}
+
+.nv-sheet--modal {
+  gap: 16px;
+  padding: 24px 20px;
+  border-color: var(--nova-blue);
+}
+
+.nv-sheet--toast {
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: var(--nova-r-card);
+  border-color: var(--nova-blue-light);
+  box-shadow: var(--nova-selected-shadow);
+}
+
+.nv-sheet--orb {
+  margin-top: 36px;
+  padding-top: 46px;
+}
+
+.nv-sheet__orb {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  margin-left: -36px;
+}
+
+.nv-sheet-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.nv-sheet-heading__sub {
+  margin: 0;
+  font-size: 14px;
+  color: var(--nova-muted);
+}
+
+/* Small inline card inside a sheet (receipts, step cards, tease). */
+.nv-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--nova-r-card);
+  border: 1px solid var(--nova-border);
+  background: var(--nova-glass-fill);
+  backdrop-filter: blur(16px);
+}
+
+.nv-card--selected {
+  border-color: var(--nova-blue-light);
+  box-shadow: var(--nova-selected-shadow);
+}
+
+.nv-card__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nv-card__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nv-card__sub {
+  font-size: 12px;
+  color: var(--nova-muted);
+}
+
+/* ---------- Orb + spinner ---------- */
+
+.nv-orb {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2px solid var(--nova-blue-bright);
+  background: var(--nova-orb-fill), var(--nova-navy);
+  box-shadow: var(--nova-orb-shadow);
+  color: var(--nova-blue-light);
+}
+
+.nv-orb--glow {
+  animation: nv-orb-glow 600ms ease-out 1 both;
+}
+
+@keyframes nv-orb-glow {
+  from {
+    box-shadow: 0 0 0 rgba(39, 133, 255, 0);
+  }
+  to {
+    box-shadow: var(--nova-orb-shadow), 0 0 36px rgba(39, 133, 255, 0.45);
+  }
+}
+
+.nv-orb-sm {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--nova-blue-bright);
+  background: var(--nova-orb-fill);
+  box-shadow: var(--nova-orb-shadow);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nv-spinner {
+  display: block;
+  align-self: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 6px solid rgba(113, 185, 255, 0.22);
+  border-top-color: var(--nova-blue-bright);
+  animation: nova-spin 1.8s linear infinite;
+}
+
+.nv-spinner--calm {
+  animation: none;
+}
+
+/* ---------- Receipt ---------- */
+
+.nv-receipt {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--nova-border-soft);
+  background: var(--nova-glass-fill);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nv-receipt__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 32px;
+}
+
+.nv-receipt__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.nv-receipt__value {
+  text-align: right;
+}
+
+.nv-receipt__row--strong {
+  min-height: 36px;
+  font-weight: 600;
+}
+
+.nv-receipt__row--strong .nv-receipt__value {
+  font-size: 16px;
+}
+
+.nv-divider {
+  height: 1px;
+  margin: 6px 0;
+  background: var(--nova-border-soft);
+}
+
+/* ---------- Rank ---------- */
+
+.nv-rank {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--nova-r-chip);
+  border: 1px solid var(--nova-border);
+  background: var(--nova-glass-fill);
+  backdrop-filter: blur(16px);
+}
+
+.nv-rank__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.nv-rank__track {
+  display: block;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(151, 185, 228, 0.22);
+  overflow: hidden;
+}
+
+.nv-rank__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--nova-blue), var(--nova-blue-light));
+}
+
+/* ---------- List rows (menu, settings) ---------- */
+
+.nv-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.nv-list__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 46px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--nova-border-soft);
+  background: none;
+  color: var(--nova-text);
+  font-size: 14px;
+  text-align: left;
+}
+
+.nv-list__row:last-child {
+  border-bottom: 0;
+}
+
+button.nv-list__row {
+  cursor: pointer;
+}
+
+.nv-list__label {
+  flex: 1;
+}
+
+.nv-list__chevron {
+  color: var(--nova-subtle);
+}

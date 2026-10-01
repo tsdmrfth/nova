@@ -1,36 +1,43 @@
-import { NOVA_BUDGET_LABEL, PLATFORM_FEE_LABEL, buySplitPercents } from "@nova/shared";
+import {
+  NOVA_BUDGET_LABEL,
+  PLATFORM_FEE_LABEL,
+  buySplitPercents,
+  grantDailyFree,
+  type DayGoal,
+} from "@nova/shared";
 
 const buyPercents = buySplitPercents();
+const dailyFree = grantDailyFree();
 
-/** COPY-S1 B1–B2 + C + E1 / ONBOARDING-EDGE-COPY / PRE-CODE-LOCKS. EN-first. */
+/** UI-KIT-V2 screens 01–04 + ONBOARDING-EDGE-COPY. EN-first. */
 export const ONBOARDING_COPY = {
-  headline: "Nova just woke up.",
-  body: [
-    "You're an Architect in-game — not Circle's official program.",
-    "Each day, cast Influence on three choices.",
-    "The crowd writes her story.",
-    "Free Influence is yours every day; Extra Influence is optional (USDC).",
+  wordmark: "NOVA",
+  headline: "Raise Nova, one choice a day.",
+  subline: "A daily story game with programmable USDC on Arc.",
+  signInKicker: "Sign in",
+  connectCta: "Connect Arc wallet",
+  footerMicro:
+    "You're an Architect in-game — not Circle's official program. Third-party on Arc.",
+  noticeTag: "Soft launch",
+  noticeTitle: "Before you play",
+  noticeBullets: [
+    "Nova is a story game. Nova is a scripted AI agent, not general intelligence.",
+    `Free Influence refills daily. Extra Influence is optional and paid in USDC on Arc: ${buyPercents.prizePool}% to that day's prize pool, ${buyPercents.studioNet}% ${PLATFORM_FEE_LABEL}, ${buyPercents.novaBudget}% ${NOVA_BUDGET_LABEL}.`,
+    "Free and Extra are counted in separate lanes. Extra doesn't make your pick more likely to win.",
+    "Payouts come only from each day's pool and can be zero. Contracts are new. Not financial advice.",
+    "Nova runs on Arc and is not affiliated with or endorsed by Circle or its Architects program. Soft launch geo rules may apply.",
   ],
-  connectCta: "Connect wallet",
-  continueCta: "Continue",
-  disclaimer:
-    "I understand this is a third-party game on Arc. Rewards aren't guaranteed. Geo rules may apply. Not affiliated with Circle's Architects program. Not financial advice.",
-  checkbox: "I accept the rules above",
-  footerMicro: "Third-party on Arc · Not Circle Architects",
-  feePool:
-    `${buyPercents.prizePool}% of Extra purchases go to that day's prize pool; ${buyPercents.studioNet}% is the ${PLATFORM_FEE_LABEL}; ${buyPercents.novaBudget}% is the ${NOVA_BUDGET_LABEL}.`,
-  feeRisk: "No guaranteed reward. Soft launch geo may apply.",
-  feeAffiliation:
-    "Third-party game on Arc. Not affiliated with Circle's Architects program.",
-  grantTitle: "+10 Free Influence",
-  grantBody: "Yours for today. Unused Free burns when the day ends.",
-  grantFirstDay: "Use it on today's three choices. You can skip Extra.",
+  checkbox: "I understand this is a soft launch",
+  enterCta: "Enter Nova",
+  grantTitle: `Free Influence +${dailyFree}`,
+  grantOrb: `+${dailyFree}`,
+  grantBody: "Today's refill is in. Spend it on any choice.",
   tutorialKicker: "First light",
   tutorialTitle: "How today works",
-  tutorialSteps: [
-    "Goal of the day: MOST, LEAST, or MIDDLE — match the crowd's Influence.",
-    "Free Influence is daily and free. Extra Influence (USDC) grows your paid-pool share if you're correct — it doesn't buy a better pick.",
-    "Tap Cast Influence to lock your vote until results.",
+  tutorialSteps: (goal: DayGoal) => [
+    "Read today's chapter. Nova faces one decision.",
+    `Pick A, B or C and cast Influence. Today's goal is ${goal}.`,
+    "After voting closes, correct voters share the day pool by Influence weight.",
   ],
   tutorialGotIt: "Got it",
   tutorialSkip: "Skip",
@@ -50,4 +57,5 @@ export const ONBOARDING_COPY = {
   geoCta: "OK",
 } as const;
 
-export const GRANT_TOAST_MS = 4000;
+/** Toast slides down 240ms, then holds 2.4s. */
+export const GRANT_TOAST_MS = 2640;

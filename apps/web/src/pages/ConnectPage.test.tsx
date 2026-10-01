@@ -1,17 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { App } from "../App";
 import { ONBOARDING_COPY } from "../onboarding/onboardingCopy";
 import {
   ONBOARDING_STORAGE_KEYS,
   seedOnboarded,
 } from "../onboarding/onboardingStorage";
-
-vi.mock("../scene/HomeSceneHost", () => ({
-  HomeSceneHost: () => <div data-testid="scene-stage" />,
-}));
 
 function renderAt(path: string) {
   return render(
@@ -21,57 +17,52 @@ function renderAt(path: string) {
   );
 }
 
-describe("P1-09 onboarding first-run", () => {
-  it("lands first-run visitors on Connect and requires the disclaimer", async () => {
-    const user = userEvent.setup();
+async function connectAndAccept(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByTestId("connect-cta"));
+  await user.click(screen.getByTestId("connect-checkbox"));
+  await user.click(screen.getByTestId("notice-enter"));
+}
+
+describe("onboarding first-run (UI-KIT-V2 01–04)", () => {
+  it("lands first-run visitors on Connect with a single wallet CTA", () => {
     renderAt("/");
 
-    expect(
-      screen.getByRole("heading", { name: ONBOARDING_COPY.headline }),
-    ).toBeTruthy();
-    expect(screen.getByTestId("connect-disclaimer").textContent).toBe(
-      ONBOARDING_COPY.disclaimer,
-    );
-    expect(screen.getByTestId("connect-cta")).toHaveProperty("disabled", true);
-    expect(screen.getByTestId("connect-continue")).toHaveProperty(
-      "disabled",
-      true,
-    );
-    expect(screen.getByTestId("connect-footer").textContent).toBe(
-      ONBOARDING_COPY.footerMicro,
-    );
-
-    await user.click(screen.getByTestId("connect-checkbox"));
+    expect(screen.getByRole("heading", { name: ONBOARDING_COPY.headline })).toBeTruthy();
+    expect(screen.getByTestId("connect-cta").textContent).toBe(ONBOARDING_COPY.connectCta);
     expect(screen.getByTestId("connect-cta")).toHaveProperty("disabled", false);
-    expect(screen.getByTestId("connect-continue")).toHaveProperty(
-      "disabled",
-      false,
-    );
+    expect(screen.queryByText("Google")).toBeNull();
+    expect(screen.getByTestId("connect-footer").textContent).toBe(ONBOARDING_COPY.footerMicro);
+    expect(screen.queryByTestId("soft-launch-notice")).toBeNull();
   });
 
-  it("mock-connects, grants +10 Free, then skippable tutorial into Home Day 1", async () => {
+  it("shows the soft-launch notice after connect and gates Enter Nova on the checkbox", async () => {
     const user = userEvent.setup();
     renderAt("/connect");
 
-    await user.click(screen.getByTestId("connect-checkbox"));
     await user.click(screen.getByTestId("connect-cta"));
-
-    expect(screen.getByTestId("grant-toast").textContent).toMatch(
-      /\+10 Free Influence/,
-    );
-    expect(screen.getByTestId("grant-toast").textContent).toMatch(/skip Extra/);
-    expect(localStorage.getItem(ONBOARDING_STORAGE_KEYS.disclaimerAccepted)).toBe(
-      "1",
-    );
+    const notice = screen.getByTestId("soft-launch-notice");
+    expect(notice.textContent).toMatch(/Before you play/);
+    expect(screen.getByTestId("connect-disclaimer").querySelectorAll("li")).toHaveLength(5);
+    expect(screen.getByTestId("nova-scene-dim")).toBeTruthy();
+    expect(screen.getByTestId("notice-enter")).toHaveProperty("disabled", true);
     expect(localStorage.getItem(ONBOARDING_STORAGE_KEYS.connected)).toBe("1");
+    expect(localStorage.getItem(ONBOARDING_STORAGE_KEYS.disclaimerAccepted)).toBeNull();
+
+    await user.click(screen.getByTestId("connect-checkbox"));
+    expect(screen.getByTestId("notice-enter")).toHaveProperty("disabled", false);
+  });
+
+  it("enters Nova, grants +10 Free, then a skippable tutorial into Home Day 1", async () => {
+    const user = userEvent.setup();
+    renderAt("/connect");
+    await connectAndAccept(user);
+
+    expect(screen.getByTestId("grant-toast").textContent).toMatch(/Free Influence \+10/);
+    expect(screen.getByTestId("home-screen").className).toMatch(/is-behind-toast/);
+    expect(localStorage.getItem(ONBOARDING_STORAGE_KEYS.disclaimerAccepted)).toBe("1");
 
     await user.click(screen.getByTestId("grant-toast"));
-    expect(screen.getByTestId("tutorial-overlay").textContent).toMatch(
-      /MOST, LEAST, or MIDDLE/,
-    );
-    expect(screen.getByTestId("tutorial-overlay").textContent).toMatch(
-      /Free Influence is daily and free/,
-    );
+    expect(screen.getByTestId("tutorial-overlay").textContent).toMatch(/Today's goal is MOST/);
 
     await user.click(screen.getByTestId("tutorial-skip"));
     expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
@@ -80,15 +71,12 @@ describe("P1-09 onboarding first-run", () => {
     expect(localStorage.getItem(ONBOARDING_STORAGE_KEYS.tutorialSeen)).toBe("1");
   });
 
-  it("lets Continue skip a real wallet and remembers a returning player", async () => {
+  it("remembers a returning player", async () => {
     const user = userEvent.setup();
     const { unmount } = renderAt("/connect");
-
-    await user.click(screen.getByTestId("connect-checkbox"));
-    await user.click(screen.getByTestId("connect-continue"));
+    await connectAndAccept(user);
     await user.click(screen.getByTestId("grant-toast"));
     await user.click(screen.getByTestId("tutorial-got-it"));
-    expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
     unmount();
 
     renderAt("/");
@@ -98,17 +86,20 @@ describe("P1-09 onboarding first-run", () => {
     expect(screen.queryByTestId("connect-cta")).toBeNull();
   });
 
+  it("brings a connected-but-unaccepted wallet back to the notice on reload", () => {
+    localStorage.setItem(ONBOARDING_STORAGE_KEYS.connected, "1");
+    renderAt("/");
+    expect(screen.getByTestId("soft-launch-notice")).toBeTruthy();
+  });
+
   it("shows the locked geo-block copy and keeps Home closed", async () => {
     const user = userEvent.setup();
     renderAt("/connect?edge=geo");
 
-    expect(screen.getByTestId("geo-block").textContent).toMatch(
-      /Not available here yet/,
-    );
+    expect(screen.getByTestId("geo-block").textContent).toMatch(/Not available here yet/);
     expect(screen.getByTestId("geo-block").textContent).toMatch(
       /Nova isn't available in your region yet/,
     );
-    expect(screen.getByTestId("geo-ok").textContent).toMatch(/^OK/);
     await user.click(screen.getByTestId("geo-ok"));
     expect(screen.getByTestId("geo-block")).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "First light" })).toBeNull();
@@ -118,21 +109,14 @@ describe("P1-09 onboarding first-run", () => {
     const user = userEvent.setup();
     renderAt("/connect?edge=network");
 
-    expect(
-      screen.getByRole("heading", { name: ONBOARDING_COPY.headline }),
-    ).toBeTruthy();
-    await user.click(screen.getByTestId("connect-checkbox"));
     await user.click(screen.getByTestId("connect-cta"));
-
-    expect(screen.getByTestId("network-block").textContent).toMatch(
-      /Nova runs on Arc/,
-    );
+    expect(screen.getByTestId("network-block").textContent).toMatch(/Nova runs on Arc/);
     await user.click(screen.getByTestId("network-retry"));
     expect(screen.getByTestId("network-block")).toBeTruthy();
 
     await user.click(screen.getByTestId("network-switch"));
     await user.click(screen.getByTestId("network-retry"));
-    expect(screen.getByTestId("grant-toast")).toBeTruthy();
+    expect(screen.getByTestId("soft-launch-notice")).toBeTruthy();
   });
 
   it("keeps seeded returning users on Home without the tutorial", () => {

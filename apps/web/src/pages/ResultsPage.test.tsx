@@ -1,133 +1,114 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { formatUsdc } from "@nova/shared";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { App } from "../App";
+import { formatCheckoutUsdc } from "../buy/buyModel";
+import { castSelected, createDayState, selectChoice } from "../day/dayStore";
+import { CLAIM_CONFIRM_MS } from "../day/DayStoreProvider";
 import { seedOnboarded } from "../onboarding/onboardingStorage";
 import { settleOffline } from "../results/settleMock";
-import {
-  buyPack,
-  castSelected,
-  createDayState,
-  selectChoice,
-} from "../day/dayStore";
 
-vi.mock("../scene/HomeSceneHost", () => ({
-  HomeSceneHost: () => <div data-testid="scene-stage" />,
-}));
+const settleWait = { timeout: CLAIM_CONFIRM_MS + 1500 };
 
-describe("Results + Profile mock loop", () => {
+function renderAt(path: string) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <App />
+    </MemoryRouter>,
+  );
+}
+
+async function castAndOpenResults(user: ReturnType<typeof userEvent.setup>, pick: "A" | "B") {
+  renderAt("/vote");
+  await user.click(screen.getByTestId(`choice-${pick}`));
+  await user.click(screen.getByTestId("cast-influence"));
+  await user.click(screen.getByTestId("confirmation-results"));
+}
+
+describe("Results + claim (UI-KIT-V2 08–11)", () => {
   beforeEach(() => {
     seedOnboarded();
   });
-  it("settles a correct Expand cast with Free share, SPARK, and claim CTA", async () => {
-    const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/vote"]}>
-        <App />
-      </MemoryRouter>,
-    );
 
-    await user.click(screen.getByTestId("choice-B"));
-    await user.click(screen.getByTestId("cast-influence"));
-    await user.click(screen.getByText("Menu"));
-    await user.click(screen.getByRole("link", { name: "Results" }));
+  afterEach(() => {
+    window.history.replaceState(null, "", "/");
+  });
+
+  it("settles a correct cast as matched with the lane receipt and a claim CTA", async () => {
+    const user = userEvent.setup();
+    await castAndOpenResults(user, "B");
 
     const expected = settleOffline(
       castSelected(selectChoice(createDayState(1, new Date("2026-09-18T12:00:00")), "B")),
     );
+    const claimable = formatCheckoutUsdc(expected.player.total);
 
-    expect(screen.getByTestId("results-canon").textContent).toBe(
-      "Canon today: Say hello",
-    );
-    expect(screen.getByTestId("results-goal").textContent).toBe("Day goal was MOST");
-    expect(screen.getByTestId("results-world").textContent).toMatch(/Expand/i);
-    expect(screen.getByTestId("results-share-free").textContent).toBe(
-      `Free pool: ${formatUsdc(expected.player.free)} USDC`,
-    );
-    expect(screen.queryByTestId("results-share-paid")).toBeNull();
-    expect(screen.getByTestId("results-spark").textContent).toMatch(/\+20/);
-    expect(screen.getByTestId("results-claim").textContent).toMatch(
-      new RegExp(`Claim ${formatUsdc(expected.player.total)} USDC`),
-    );
+    expect(screen.getByTestId("results-matched")).toBeTruthy();
+    expect(screen.getByTestId("results-title").textContent).toBe("You matched!");
+    expect(screen.getByTestId("results-badge").getAttribute("data-orb")).toBe("trophy");
+    expect(screen.getByTestId("results-shares").textContent).toMatch(/Paid lane · 90%/);
+    expect(screen.getByTestId("results-shares").textContent).toMatch(/Free lane · 10%/);
+    expect(screen.getByTestId("results-share-free").textContent).toContain(claimable);
+    expect(screen.getByTestId("results-claim").textContent).toBe(`Claim ${claimable} USDC`);
+    expect(screen.queryByText(/SPARK/)).toBeNull();
+  });
+
+  it("walks Claim pending → USDC claimed → Claimed chip, and records it in Menu history", async () => {
+    const user = userEvent.setup();
+    await castAndOpenResults(user, "B");
 
     await user.click(screen.getByTestId("results-claim"));
+    expect(screen.getByTestId("claim-pending")).toBeTruthy();
+    expect(screen.getByTestId("claim-confirming")).toHaveProperty("disabled", true);
+
+    await waitFor(() => expect(screen.getByTestId("claim-done")).toBeTruthy(), settleWait);
+    expect(screen.getByTestId("claim-title").textContent).toBe("USDC claimed");
+
+    await user.click(screen.getByTestId("claim-done-back"));
+    await user.click(screen.getByTestId("hud-menu"));
+    expect(screen.getByTestId("profile-claims").textContent).toMatch(/^\+/);
+    await user.click(screen.getByTestId("menu-close"));
+
+    await user.click(screen.getByTestId("home-cta"));
+    await user.click(screen.getByTestId("confirmation-results"));
     expect(screen.getByTestId("results-claim").textContent).toBe("Claimed");
-    expect(screen.getByTestId("results-claim")).toHaveProperty("disabled", true);
-
-    await user.click(screen.getByText("Menu"));
-    await user.click(screen.getByRole("link", { name: "Profile" }));
-    expect(screen.getByTestId("profile-casts").textContent).toMatch(/Say hello/);
-    expect(screen.getByTestId("profile-claims").textContent).toMatch(/USDC/);
-    expect(screen.queryByTestId("results-claim")).toBeNull();
-    expect(screen.queryByRole("button", { name: /claim/i })).toBeNull();
+    expect(screen.getByTestId("results-claim").tagName).toBe("SPAN");
   });
 
-  it("shows paid + free lines after a Pulse buy on the winner", async () => {
+  it("shows Claim didn't go through and lets the player retry (?claim=fail)", async () => {
+    window.history.replaceState(null, "", "/?claim=fail");
     const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/buy"]}>
-        <App />
-      </MemoryRouter>,
-    );
+    await castAndOpenResults(user, "B");
 
-    await user.click(screen.getByTestId("buy-cta"));
-    await user.click(screen.getByTestId("buy-back"));
-    await user.click(screen.getByTestId("choice-B"));
-    await user.click(screen.getByTestId("cast-influence"));
-    await user.click(screen.getByText("Menu"));
-    await user.click(screen.getByRole("link", { name: "Results" }));
+    await user.click(screen.getByTestId("results-claim"));
+    await waitFor(() => expect(screen.getByTestId("claim-failed")).toBeTruthy(), settleWait);
+    expect(screen.getByTestId("claim-title").textContent).toBe("Claim didn't go through");
 
-    const seeded = castSelected(
-      selectChoice(
-        buyPack(createDayState(1, new Date("2026-09-18T12:00:00")), "pulse"),
-        "B",
-      ),
-    );
-    const expected = settleOffline(seeded);
-
-    expect(screen.getByTestId("results-share-paid").textContent).toBe(
-      `Paid pool: ${formatUsdc(expected.player.paid)} USDC`,
-    );
-    expect(screen.getByTestId("results-share-free").textContent).toBe(
-      `Free pool: ${formatUsdc(expected.player.free)} USDC`,
-    );
-    expect(screen.getByTestId("results-claim").textContent).toMatch(
-      new RegExp(`Claim ${formatUsdc(expected.player.total)} USDC`),
-    );
+    await user.click(screen.getByTestId("claim-retry"));
+    expect(screen.getByTestId("claim-pending")).toBeTruthy();
   });
 
-  it("misses Stabilize against MOST Expand and keeps Profile history-only", async () => {
+  it("renders a miss as Not this round with the WINNER tag and a next-day tease", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <App />
-      </MemoryRouter>,
-    );
+    await castAndOpenResults(user, "A");
 
-    await user.click(screen.getByTestId("choice-A"));
-    await user.click(screen.getByTestId("cast-influence"));
-    await user.click(screen.getByText("Menu"));
-    await user.click(screen.getByRole("link", { name: "Results" }));
-
-    expect(screen.getByTestId("results-miss").textContent).toBe("No pool share today");
+    expect(screen.getByTestId("results-title").textContent).toBe("Not this round");
+    expect(screen.getByTestId("results-badge").getAttribute("data-orb")).toBe("x");
+    expect(screen.getByTestId("results-winner").textContent).toMatch(/WINNER/);
+    expect(screen.getByTestId("results-pick").textContent).toMatch(/Your pick · A/);
+    expect(screen.getByTestId("results-share-paid").textContent).toContain("0.00 USDC");
+    expect(screen.getByTestId("results-tease").textContent).toMatch(/Chapter 02 opens tomorrow/);
     expect(screen.queryByTestId("results-claim")).toBeNull();
-    expect(screen.getByTestId("results-spark").textContent).toMatch(/\+5/);
-
-    await user.click(screen.getByTestId("results-back"));
-    expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
   });
 
-  it("shows the empty Profile copy before any cast", async () => {
-    render(
-      <MemoryRouter initialEntries={["/profile"]}>
-        <App />
-      </MemoryRouter>,
-    );
-    expect(screen.getByTestId("profile-empty").textContent).toMatch(
-      /No casts yet/,
-    );
-    expect(screen.queryByRole("button", { name: /claim/i })).toBeNull();
+  it("asks for a cast before any shares on an empty day", async () => {
+    const user = userEvent.setup();
+    renderAt("/results");
+
+    expect(screen.getByTestId("results-needCast")).toBeTruthy();
+    expect(screen.queryByTestId("results-shares")).toBeNull();
+    await user.click(screen.getByTestId("results-vote"));
+    expect(screen.getByTestId("vote-screen")).toBeTruthy();
   });
 });

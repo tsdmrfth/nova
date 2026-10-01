@@ -12,6 +12,8 @@ export const canonAssetUrls = {
     "../canon/scene/home-bg-city-nova.webp",
     import.meta.url,
   ).href,
+  scene_nova_city: new URL("../canon/scene/nova-city.webp", import.meta.url)
+    .href,
   layer_sky_sunset: new URL(
     "../canon/scene/layer-sky-sunset.png",
     import.meta.url,

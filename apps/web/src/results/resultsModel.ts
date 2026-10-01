@@ -1,122 +1,119 @@
 import type { ChoiceId } from "@nova/assets";
-import { formatUsdc, type DayGoal, type MicroUsdc } from "@nova/shared";
+import { BPS_DENOMINATOR, DAY_SPLIT_BPS, type DayGoal, type MicroUsdc } from "@nova/shared";
+import { formatCheckoutUsdc } from "../buy/buyModel";
 import type { ClaimStatus, DayState } from "../day/dayStore";
+import { padDay } from "../hud/homeHudModel";
 import { RESULTS_COPY } from "./resultsCopy";
 import { settleOffline, type OfflineDaySettle } from "./settleMock";
 
 export { RESULTS_COPY };
 
-export const WINNER_BADGE_ID = "badge_winner";
-
-export type ResultsShareRow = {
-  id: "paid" | "free";
-  label: string;
-};
+/** 08 matched · 09 miss (+ rollover / needCast variants, UI-KIT-V2 guardrail 4). */
+export type ResultsVariant = "matched" | "miss" | "rollover" | "needCast";
 
 export type ResultsHudModel = {
   day: number;
+  dayLabel: string;
   goal: DayGoal;
-  canon: string;
-  goalLine: string;
+  variant: ResultsVariant;
+  title: string;
+  sub: string;
   winnerId: ChoiceId;
   winnerTitle: string;
-  winnerWorld: string;
-  badgeId: string;
+  pickId: ChoiceId | null;
+  dayPool: string;
+  paidLaneLabel: string;
+  paidLane: string;
+  freeLaneLabel: string;
+  freeLane: string;
   paidShare: MicroUsdc;
   freeShare: MicroUsdc;
   totalShare: MicroUsdc;
-  shareRows: ResultsShareRow[];
-  miss: string | null;
-  rollover: string | null;
-  spark: number;
-  sparkLabel: string;
-  sparkHint: string;
+  yourExtra: string;
+  yourFree: string;
+  claimable: string;
+  teaseKicker: string;
+  teaseTitle: string;
   claimStatus: ClaimStatus;
   claimCta: string;
   claimEnabled: boolean;
-  share: string;
-  back: string;
-  needCast: string | null;
-  voteCta: string;
   lockedVote: boolean;
   correct: boolean;
 };
 
 export function formatShareUsdc(micro: MicroUsdc): string {
-  return formatUsdc(micro);
+  return formatCheckoutUsdc(micro);
 }
 
-function shareRows(paid: MicroUsdc, free: MicroUsdc): ResultsShareRow[] {
-  const rows: ResultsShareRow[] = [];
-  if (paid > 0n) {
-    rows.push({
-      id: "paid",
-      label: RESULTS_COPY.paidPool(formatShareUsdc(paid)),
-    });
-  }
-  if (free > 0n) {
-    rows.push({
-      id: "free",
-      label: RESULTS_COPY.freePool(formatShareUsdc(free)),
-    });
-  }
-  return rows;
+function usdc(micro: MicroUsdc): string {
+  return `${formatShareUsdc(micro)} USDC`;
 }
 
-export function claimLabel(status: ClaimStatus, total: MicroUsdc): string {
-  if (status === "claimed") {
-    return RESULTS_COPY.claimed;
-  }
-  if (status === "pending") {
-    return RESULTS_COPY.claimPending;
-  }
-  return RESULTS_COPY.claim(formatShareUsdc(total));
+function pct(bps: number): number {
+  return Math.round((bps / BPS_DENOMINATOR) * 100);
 }
+
+function variantFor(settled: OfflineDaySettle): ResultsVariant {
+  if (!settled.lockedVote) {
+    return "needCast";
+  }
+  if (settled.correct) {
+    return "matched";
+  }
+  return settled.rolledOver ? "rollover" : "miss";
+}
+
+const HEADINGS: Record<ResultsVariant, { title: string; sub: string }> = {
+  matched: { title: RESULTS_COPY.matchedTitle, sub: RESULTS_COPY.matchedSub },
+  miss: { title: RESULTS_COPY.missTitle, sub: RESULTS_COPY.missSub },
+  rollover: { title: RESULTS_COPY.missTitle, sub: RESULTS_COPY.rollover },
+  needCast: { title: RESULTS_COPY.needCastTitle, sub: RESULTS_COPY.needCast },
+};
 
 export function buildResultsModel(
   state: DayState,
   settled: OfflineDaySettle = settleOffline(state),
 ): ResultsHudModel {
-  const winner =
-    state.choices.find((choice) => choice.id === settled.winningOptionId) ??
-    state.choices[0];
   const claimed = state.claim;
   const paid = claimed?.paid ?? settled.player.paid;
   const free = claimed?.free ?? settled.player.free;
   const total = claimed?.total ?? settled.player.total;
-  const spark = claimed?.spark ?? settled.spark.spark;
   const winnerId = (claimed?.winningOptionId ?? settled.winningOptionId) as ChoiceId;
-  const winnerChoice =
-    state.choices.find((choice) => choice.id === winnerId) ?? winner;
-  const rows = shareRows(paid, free);
-  const rolledOver = settled.rolledOver;
+  const winner =
+    state.choices.find((choice) => choice.id === winnerId) ?? state.choices[0];
+  const variant = variantFor(settled);
+  const pick = state.casts.at(-1)?.optionId ?? null;
+  const next = padDay(state.day + 1);
   const claimStatus = state.claimStatus;
 
   return {
     day: state.day,
+    dayLabel: `DAY ${padDay(state.day)}`,
     goal: state.goal,
-    canon: RESULTS_COPY.canonToday(winnerChoice?.title ?? settled.winningOptionId),
-    goalLine: RESULTS_COPY.dayGoal(state.goal),
-    winnerId: winnerChoice?.id ?? "B",
-    winnerTitle: winnerChoice?.title ?? settled.winningOptionId,
-    winnerWorld: winnerChoice?.world ?? "",
-    badgeId: WINNER_BADGE_ID,
+    variant,
+    ...HEADINGS[variant],
+    winnerId: winner.id,
+    winnerTitle: winner.title,
+    pickId: pick,
+    dayPool: usdc(settled.pool.prizePool),
+    paidLaneLabel: RESULTS_COPY.paidLane(pct(DAY_SPLIT_BPS.paidWinners)),
+    paidLane: usdc(settled.pool.paidWinnerBucket),
+    freeLaneLabel: RESULTS_COPY.freeLane(pct(DAY_SPLIT_BPS.freeWinners)),
+    freeLane: usdc(settled.pool.freeWinnerBucket),
     paidShare: paid,
     freeShare: free,
     totalShare: total,
-    shareRows: rows,
-    miss: rolledOver ? null : rows.length === 0 ? RESULTS_COPY.miss : null,
-    rollover: rolledOver ? RESULTS_COPY.rollover : null,
-    spark,
-    sparkLabel: RESULTS_COPY.sparkLabel,
-    sparkHint: RESULTS_COPY.sparkHint,
+    yourExtra: usdc(paid),
+    yourFree: usdc(free),
+    claimable: usdc(total),
+    teaseKicker: RESULTS_COPY.teaseKicker(next),
+    teaseTitle: RESULTS_COPY.tease(next),
     claimStatus,
-    claimCta: claimLabel(claimStatus, total),
-    claimEnabled: total > 0n && claimStatus !== "claimed",
-    share: RESULTS_COPY.share,
-    back: RESULTS_COPY.back,
-    needCast: settled.lockedVote ? null : RESULTS_COPY.needCast,
-    voteCta: RESULTS_COPY.voteCta,
+    claimCta:
+      claimStatus === "claimed"
+        ? RESULTS_COPY.claimed
+        : RESULTS_COPY.claim(formatShareUsdc(total)),
+    claimEnabled: total > 0n && claimStatus !== "claimed" && claimStatus !== "pending",
     lockedVote: settled.lockedVote,
     correct: settled.correct,
   };

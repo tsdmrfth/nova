@@ -1,74 +1,11 @@
-import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
-import {
-  assertArtLockVersion,
-  canonManifest,
-  resolvePack,
-} from "@nova/assets";
-import { useDayStore } from "../day/useDayStore";
-import { usePrefersReducedMotion } from "../hud/usePrefersReducedMotion";
-import { HomeSceneHost } from "../scene/HomeSceneHost";
-import { novaPoseId } from "../scene/novaPose";
 import { ConnectHud, GeoBlockHud } from "../onboarding/ConnectHud";
 
 export function ConnectPage() {
-  const { state } = useDayStore();
   const navigate = useNavigate();
-  const { pack, missing } = useMemo(
-    () => resolvePack(canonManifest, state.day),
-    [state.day],
-  );
-  const reducedMotion = usePrefersReducedMotion();
-  const dpr = Math.min(
-    typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
-    2,
-  );
-
-  useEffect(() => {
-    assertArtLockVersion(canonManifest.artLockVersion);
-    if (missing.length > 0) {
-      console.error("[nova] missing canon ids in Connect scene", missing);
-    }
-  }, [missing]);
-
-  return (
-    <section className="home-screen home-screen--connect">
-      <HomeSceneHost
-        pack={pack}
-        novaId={novaPoseId("connect")}
-        selected={state.selected}
-        phase="idle"
-        reducedMotion={reducedMotion}
-        dpr={dpr}
-      />
-      <ConnectHud onEnter={() => navigate("/")} />
-    </section>
-  );
+  return <ConnectHud onEnter={() => navigate("/")} />;
 }
 
 export function GeoBlockPage() {
-  const { state } = useDayStore();
-  const { pack } = useMemo(
-    () => resolvePack(canonManifest, state.day),
-    [state.day],
-  );
-  const reducedMotion = usePrefersReducedMotion();
-  const dpr = Math.min(
-    typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
-    2,
-  );
-
-  return (
-    <section className="home-screen home-screen--connect">
-      <HomeSceneHost
-        pack={pack}
-        novaId={novaPoseId("connect")}
-        selected={null}
-        phase="idle"
-        reducedMotion={reducedMotion}
-        dpr={dpr}
-      />
-      <GeoBlockHud />
-    </section>
-  );
+  return <GeoBlockHud />;
 }

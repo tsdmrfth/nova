@@ -1,108 +1,112 @@
-import { useEffect, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import {
-  assertArtLockVersion,
-  canonManifest,
-  resolvePack,
-  tileArtId,
-} from "@nova/assets";
+import type { ChoiceId } from "@nova/assets";
 import { useDayStore } from "../day/useDayStore";
-import { HomeHud } from "../hud/HomeHud";
-import { buildHudModel } from "../hud/homeHudModel";
-import { usePrefersReducedMotion } from "../hud/usePrefersReducedMotion";
+import { HomeView } from "../hud/HomeView";
+import { VoteView } from "../hud/VoteView";
+import { buildHomeModel, buildVoteModel } from "../hud/homeHudModel";
+import { useCalmMotion } from "../hud/usePrefersReducedMotion";
+import { MenuSheet } from "../menu/MenuSheet";
 import { GrantToast } from "../onboarding/GrantToast";
 import { TutorialOverlay } from "../onboarding/TutorialOverlay";
 import { useOnboarding } from "../onboarding/useOnboarding";
-import { HomeSceneHost } from "../scene/HomeSceneHost";
-import { novaPoseId } from "../scene/novaPose";
+import { FrameOverlay, ScreenFrame } from "../ui";
 
-export function CastPage({ screen }: { screen: "home" | "vote" }) {
-  const { state, select, setSpend, setExtraSpend, cast } = useDayStore();
+/** Screens 03–05: Home with the first-run toast, tutorial, and Menu on top. */
+export function HomePage() {
+  const { state, select } = useDayStore();
   const onboarding = useOnboarding();
   const navigate = useNavigate();
-  const goBuy = () => navigate("/buy");
-  const goConfirm = () => navigate("/confirmation");
-  const { pack, missing } = useMemo(
-    () => resolvePack(canonManifest, state.day),
-    [state.day],
-  );
-  const reducedMotion = usePrefersReducedMotion();
-  const dpr = Math.min(
-    typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
-    2,
-  );
-  const artByChoice = useMemo(
-    () => ({
-      A: tileArtId(pack, "A"),
-      B: tileArtId(pack, "B"),
-      C: tileArtId(pack, "C"),
-    }),
-    [pack],
-  );
-  const model = useMemo(
-    () => buildHudModel(state, artByChoice),
-    [state, artByChoice],
-  );
-  const onboardingWave =
-    screen === "home" &&
-    onboarding.onboarded &&
-    !onboarding.state.grantPending &&
-    !onboarding.state.tutorialSeen;
-  const pose = screen === "vote" || onboardingWave ? novaPoseId("vote") : novaPoseId(screen);
+  const calm = useCalmMotion();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const model = useMemo(() => buildHomeModel(state), [state]);
 
-  useEffect(() => {
-    assertArtLockVersion(canonManifest.artLockVersion);
-    if (missing.length > 0) {
-      console.error("[nova] missing canon ids in Home pack", missing);
+  const grant = onboarding.state.grantPending;
+  const tutorial = !grant && onboarding.onboarded && !onboarding.state.tutorialSeen;
+
+  const pick = (id: ChoiceId) => {
+    if (!model.locked) {
+      select(id);
     }
-  }, [missing]);
+    navigate("/vote");
+  };
 
-  return (
-    <section className={`home-screen home-screen--${screen}`}>
-      <HomeSceneHost
-        pack={pack}
-        novaId={pose}
-        plateId={screen === "home" ? "scene_home_bg_city_nova" : undefined}
-        selected={state.selected}
-        phase={state.status === "cast" ? "pending" : "choosing"}
-        reducedMotion={reducedMotion}
-        dpr={dpr}
-      />
-      <HomeHud
-        model={model}
-        selected={state.selected}
-        onSelect={select}
-        onSpend={setSpend}
-        onExtraSpend={setExtraSpend}
-        onCast={cast}
-        onUsdcChip={goBuy}
-        onBuyExtraPlus={goBuy}
-        onConfirm={goConfirm}
-      />
-      {onboarding.state.grantPending ? (
+  let overlay = null;
+  if (menuOpen) {
+    overlay = (
+      <FrameOverlay align="fill" testId="menu-overlay">
+        <MenuSheet
+          onClose={() => setMenuOpen(false)}
+          onHowTo={() => {
+            setMenuOpen(false);
+            onboarding.reopenTutorial();
+          }}
+          onPools={() => navigate("/buy")}
+          onDisconnect={onboarding.disconnect}
+        />
+      </FrameOverlay>
+    );
+  } else if (grant) {
+    overlay = (
+      <FrameOverlay align="top">
         <GrantToast
-          firstDay
           freeInfluence={state.freeInfluence}
-          reducedMotion={reducedMotion}
+          reducedMotion={calm}
           onDismiss={onboarding.dismissGrant}
         />
-      ) : null}
-      {!onboarding.state.grantPending &&
-      onboarding.onboarded &&
-      !onboarding.state.tutorialSeen ? (
+      </FrameOverlay>
+    );
+  } else if (tutorial) {
+    overlay = (
+      <FrameOverlay align="center">
         <TutorialOverlay
+          goal={state.goal}
           onGotIt={onboarding.completeTutorial}
           onSkip={onboarding.completeTutorial}
         />
-      ) : null}
-    </section>
+      </FrameOverlay>
+    );
+  }
+
+  return (
+    <ScreenFrame
+      className={grant ? "home-screen home-screen--home is-behind-toast" : "home-screen home-screen--home"}
+      dim={menuOpen || tutorial}
+      overlay={overlay}
+      testId="home-screen"
+    >
+      <HomeView
+        model={model}
+        onPick={pick}
+        onPrimary={() => navigate(model.locked ? "/confirmation" : "/vote")}
+        onBuyExtra={() => navigate("/buy")}
+        onMenu={() => setMenuOpen(true)}
+      />
+    </ScreenFrame>
   );
 }
 
-export function HomePage() {
-  return <CastPage screen="home" />;
-}
-
+/** Screen 06. */
 export function VotePage() {
-  return <CastPage screen="vote" />;
+  const { state, select, setSpend, setExtraSpend, cast } = useDayStore();
+  const navigate = useNavigate();
+  const model = useMemo(() => buildVoteModel(state), [state]);
+
+  return (
+    <ScreenFrame className="home-screen home-screen--vote" testId="vote-screen">
+      <VoteView
+        model={model}
+        onBack={() => navigate("/")}
+        onSelect={select}
+        onSpend={setSpend}
+        onExtraSpend={setExtraSpend}
+        onCast={() => {
+          cast();
+          navigate("/confirmation");
+        }}
+        onViewLocked={() => navigate("/confirmation")}
+        onBuyExtra={() => navigate("/buy")}
+      />
+    </ScreenFrame>
+  );
 }

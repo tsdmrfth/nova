@@ -1,61 +1,76 @@
 import type { ChoiceId } from "@nova/assets";
 import { EFFECTIVE_EXTRA_CAP } from "@nova/shared";
 import { BUY_COPY } from "../buy/buyCopy";
-import { CONFIRMATION_COPY } from "../confirmation/confirmationCopy";
-import { canCast, formatLocalStamp, type DayState } from "../day/dayStore";
+import { canCast, formatLocalTime, type DayState } from "../day/dayStore";
 
 export type HudChoice = {
   id: ChoiceId;
   label: string;
-  title: string;
-  body: string;
-  artId: string;
+  selected: boolean;
 };
 
-export type HudModel = {
+/** Top chrome shared by Home and Vote. */
+export type HudChrome = {
   day: number;
+  dayLabel: string;
   goal: DayState["goal"];
   freeInfluence: number;
   extraInfluence: number;
-  spendAmount: number;
-  extraSpendAmount: number;
-  spendCapHint: string;
-  usdcLabel: string;
+  freeHint: string;
+};
+
+/** Screen 05. Read-only story + picks; voting happens on Vote. */
+export type HomeModel = HudChrome & {
+  chapterLabel: string;
+  title: string;
+  scene: string;
+  choices: HudChoice[];
   rankTitle: string;
   rankXp: { current: number; next: number };
-  heroTitle: string;
-  heroSub: string;
-  scene: string;
-  freeHint: string;
-  dayHint: string;
-  choices: HudChoice[];
+  locked: boolean;
+  closesLabel: string;
+  ctaLabel: string;
+};
+
+/** Screen 06. Pick + two independent steppers. */
+export type VoteModel = HudChrome & {
   status: DayState["status"];
+  locked: boolean;
+  choices: HudChoice[];
+  spendAmount: number;
+  extraSpendAmount: number;
+  freeMeta: string;
+  extraMeta: string;
+  canDecreaseFree: boolean;
+  canIncreaseFree: boolean;
+  canDecreaseExtra: boolean;
+  canIncreaseExtra: boolean;
   castEnabled: boolean;
-  castMessage: string;
-  castDetail: string;
+  castLabel: string;
+  lanes: string;
   buyEntry: string | null;
   buyEntryToBuy: boolean;
-  confirmLabel: string | null;
-  disclaimer: string;
 };
 
-export type HudCallbacks = {
-  onSelect(id: ChoiceId): void;
-  onSpend(amount: number): void;
-  onExtraSpend(amount: number): void;
-  onCast(): void;
-  onBuyFreePlus(): void;
-  onBuyExtraPlus(): void;
-  onUsdcChip(): void;
-};
-
-const RANK_CHROME = {
-  usdcLabel: "USDC",
-  rankTitle: "Architect Apprentice",
+export const HUD_COPY = {
+  rankTitle: "Architect · Apprentice",
   rankXp: { current: 1250, next: 2000 },
-  disclaimer:
-    "Influence is non-binding but impactful. Outcomes shape the world for all citizens.",
+  chooseCta: (closes: string) => `Choose and vote · closes ${closes}`,
+  viewVoteCta: "View your vote",
+  voteTitle: "Your choice",
+  voteSub: "Choose the path for Nova today.",
+  backLabel: "Cast Influence",
+  castOn: (id: ChoiceId) => `Cast Influence on ${id}`,
+  pickFirst: "Pick A, B or C",
+  lockedCta: "Vote locked · view",
+  lanes:
+    "Free and Extra are counted in separate lanes. Extra doesn't make your pick more likely to win.",
+  left: (left: number, of: number) => `${left} left of ${of}`,
 } as const;
+
+export function padDay(day: number): string {
+  return String(day).padStart(2, "0");
+}
 
 export function voteBuyEntry(state: DayState): {
   buyEntry: string | null;
@@ -73,44 +88,74 @@ export function voteBuyEntry(state: DayState): {
   return { buyEntry: null, buyEntryToBuy: false };
 }
 
-export function buildHudModel(
-  state: DayState,
-  artByChoice: Record<ChoiceId, string>,
-): HudModel {
-  const castEnabled = canCast(state);
-  const { buyEntry, buyEntryToBuy } = voteBuyEntry(state);
+function chrome(state: DayState): HudChrome {
   return {
     day: state.day,
+    dayLabel: `DAY ${padDay(state.day)}`,
     goal: state.goal,
     freeInfluence: state.freeInfluence,
     extraInfluence: state.extraInfluence,
-    spendAmount: state.spendAmount,
-    extraSpendAmount: state.extraSpendAmount,
-    spendCapHint: BUY_COPY.capHint,
-    ...RANK_CHROME,
-    heroTitle: state.roundTitle,
-    heroSub: `Day goal ${state.goal}`,
-    scene: state.scene,
     freeHint: state.freeHint,
-    dayHint: state.dayHint,
-    choices: state.choices.map((choice) => ({
-      id: choice.id,
-      label: choice.world,
-      title: choice.title,
-      body: choice.caption,
-      artId: artByChoice[choice.id],
-    })),
+  };
+}
+
+function choices(state: DayState): HudChoice[] {
+  return state.choices.map((choice) => ({
+    id: choice.id,
+    label: choice.title,
+    selected: state.selected === choice.id,
+  }));
+}
+
+export function buildHomeModel(state: DayState): HomeModel {
+  const locked = state.status === "cast";
+  const closesLabel = formatLocalTime(state.schedule.voteCloseAt);
+  return {
+    ...chrome(state),
+    chapterLabel: `CHAPTER ${padDay(state.day)}`,
+    title: state.roundTitle,
+    scene: state.scene,
+    choices: choices(state),
+    rankTitle: HUD_COPY.rankTitle,
+    rankXp: HUD_COPY.rankXp,
+    locked,
+    closesLabel,
+    ctaLabel: locked ? HUD_COPY.viewVoteCta : HUD_COPY.chooseCta(closesLabel),
+  };
+}
+
+export function buildVoteModel(state: DayState): VoteModel {
+  const open = state.status === "open";
+  const lastCast = open ? undefined : state.casts.at(-1);
+  // After a cast the steppers show what went on the pick, read-only.
+  const free = lastCast ? lastCast.free : state.spendAmount;
+  const extra = lastCast ? lastCast.extra : state.extraSpendAmount;
+  const freePool = lastCast ? lastCast.free + state.freeInfluence : state.freeInfluence;
+  const extraPool = state.extraInfluence;
+  const { buyEntry, buyEntryToBuy } = voteBuyEntry(state);
+  const selected = state.selected;
+
+  return {
+    ...chrome(state),
     status: state.status,
-    castEnabled,
-    castMessage: state.status === "cast" ? "Influence cast" : "Cast Influence",
-    castDetail:
-      state.status === "cast"
-        ? `Locked until ${formatLocalStamp(state.schedule.voteCloseAt)}. Results publish around ${formatLocalStamp(state.schedule.publishAt)}.`
-        : state.dayHint,
-    buyEntry,
+    locked: !open,
+    choices: choices(state),
+    spendAmount: free,
+    extraSpendAmount: extra,
+    freeMeta: HUD_COPY.left(Math.max(0, freePool - free), freePool),
+    extraMeta: HUD_COPY.left(Math.max(0, extraPool - extra), extraPool),
+    canDecreaseFree: open && state.spendAmount > 0,
+    canIncreaseFree: open && state.spendAmount < state.freeInfluence,
+    canDecreaseExtra: open && state.extraSpendAmount > 0,
+    canIncreaseExtra: open && state.extraSpendAmount < state.extraInfluence,
+    castEnabled: canCast(state),
+    castLabel: !open
+      ? HUD_COPY.lockedCta
+      : selected
+        ? HUD_COPY.castOn(selected)
+        : HUD_COPY.pickFirst,
+    lanes: HUD_COPY.lanes,
+    buyEntry: open ? buyEntry : null,
     buyEntryToBuy,
-    confirmLabel:
-      state.status === "cast" ? CONFIRMATION_COPY.reviewCta : null,
-    disclaimer: RANK_CHROME.disclaimer,
   };
 }

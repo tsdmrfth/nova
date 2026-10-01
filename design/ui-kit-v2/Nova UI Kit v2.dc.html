@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="nova-theme.css">
+<style>body{margin:0;background:#030b1a}a{color:#71b9ff;text-decoration:none}a:hover{color:#a9d4ff}@keyframes nova-spin{to{transform:rotate(360deg)}}</style>
+</helmet>
+<div style="min-height:100vh;background:#030b1a;padding:64px 64px 120px;display:flex;flex-direction:column;gap:72px;font-family:var(--nova-font);color:var(--nova-text)">
+
+<header style="display:flex;flex-direction:column;gap:18px;max-width:1100px">
+  <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+    <div style="font-size:56px;font-weight:300;letter-spacing:.15em;line-height:1">NOVA</div>
+    <div style="width:1px;height:44px;background:var(--nova-border)"></div>
+    <div style="font-size:16px;letter-spacing:.18em;color:var(--nova-muted)">MOBILE UI KIT · v2</div>
+  </div>
+  <div style="font-size:15px;line-height:1.55;color:var(--nova-muted);max-width:720px;text-wrap:pretty">Daily story + Influence voting on Arc. HUD floats over the full-bleed city plate; Nova stays visible on the right edge above every bottom sheet. Balances, shares and timings are illustrative.</div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px">
+    <div style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);font-size:13px"><span style="width:14px;height:14px;border-radius:4px;background:var(--nova-glass-fill);border:1px solid var(--nova-border)"></span>Navy glass</div>
+    <div style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);font-size:13px"><span style="width:14px;height:14px;border-radius:4px;background:var(--nova-blue)"></span>Electric blue #4880D6</div>
+    <div style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);font-size:13px">390 × 844 · 24 px margins</div>
+  </div>
+</header>
+
+<section id="onboarding" style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--nova-border-soft)"><span style="font-size:22px;font-weight:600">Onboarding</span><span style="font-size:13px;color:var(--nova-subtle)">01 — 04</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+
+    <div id="s01" data-screen-label="01 Connect wallet" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">01 · CONNECT WALLET</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:84px;left:24px;width:200px;display:flex;flex-direction:column;gap:14px;text-shadow:0 2px 12px rgba(0,9,28,.65)">
+          <div style="font-size:44px;font-weight:300;letter-spacing:.15em;line-height:1">NOVA</div>
+          <div style="font-family:var(--nova-story-font);font-size:30px;line-height:1.12;letter-spacing:-.02em">Raise Nova, one choice a day.</div>
+          <div style="font-size:15px;line-height:1.45;color:var(--nova-muted)">A daily story game with programmable USDC on Arc.</div>
+        </div>
+        <div style="position:absolute;left:24px;right:24px;bottom:28px;padding:20px;border-radius:var(--nova-radius);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-muted)">SIGN IN</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:var(--nova-cta-h);padding:0 18px;border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></svg>Connect Arc wallet
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta2-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-border);background:var(--nova-cta2-fill);font-size:14px;font-weight:500">Google</div>
+            <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta2-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-border);background:var(--nova-cta2-fill);font-size:14px;font-weight:500">Email</div>
+          </div>
+          <div style="font-size:12px;line-height:1.5;color:var(--nova-muted);text-align:center">Social sign-in creates an Arc wallet for you. You can export it any time.</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Wallet is primary; social sign-in sits below at equal weight.</div></sc-if>
+    </div>
+
+    <div id="s02" data-screen-label="02 Soft-launch notice" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">02 · SOFT-LAUNCH NOTICE</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" dim="{{ true }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;padding:24px">
+          <div style="width:100%;padding:24px 20px;border-radius:var(--nova-radius);background:var(--nova-glass-fill);border:1px solid var(--nova-blue);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:16px">
+            <div style="display:inline-flex;align-self:flex-start;align-items:center;min-height:28px;padding:0 12px;border-radius:999px;background:var(--nova-chip-fill);border:1px solid var(--nova-border);color:var(--nova-blue-light);font-size:11px;font-weight:600;letter-spacing:.08em">SOFT LAUNCH</div>
+            <div style="font-family:var(--nova-story-font);font-size:30px;line-height:1.12;letter-spacing:-.02em">Before you play</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;gap:10px;font-size:13px;line-height:1.5;color:var(--nova-muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.8" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><span>Nova is a story game. Nova is a scripted AI agent, not general intelligence.</span></div>
+              <div style="display:flex;gap:10px;font-size:13px;line-height:1.5;color:var(--nova-muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.8" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><span>Free Influence refills daily. Extra Influence is optional and paid in USDC on Arc.</span></div>
+              <div style="display:flex;gap:10px;font-size:13px;line-height:1.5;color:var(--nova-muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.8" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><span>Free and Extra are counted in separate lanes. Extra does not increase win odds of your pick.</span></div>
+              <div style="display:flex;gap:10px;font-size:13px;line-height:1.5;color:var(--nova-muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.8" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><span>Payouts come only from each day's pool and can be zero. Contracts are new.</span></div>
+              <div style="display:flex;gap:10px;font-size:13px;line-height:1.5;color:var(--nova-muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.8" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><span>Nova runs on Arc and is not affiliated with or endorsed by Circle.</span></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:44px;font-size:14px">
+              <div style="display:grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--nova-blue-bright);border:1px solid var(--nova-blue-light)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+              I understand this is a soft launch
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Enter Nova</div>
+          </div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Enter Nova stays disabled until the box is checked.</div></sc-if>
+    </div>
+
+    <div id="s03" data-screen-label="03 Free Influence toast" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">03 · FREE INFLUENCE +10 → HOME</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:56px;left:24px;right:24px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-blue-light);box-shadow:var(--nova-selected-shadow);backdrop-filter:blur(20px) saturate(125%)">
+          <div style="display:grid;place-items:center;width:44px;height:44px;flex:none;border-radius:50%;border:2px solid var(--nova-blue-bright);background:var(--nova-orb-fill);box-shadow:var(--nova-orb-shadow);font-size:14px;font-weight:600">+10</div>
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1"><span style="font-size:14px;font-weight:600">Free Influence +10</span><span style="font-size:12px;color:var(--nova-muted)">Today's refill is in. Spend it on any choice.</span></div>
+        </div>
+        <div style="position:absolute;left:24px;right:24px;bottom:24px;display:flex;flex-direction:column;gap:8px;opacity:.5">
+          <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">A</div>Light the skybridge</div>
+          <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">B</div>Open the signal tower</div>
+          <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">C</div>Wake the harbor</div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);color:#fff;font-size:15px;font-weight:600">Choose and vote</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Toast slides down 240ms, holds 2.4s; Home fades to full opacity behind it. No particles.</div></sc-if>
+    </div>
+
+    <div id="s04" data-screen-label="04 Tutorial overlay" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">04 · TUTORIAL OVERLAY (OPTIONAL)</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" dim="{{ true }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;padding:24px">
+          <div style="width:100%;padding:24px 20px;border-radius:var(--nova-radius);background:var(--nova-glass-fill);border:1px solid var(--nova-blue);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-blue-light)">FIRST LIGHT</div>
+              <div style="font-family:var(--nova-story-font);font-size:30px;line-height:1.12;letter-spacing:-.02em">How today works</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:12px;min-height:52px"><div style="display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:50%;border:1px solid var(--nova-blue);background:linear-gradient(135deg,#164c89,#082953);font-size:17px">1</div><span style="font-size:14px;line-height:1.45;color:var(--nova-muted)">Read today's chapter. Nova faces one decision.</span></div>
+              <div style="display:flex;align-items:center;gap:12px;min-height:52px"><div style="display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:50%;border:1px solid var(--nova-blue);background:linear-gradient(135deg,#164c89,#082953);font-size:17px">2</div><span style="font-size:14px;line-height:1.45;color:var(--nova-muted)">Pick A, B or C and cast Influence. Today's goal is MOST.</span></div>
+              <div style="display:flex;align-items:center;gap:12px;min-height:52px"><div style="display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:50%;border:1px solid var(--nova-blue);background:linear-gradient(135deg,#164c89,#082953);font-size:17px">3</div><span style="font-size:14px;line-height:1.45;color:var(--nova-muted)">After voting closes, correct voters share the day pool by Influence weight.</span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px">
+              <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-border);background:var(--nova-cta2-fill);font-size:14px;font-weight:500">Skip</div>
+              <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Got it</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Shown once after the toast. Reopen from Menu › Help.</div></sc-if>
+    </div>
+
+  </div>
+</section>
+
+<section id="loop" style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--nova-border-soft)"><span style="font-size:22px;font-weight:600">Daily loop</span><span style="font-size:13px;color:var(--nova-subtle)">05 — 07</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+
+    <div id="s05" data-screen-label="05 Home" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">05 · HOME</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:52px;left:24px;right:24px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="display:flex;align-items:center;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:13px;letter-spacing:.06em">DAY 07</div>
+            <div style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:13px;letter-spacing:.06em;color:var(--nova-blue-light)">GOAL · <b style="color:var(--nova-text);font-weight:600">MOST</b></div>
+            <div style="flex:1"></div>
+            <div style="display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:13px;letter-spacing:.06em"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>MENU</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg><span style="font-size:11px;letter-spacing:.06em">FREE</span><span style="margin-left:auto;font-size:22px;font-variant-numeric:tabular-nums">10</span></div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg><span style="font-size:11px;letter-spacing:.06em">EXTRA</span><span style="margin-left:auto;font-size:22px;font-variant-numeric:tabular-nums">20</span></div>
+          </div>
+        </div>
+        <div style="position:absolute;top:168px;left:16px;width:228px;box-sizing:border-box;padding:14px 16px 16px;border-radius:var(--nova-r-card);background:rgba(6,22,46,.42);backdrop-filter:blur(14px) saturate(120%);display:flex;flex-direction:column;gap:8px;text-shadow:0 1px 8px rgba(0,9,28,.5)">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-blue-light)">CHAPTER 07</div>
+          <div style="font-family:var(--nova-story-font);font-size:32px;line-height:1.1;letter-spacing:-.02em">The Signal Tower</div>
+          <div style="font-size:15px;line-height:1.45">An old tower on the bay has started broadcasting again. What should Nova do at first light?</div>
+        </div>
+        <div style="position:absolute;left:24px;right:24px;bottom:24px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(16px);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">A</div><span style="flex:1">Light the skybridge</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+          <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(16px);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">B</div><span style="flex:1">Open the signal tower</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+          <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(16px);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">C</div><span style="flex:1">Wake the harbor</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+          <div style="padding:10px 14px;border-radius:var(--nova-r-chip);background:var(--nova-glass-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:12px"><span>Architect · Rank III</span><span style="color:var(--nova-muted);font-variant-numeric:tabular-nums">340 / 500</span></div>
+            <div style="height:5px;border-radius:999px;background:rgba(151,185,228,.22);overflow:hidden"><div style="width:68%;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--nova-blue),var(--nova-blue-light))"></div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Choose and vote · closes 20:00 UTC</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Story copy sits on the plate (no panel) at 68% width so Nova stays clear. Tapping a card opens Vote with it preselected.</div></sc-if>
+    </div>
+
+    <div id="s06" data-screen-label="06 Vote" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">06 · VOTE (INTERACTIVE)</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:52px;left:24px;right:24px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:8px">
+            <div style="flex:1;display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:15px;font-weight:500"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Cast Influence</div>
+            <div style="display:flex;align-items:center;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:13px;letter-spacing:.06em">DAY 07</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg><span style="font-size:11px;letter-spacing:.06em">FREE</span><span style="margin-left:auto;font-size:22px;font-variant-numeric:tabular-nums">10</span></div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg><span style="font-size:11px;letter-spacing:.06em">EXTRA</span><span style="margin-left:auto;font-size:22px;font-variant-numeric:tabular-nums">20</span></div>
+          </div>
+        </div>
+        <div style="position:absolute;top:168px;left:24px;width:62%;display:flex;flex-direction:column;gap:6px;text-shadow:0 2px 12px rgba(0,9,28,.7)">
+          <div style="font-family:var(--nova-story-font);font-size:34px;line-height:1.1;letter-spacing:-.02em">Your choice</div>
+          <div style="font-size:15px;line-height:1.45">Choose the path for Nova today.</div>
+        </div>
+        <div style="position:absolute;left:24px;right:24px;bottom:24px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ picks }}" as="p" hint-placeholder-count="3">
+              <div onClick="{{ p.select }}" style="display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 14px;border-radius:var(--nova-r-card);background:{{ p.bg }};border:1px solid {{ p.bd }};box-shadow:{{ p.sh }};backdrop-filter:blur(16px);font-size:15px;cursor:pointer;transition:border-color 180ms ease,box-shadow 180ms ease">
+                <div style="display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">{{ p.key }}</div>
+                <span style="flex:1">{{ p.label }}</span>
+                <sc-if value="{{ p.on }}" hint-placeholder-val="{{ false }}"><div style="display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--nova-blue-bright);border:1px solid var(--nova-blue-light)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div></sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:12px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:10px;font-size:12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg><span style="flex:1;letter-spacing:.06em">FREE TO CAST</span><span style="color:var(--nova-muted)">{{ freeLeft }} left of 10</span></div>
+              <div style="display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:12px;padding:0 60px 0 30px">
+                <div onClick="{{ freeDec }}" style="display:grid;place-items:center;width:44px;height:44px;border-radius:var(--nova-r-step);background:var(--nova-step-fill);border:1px solid var(--nova-blue);box-shadow:inset 0 1px 0 rgba(165,215,255,.2);cursor:pointer" style-active="filter:brightness(1.2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"></path></svg></div>
+                <div style="text-align:center;font-size:24px;font-variant-numeric:tabular-nums">{{ free }}</div>
+                <div onClick="{{ freeInc }}" style="display:grid;place-items:center;width:44px;height:44px;border-radius:var(--nova-r-step);background:var(--nova-step-fill);border:1px solid var(--nova-blue);box-shadow:inset 0 1px 0 rgba(165,215,255,.2);cursor:pointer" style-active="filter:brightness(1.2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5v14"></path></svg></div>
+              </div>
+            </div>
+            <div style="height:1px;background:var(--nova-border-soft)"></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:10px;font-size:12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg><span style="flex:1;letter-spacing:.06em">EXTRA TO CAST</span><span style="color:var(--nova-muted)">{{ extraLeft }} left of 20</span></div>
+              <div style="display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:12px;padding:0 60px 0 30px">
+                <div onClick="{{ extraDec }}" style="display:grid;place-items:center;width:44px;height:44px;border-radius:var(--nova-r-step);background:var(--nova-step-fill);border:1px solid var(--nova-blue);box-shadow:inset 0 1px 0 rgba(165,215,255,.2);cursor:pointer" style-active="filter:brightness(1.2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"></path></svg></div>
+                <div style="text-align:center;font-size:24px;font-variant-numeric:tabular-nums">{{ extra }}</div>
+                <div onClick="{{ extraInc }}" style="display:grid;place-items:center;width:44px;height:44px;border-radius:var(--nova-r-step);background:var(--nova-step-fill);border:1px solid var(--nova-blue);box-shadow:inset 0 1px 0 rgba(165,215,255,.2);cursor:pointer" style-active="filter:brightness(1.2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5v14"></path></svg></div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:12px;line-height:1.5;color:var(--nova-muted);text-align:center">Free and Extra are counted in separate lanes. Extra does not increase win odds of your pick.</div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Cast Influence on {{ pick }}</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Tap a pick and the steppers. Two independent controls, never a combined total.</div></sc-if>
+    </div>
+
+    <div id="s07" data-screen-label="07 Vote locked" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">07 · VOTE LOCKED</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:52px;left:24px;right:24px;display:flex;gap:8px">
+          <div style="flex:1;display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:15px;font-weight:500"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Cast Influence</div>
+          <div style="display:flex;align-items:center;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:13px;letter-spacing:.06em">DAY 07</div>
+        </div>
+        <div style="position:absolute;left:24px;right:24px;bottom:24px;padding:48px 16px 16px;border-radius:var(--nova-radius);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:10px">
+          <div style="position:absolute;top:-36px;left:50%;margin-left:-36px;display:grid;place-items:center;width:72px;height:72px;border-radius:50%;border:2px solid var(--nova-blue-bright);background:var(--nova-orb-fill),var(--nova-navy);box-shadow:var(--nova-orb-shadow)"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+          <div style="text-align:center;display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--nova-story-font);font-size:32px;line-height:1.12;letter-spacing:-.02em">Vote locked</div><div style="font-size:14px;color:var(--nova-muted)">Your Influence is cast.</div></div>
+          <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">B</div>Open the signal tower</div>
+          <div style="padding:6px 14px;border-radius:14px;background:var(--nova-glass-fill);border:1px solid var(--nova-border-soft);display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg><div style="flex:1;display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:14px;font-variant-numeric:tabular-nums"><span>Free spent</span><span>10</span><span style="color:var(--nova-muted);font-size:13px">Remaining</span><span style="color:var(--nova-muted);font-size:13px">0</span></div></div>
+            <div style="height:1px;background:var(--nova-border-soft)"></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg><div style="flex:1;display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:14px;font-variant-numeric:tabular-nums"><span>Extra spent</span><span>5</span><span style="color:var(--nova-muted);font-size:13px">Remaining</span><span style="color:var(--nova-muted);font-size:13px">15</span></div></div>
+            <div style="height:1px;background:var(--nova-border-soft)"></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg><div style="flex:1;display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:13px;font-variant-numeric:tabular-nums"><span style="color:var(--nova-muted)">Vote closes</span><span>20:00 UTC</span><span style="color:var(--nova-muted)">Results publish</span><span>20:15 UTC</span></div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Back to Nova</div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:40px;border-radius:var(--nova-r-card);border:1px solid var(--nova-border);background:var(--nova-cta2-fill);font-size:14px">See results · 20:15</div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:40px;border-radius:var(--nova-r-card);border:1px solid var(--nova-border);background:var(--nova-cta2-fill);font-size:14px">Back to vote · View only</div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:40px;border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta2-fill);color:var(--nova-blue-light);font-size:14px">Extra Influence</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">"See results" shows its publish time until 20:15, then becomes active. Nova's head stays visible above the panel.</div></sc-if>
+    </div>
+
+  </div>
+</section>
+<section id="results" style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--nova-border-soft)"><span style="font-size:22px;font-weight:600">Results</span><span style="font-size:13px;color:var(--nova-subtle)">08 — 11</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+
+    <div id="s08" data-screen-label="08 Results correct" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">08 · RESULTS · MATCHED</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:52px;left:24px;display:flex;align-items:center;gap:12px;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:13px;letter-spacing:.06em"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>DAY 07<span style="width:1px;height:16px;background:var(--nova-border)"></span>RESULTS</div>
+        <div style="position:absolute;left:24px;right:24px;bottom:24px;padding:46px 16px 16px;border-radius:var(--nova-radius);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:10px">
+          <div style="position:absolute;top:-36px;left:50%;margin-left:-36px;display:grid;place-items:center;width:72px;height:72px;border-radius:50%;border:2px solid var(--nova-blue-bright);background:var(--nova-orb-fill),var(--nova-navy);box-shadow:var(--nova-orb-shadow)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg></div>
+          <div style="text-align:center;display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--nova-story-font);font-size:32px;line-height:1.12;letter-spacing:-.02em">You matched!</div><div style="font-size:14px;color:var(--nova-muted)">Nova chose your path.</div></div>
+          <div style="display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-selected-fill);border:1px solid var(--nova-blue-light);box-shadow:var(--nova-selected-shadow);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">B</div>Open the signal tower</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;color:var(--nova-blue-light)">Your pick · <b style="color:var(--nova-text);font-weight:600">B</b><span style="display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--nova-blue-bright)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span></div>
+          <div style="padding:6px 14px;border-radius:14px;background:var(--nova-glass-fill);border:1px solid var(--nova-border-soft);display:flex;flex-direction:column;font-size:14px;font-variant-numeric:tabular-nums">
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:32px"><span>Day pool</span><span>100 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:32px"><span style="color:var(--nova-muted)">Paid lane · 90%</span><span>90 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:32px"><span style="color:var(--nova-muted)">Free lane · 10%</span><span>10 USDC</span></div>
+            <div style="height:1px;margin:6px 0;background:var(--nova-border-soft)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:32px"><span>Your Extra share</span><span>2.25 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:32px"><span>Your Free share</span><span>0.25 USDC</span></div>
+            <div style="height:1px;margin:6px 0;background:var(--nova-border-soft)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:36px;font-weight:600"><span>Claimable</span><span style="font-size:16px">2.50 USDC</span></div>
+          </div>
+          <div style="font-size:12px;line-height:1.5;color:var(--nova-muted);text-align:center">Each lane pays correct voters by Influence weight.</div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Claim 2.50 USDC</div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta2-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta2-fill);color:var(--nova-blue-light);font-size:14px;font-weight:500">Back to Nova</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Cheer = orb glow eases in once (600ms). Free-only voters see 0.00 on the Extra row.</div></sc-if>
+    </div>
+
+    <div id="s09" data-screen-label="09 Results miss" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">09 · RESULTS · NOT THIS ROUND</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:52px;left:24px;display:flex;align-items:center;gap:12px;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:13px;letter-spacing:.06em"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>DAY 07<span style="width:1px;height:16px;background:var(--nova-border)"></span>RESULTS</div>
+        <div style="position:absolute;left:24px;right:24px;bottom:24px;padding:46px 16px 16px;border-radius:var(--nova-radius);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:10px">
+          <div style="position:absolute;top:-36px;left:50%;margin-left:-36px;display:grid;place-items:center;width:72px;height:72px;border-radius:50%;border:2px solid var(--nova-blue-bright);background:var(--nova-orb-fill),var(--nova-navy);box-shadow:var(--nova-orb-shadow)"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></div>
+          <div style="text-align:center;display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--nova-story-font);font-size:32px;line-height:1.12;letter-spacing:-.02em">Not this round</div><div style="font-size:14px;color:var(--nova-muted)">A new story begins tomorrow.</div></div>
+          <div style="display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">B</div><span style="flex:1">Open the signal tower</span><span style="font-size:11px;letter-spacing:.08em;color:var(--nova-blue-light)">WINNER</span></div>
+          <div style="text-align:center;font-size:14px;color:var(--nova-blue-light)">Your pick · <b style="color:var(--nova-text);font-weight:600">A</b></div>
+          <div style="padding:6px 14px;border-radius:14px;background:var(--nova-glass-fill);border:1px solid var(--nova-border-soft);display:flex;flex-direction:column;font-size:14px;font-variant-numeric:tabular-nums">
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:32px"><span>Day pool</span><span>100 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:32px"><span style="color:var(--nova-muted)">Paid lane · 90%</span><span>90 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:32px"><span style="color:var(--nova-muted)">Free lane · 10%</span><span>10 USDC</span></div>
+            <div style="height:1px;margin:6px 0;background:var(--nova-border-soft)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:32px"><span>Your Extra share</span><span style="color:var(--nova-muted)">0.00 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:32px"><span>Your Free share</span><span style="color:var(--nova-muted)">0.00 USDC</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border)">
+            <div style="display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:12px;background:var(--nova-letter-fill);border:1px solid var(--nova-border-soft)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;letter-spacing:.08em;color:var(--nova-blue-light)">DAY 08 · 00:00 UTC</span><span style="font-family:var(--nova-story-font);font-size:18px">A signal beyond the city</span></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Back to Nova</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Same layout as Matched; no red, no shake. Free Influence refills at the next-day tease.</div></sc-if>
+    </div>
+
+    <div id="s10" data-screen-label="10 Claim pending" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">10 · CLAIM PENDING</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:52px;left:24px;display:flex;align-items:center;gap:12px;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:13px;letter-spacing:.06em"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>DAY 07<span style="width:1px;height:16px;background:var(--nova-border)"></span>RESULTS</div>
+        <div style="position:absolute;left:24px;right:24px;bottom:24px;padding:24px 16px 16px;border-radius:var(--nova-radius);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:center">{{ spinner }}</div>
+          <div style="text-align:center;display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--nova-story-font);font-size:32px;line-height:1.12;letter-spacing:-.02em">Claim pending</div><div style="font-size:14px;color:var(--nova-muted)">Waiting for onchain confirmation.</div></div>
+          <div style="padding:6px 14px;border-radius:14px;background:var(--nova-glass-fill);border:1px solid var(--nova-border-soft);display:flex;flex-direction:column;font-size:14px;font-variant-numeric:tabular-nums">
+            <div style="display:flex;align-items:center;gap:10px;min-height:40px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg><span style="flex:1">Claim amount</span><span>2.50 USDC</span></div>
+            <div style="display:flex;align-items:center;gap:10px;min-height:40px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"></path></svg><span style="flex:1">Network</span><span>Arc</span></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;min-height:var(--nova-cta2-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta2-fill);color:var(--nova-blue-light);font-size:14px;font-weight:500">View claim transaction<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg></div>
+          <div style="font-size:12px;line-height:1.5;color:var(--nova-muted);text-align:center">Once confirmed, your USDC will be available in your connected wallet.</div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid rgba(72,128,214,.4);background:var(--nova-cta-disabled);color:var(--nova-cta-disabled-text);font-size:15px;font-weight:600">Confirming…</div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta2-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-border);background:var(--nova-cta2-fill);font-size:14px;font-weight:500">Back to Nova</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Spinner 1.8s linear; stops under Calm motion. Failure swaps copy to "Claim didn't go through" + Retry.</div></sc-if>
+    </div>
+
+    <div id="s11" data-screen-label="11 Claim done" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">11 · CLAIM DONE</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:52px;left:24px;display:flex;align-items:center;gap:12px;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:13px;letter-spacing:.06em"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>DAY 07<span style="width:1px;height:16px;background:var(--nova-border)"></span>RESULTS</div>
+        <div style="position:absolute;left:24px;right:24px;bottom:24px;padding:46px 16px 16px;border-radius:var(--nova-radius);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:12px">
+          <div style="position:absolute;top:-36px;left:50%;margin-left:-36px;display:grid;place-items:center;width:72px;height:72px;border-radius:50%;border:2px solid var(--nova-blue-bright);background:var(--nova-orb-fill),var(--nova-navy);box-shadow:var(--nova-orb-shadow)"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+          <div style="text-align:center;display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--nova-story-font);font-size:32px;line-height:1.12;letter-spacing:-.02em">USDC claimed</div><div style="font-size:14px;color:var(--nova-muted)">Sent to your connected wallet.</div></div>
+          <div style="padding:6px 14px;border-radius:14px;background:var(--nova-glass-fill);border:1px solid var(--nova-border-soft);display:flex;flex-direction:column;font-size:14px;font-variant-numeric:tabular-nums">
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:40px"><span>Amount</span><span style="font-weight:600">2.50 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:40px"><span style="color:var(--nova-muted)">To</span><span>0x71C4…9aE2</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:40px"><span style="color:var(--nova-muted)">Network</span><span>Arc</span></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;min-height:var(--nova-cta2-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta2-fill);color:var(--nova-blue-light);font-size:14px;font-weight:500">View on explorer<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg></div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Back to Nova</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">After this, the Results screen's Claim button becomes a "Claimed" status chip.</div></sc-if>
+    </div>
+
+  </div>
+</section>
+<section id="economy" style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--nova-border-soft)"><span style="font-size:22px;font-weight:600">Extra Influence, menu, demo</span><span style="font-size:13px;color:var(--nova-subtle)">12 — 14</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+
+    <div id="s12" data-screen-label="12 Buy Extra Influence" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">12 · BUY EXTRA INFLUENCE (INTERACTIVE)</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:52px;left:24px;right:24px;display:flex;gap:8px">
+          <div style="flex:1;display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px);font-size:15px;font-weight:500"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Extra Influence</div>
+          <div style="display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.7" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg><span style="font-size:18px;font-variant-numeric:tabular-nums">20</span></div>
+        </div>
+        <div style="position:absolute;left:24px;right:24px;bottom:24px;padding:20px 16px 16px;border-radius:var(--nova-radius);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--nova-story-font);font-size:28px;line-height:1.12;letter-spacing:-.02em">Add Extra Influence</div><div style="font-size:13px;line-height:1.5;color:var(--nova-muted)">Optional. Paid in USDC on Arc · 1 USDC = 1 Extra.</div></div>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+            <sc-for list="{{ packs }}" as="k" hint-placeholder-count="3">
+              <div onClick="{{ k.pick }}" style="min-height:80px;display:grid;place-content:center;gap:2px;text-align:center;border-radius:var(--nova-r-chip);background:{{ k.bg }};border:1px solid {{ k.bd }};box-shadow:{{ k.sh }};cursor:pointer;transition:border-color 180ms ease,box-shadow 180ms ease">
+                <span style="font-size:24px;font-variant-numeric:tabular-nums">{{ k.v }}</span>
+                <span style="font-size:11px;letter-spacing:.06em;color:var(--nova-muted)">USDC</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:10px 14px;border-radius:14px;background:var(--nova-glass-fill);border:1px solid var(--nova-border-soft);display:flex;flex-direction:column;gap:6px;font-size:14px;font-variant-numeric:tabular-nums">
+            <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-muted)">WHERE {{ pack }} USDC GOES</div>
+            <div style="display:flex;gap:2px;height:6px;border-radius:999px;overflow:hidden;margin:2px 0 4px"><div style="flex:90;background:var(--nova-blue-bright)"></div><div style="flex:8;background:var(--nova-blue)"></div><div style="flex:2;background:var(--nova-blue-light)"></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:30px"><span style="display:flex;align-items:center;gap:8px"><i style="width:8px;height:8px;border-radius:2px;background:var(--nova-blue-bright)"></i>Prize pool · 90%</span><span>{{ pool }}</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:30px"><span style="display:flex;align-items:center;gap:8px"><i style="width:8px;height:8px;border-radius:2px;background:var(--nova-blue)"></i>Studio · 8%</span><span>{{ studio }}</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:30px"><span style="display:flex;align-items:center;gap:8px"><i style="width:8px;height:8px;border-radius:2px;background:var(--nova-blue-light)"></i>Nova operating budget · 2%</span><span>{{ ops }}</span></div>
+          </div>
+          <div style="display:flex;gap:8px;font-size:12px;line-height:1.5;color:var(--nova-muted)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.8" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><span>Extra is counted in its own lane and does not increase win odds of any pick. The prize pool pays correct voters only.</span></div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Confirm buy · {{ pack }} USDC</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Packs are live and the split updates. 1:1 rate is a placeholder; wallet signature sheet follows Confirm.</div></sc-if>
+    </div>
+
+    <div id="s13" data-screen-label="13 Menu" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">13 · MENU</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" dim="{{ true }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:52px;left:24px;right:24px;bottom:24px;padding:16px;border-radius:var(--nova-radius);background:var(--nova-glass-fill);border:1px solid var(--nova-blue);box-shadow:var(--nova-shadow);backdrop-filter:blur(20px) saturate(125%);display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:20px;font-weight:600">Menu</span><span style="font-size:12px;color:var(--nova-muted)">Architect · Rank III · 0x71C4…9aE2</span></div>
+            <div style="display:grid;place-items:center;width:44px;height:44px;border-radius:var(--nova-r-chip);border:1px solid var(--nova-border);background:var(--nova-chip-fill)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-blue-light)">DAY HISTORY</div>
+            <div style="display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--nova-r-chip);background:var(--nova-cta2-fill);border:1px solid var(--nova-border-soft);font-size:13px;font-variant-numeric:tabular-nums"><span>Day 06</span><span style="color:var(--nova-muted)">Picked C · matched</span><span style="color:var(--nova-blue-light)">+1.40</span></div>
+            <div style="display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--nova-r-chip);background:var(--nova-cta2-fill);border:1px solid var(--nova-border-soft);font-size:13px;font-variant-numeric:tabular-nums"><span>Day 05</span><span style="color:var(--nova-muted)">Picked A · not this round</span><span style="color:var(--nova-muted)">0.00</span></div>
+            <div style="display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--nova-r-chip);background:var(--nova-cta2-fill);border:1px solid var(--nova-border-soft);font-size:13px;font-variant-numeric:tabular-nums"><span>Day 04</span><span style="color:var(--nova-muted)">Picked B · matched</span><span style="color:var(--nova-blue-light)">+0.02</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-blue-light);margin-bottom:2px">SETTINGS</div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:46px;border-bottom:1px solid var(--nova-border-soft);font-size:14px"><span style="flex:1">Daily reminder</span><div style="display:flex;align-items:center;justify-content:center;width:44px;height:44px"><div style="width:38px;height:22px;box-sizing:border-box;padding:2px;border-radius:999px;background:var(--nova-blue-bright);border:1px solid var(--nova-border);display:flex;justify-content:flex-end"><div style="width:16px;height:16px;border-radius:50%;background:#e3efff"></div></div></div></div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:46px;border-bottom:1px solid var(--nova-border-soft);font-size:14px"><span style="flex:1">Calm motion</span><div style="display:flex;align-items:center;justify-content:center;width:44px;height:44px"><div style="width:38px;height:22px;box-sizing:border-box;padding:2px;border-radius:999px;background:var(--nova-track-off);border:1px solid var(--nova-border);display:flex"><div style="width:16px;height:16px;border-radius:50%;background:#e3efff"></div></div></div></div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:46px;font-size:14px"><span style="flex:1">Wallet</span><span style="color:var(--nova-muted)">Arc</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93a9c9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-blue-light);margin-bottom:2px">HELP</div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:46px;border-bottom:1px solid var(--nova-border-soft);font-size:14px"><span style="flex:1">How today works</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93a9c9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:46px;border-bottom:1px solid var(--nova-border-soft);font-size:14px"><span style="flex:1">Pools and the 90 / 8 / 2 split</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93a9c9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:46px;font-size:14px"><span style="flex:1">Soft-launch notice</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93a9c9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+          </div>
+          <div style="flex:1"></div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta2-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-border);background:var(--nova-cta2-fill);font-size:14px;font-weight:500">Disconnect</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Opens from the MENU chip. Toggles use a 38×22 track inside a 44px tap target. Day history is a stub.</div></sc-if>
+    </div>
+
+    <div id="s14" data-screen-label="14 Demo grant page" style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--nova-subtle)">14 · /DEMO GRANT PAGE</div>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 1px rgba(113,185,255,.22),0 30px 80px rgba(0,0,0,.55)">
+        <dc-import name="NovaScene" bg-image="{{ bgImage }}" dim="{{ true }}" style="position:absolute;inset:0" hint-size="390px,844px"></dc-import>
+        <div style="position:absolute;top:56px;left:24px;right:24px;bottom:24px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-blue-light)">NOVA · /DEMO</div>
+            <div style="font-family:var(--nova-story-font);font-size:28px;line-height:1.12;letter-spacing:-.02em">One Extra buy on Arc mainnet</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px)"><div style="display:grid;place-items:center;width:26px;height:26px;flex:none;border-radius:50%;background:var(--nova-blue-bright);border:1px solid var(--nova-blue-light)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">1 · Connect Arc mainnet</span><span style="font-size:12px;color:var(--nova-muted)">0x71C4…9aE2</span></div></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);backdrop-filter:blur(16px)"><div style="display:grid;place-items:center;width:26px;height:26px;flex:none;border-radius:50%;background:var(--nova-blue-bright);border:1px solid var(--nova-blue-light)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">2 · Buy 1 Extra Influence · 1 USDC</span><span style="font-size:12px;color:var(--nova-muted)">0.90 prize pool · 0.08 studio · 0.02 Nova budget</span></div></div>
+          <div style="padding:12px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-blue-light);box-shadow:var(--nova-selected-shadow);backdrop-filter:blur(16px);display:flex;flex-direction:column;gap:8px">
+            <span style="font-size:14px;font-weight:600">3 · Explorer links</span>
+            <div style="display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:var(--nova-r-chip);background:var(--nova-cta2-fill);border:1px solid var(--nova-border-soft);font-size:13px"><span style="flex:1">Buy tx</span><span style="color:var(--nova-blue-light);font-variant-numeric:tabular-nums">0x8f3a…c21e</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg></div>
+            <div style="display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:var(--nova-r-chip);background:var(--nova-cta2-fill);border:1px solid var(--nova-border-soft);font-size:13px"><span style="flex:1">NovaSignal tx</span><span style="color:var(--nova-blue-light);font-variant-numeric:tabular-nums">0x2b9d…07fa</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg></div>
+          </div>
+          <div style="display:flex;gap:8px;padding:12px 14px;border-radius:var(--nova-r-card);background:var(--nova-cta2-fill);border:1px solid var(--nova-border-soft);font-size:12px;line-height:1.55;color:var(--nova-muted)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="1.8" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><span>Nova is a story game with programmable USDC on Arc. Nova is a scripted AI agent, not general intelligence. Not affiliated with or endorsed by Circle. Payouts depend on daily pools and can be zero.</span></div>
+          <div style="flex:1"></div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Open Nova</div>
+        </div>
+      </div>
+      <sc-if value="{{ notes }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:var(--nova-subtle)">Shown completed. Steps unlock in order; step 3 appears once both transactions confirm.</div></sc-if>
+    </div>
+
+  </div>
+</section>
+
+<section id="legend" style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--nova-border-soft)"><span style="font-size:22px;font-weight:600">Component legend</span><span style="font-size:13px;color:var(--nova-subtle)">tokens in nova-theme.css</span></div>
+  <div style="max-width:1290px;padding:32px;border-radius:24px;background:linear-gradient(160deg,#0b2244,#06162e);border:1px solid var(--nova-border-soft);display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:32px">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-subtle)">CHIPS</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;min-height:44px;padding:0 14px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border);font-size:13px;letter-spacing:.06em">DAY 07</div>
+        <div style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--nova-chip-fill);border:1px solid var(--nova-border);font-size:13px;letter-spacing:.06em;color:var(--nova-blue-light)">GOAL · <b style="color:var(--nova-text);font-weight:600">MOST</b></div>
+        <div style="display:inline-flex;align-items:center;min-height:28px;padding:0 12px;border-radius:999px;background:var(--nova-chip-fill);border:1px solid var(--nova-border);color:var(--nova-blue-light);font-size:11px;font-weight:600;letter-spacing:.08em">SOFT LAUNCH</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border)"><span style="font-size:11px;letter-spacing:.06em">FREE</span><span style="margin-left:auto;font-size:22px">10</span></div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--nova-r-chip);background:var(--nova-chip-fill);border:1px solid var(--nova-border)"><span style="font-size:11px;letter-spacing:.06em">EXTRA</span><span style="margin-left:auto;font-size:22px">20</span></div>
+      </div>
+      <div style="font-size:12px;line-height:1.5;color:var(--nova-subtle)">Square chip (12px) for data; pill for status. 44px min height.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-subtle)">CHOICE CARDS</div>
+      <div style="display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);box-shadow:var(--nova-shadow);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">A</div>Default</div>
+      <div style="display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-selected-fill);border:1px solid var(--nova-blue-light);box-shadow:var(--nova-selected-shadow);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">B</div><span style="flex:1">Selected</span><div style="display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--nova-blue-bright)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div></div>
+      <div style="display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);font-size:15px"><div style="display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--nova-blue-light);background:var(--nova-letter-fill);font-size:17px">C</div><span style="flex:1">Result · winner</span><span style="font-size:11px;letter-spacing:.08em;color:var(--nova-blue-light)">WINNER</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-subtle)">STEPPER</div>
+      <div style="padding:12px 14px;border-radius:var(--nova-r-card);background:var(--nova-glass-fill);border:1px solid var(--nova-border);display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;letter-spacing:.06em"><span>EXTRA TO CAST</span><span style="color:var(--nova-muted);letter-spacing:0">Available 20</span></div>
+        <div style="display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:12px">
+          <div style="display:grid;place-items:center;width:44px;height:44px;border-radius:var(--nova-r-step);background:var(--nova-step-fill);border:1px solid var(--nova-blue)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"></path></svg></div>
+          <div style="text-align:center;font-size:24px">5</div>
+          <div style="display:grid;place-items:center;width:44px;height:44px;border-radius:var(--nova-r-step);background:var(--nova-step-fill);border:1px solid var(--nova-blue)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5v14"></path></svg></div>
+        </div>
+      </div>
+      <div style="font-size:12px;line-height:1.5;color:var(--nova-subtle)">Free and Extra always render as two separate steppers.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-subtle)">CTAS</div>
+      <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta-fill);box-shadow:var(--nova-cta-shadow);color:#fff;font-size:15px;font-weight:600">Primary</div>
+      <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta2-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-blue-light);background:var(--nova-cta2-fill);color:var(--nova-blue-light);font-size:14px;font-weight:500">Secondary</div>
+      <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta2-h);border-radius:var(--nova-r-card);border:1px solid var(--nova-border);background:var(--nova-cta2-fill);font-size:14px;font-weight:500">Tertiary / neutral</div>
+      <div style="display:flex;align-items:center;justify-content:center;min-height:var(--nova-cta-h);border-radius:var(--nova-r-card);border:1px solid rgba(72,128,214,.4);background:var(--nova-cta-disabled);color:var(--nova-cta-disabled-text);font-size:15px;font-weight:600">Disabled / pending</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-subtle)">STATUS + RECEIPT</div>
+      <div style="display:flex;gap:12px">
+        <div style="display:grid;place-items:center;width:72px;height:72px;border-radius:50%;border:2px solid var(--nova-blue-bright);background:var(--nova-orb-fill);box-shadow:var(--nova-orb-shadow)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+        <div style="display:grid;place-items:center;width:72px;height:72px;border-radius:50%;border:2px solid var(--nova-blue-bright);background:var(--nova-orb-fill);box-shadow:var(--nova-orb-shadow)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#71b9ff" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></div>
+      </div>
+      <div style="padding:6px 14px;border-radius:14px;background:var(--nova-glass-fill);border:1px solid var(--nova-border-soft);font-size:14px">
+        <div style="display:flex;justify-content:space-between;min-height:32px;align-items:center"><span style="color:var(--nova-muted)">Paid lane · 90%</span><span>90 USDC</span></div>
+        <div style="display:flex;justify-content:space-between;min-height:32px;align-items:center"><span style="color:var(--nova-muted)">Free lane · 10%</span><span>10 USDC</span></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--nova-subtle)">TYPE + COLOR</div>
+      <div style="font-family:var(--nova-story-font);font-size:30px;line-height:1.1">Story + status titles</div>
+      <div style="font-size:16px;font-weight:600">UI chrome · system sans</div>
+      <div style="display:flex;gap:8px">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--nova-blue)"></div>
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--nova-blue-bright)"></div>
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--nova-blue-light)"></div>
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--nova-navy);border:1px solid var(--nova-border)"></div>
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--nova-text)"></div>
+      </div>
+      <div style="font-size:12px;line-height:1.5;color:var(--nova-subtle)">#4880D6 blue · #2785FF bright · #71B9FF light · #06162E navy · #F5F8FF text</div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;bgImage&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Art&quot;},&quot;showNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;calmMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { pick: 'B', free: 10, extra: 5, pack: 10 };
+  renderVals() {
+    const s = this.state, p = this.props;
+    const clamp = (v, m) => Math.max(0, Math.min(m, v));
+    const L = { A: 'Light the skybridge', B: 'Open the signal tower', C: 'Wake the harbor' };
+    const sel = on => ({
+      bg: on ? 'var(--nova-selected-fill)' : 'var(--nova-glass-fill)',
+      bd: on ? 'var(--nova-blue-light)' : 'var(--nova-border)',
+      sh: on ? 'var(--nova-selected-shadow)' : 'var(--nova-shadow)',
+    });
+    const picks = ['A', 'B', 'C'].map(k => ({ key: k, label: L[k], on: k === s.pick, select: () => this.setState({ pick: k }), ...sel(k === s.pick) }));
+    const packs = [5, 10, 25].map(v => ({ v, pick: () => this.setState({ pack: v }), ...sel(v === s.pack) }));
+    const f = n => n.toFixed(2);
+    const calm = !!p.calmMotion;
+    return {
+      bgImage: p.bgImage || '', notes: p.showNotes ?? true,
+      picks, pick: s.pick, free: s.free, extra: s.extra,
+      freeLeft: 10 - s.free, extraLeft: 20 - s.extra,
+      freeDec: () => this.setState({ free: clamp(s.free - 1, 10) }), freeInc: () => this.setState({ free: clamp(s.free + 1, 10) }),
+      extraDec: () => this.setState({ extra: clamp(s.extra - 1, 20) }), extraInc: () => this.setState({ extra: clamp(s.extra + 1, 20) }),
+      packs, pack: s.pack, pool: f(s.pack * 0.9), studio: f(s.pack * 0.08), ops: f(s.pack * 0.02),
+      spinner: React.createElement('div', { style: { width: 56, height: 56, boxSizing: 'border-box', borderRadius: '50%', border: '6px solid rgba(113,185,255,.22)', borderTopColor: '#2785ff', animation: calm ? 'none' : 'nova-spin 1.8s linear infinite' } }),
+    };
+  }
+}
+</script>
+</body>
+</html>

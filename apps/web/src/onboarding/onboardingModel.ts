@@ -1,5 +1,5 @@
 export type NetworkKind = "arc" | "wrong";
-export type ConnectFace = "welcome" | "network" | "rejected" | "locked";
+export type ConnectFace = "welcome" | "notice" | "network" | "rejected" | "locked";
 export type ConnectFault = "rejected" | "locked" | null;
 
 export type OnboardingSnapshot = {
@@ -68,8 +68,17 @@ export function applyEdgeQuery(
   };
 }
 
+/** Gates "Enter Nova" on the soft-launch notice. */
 export function canProceed(state: OnboardingSnapshot): boolean {
   return state.rulesChecked || state.disclaimerAccepted;
+}
+
+/** Face to show on a cold load: a connected wallet that never accepted lands on the notice. */
+export function restoreFace(state: OnboardingSnapshot): OnboardingSnapshot {
+  if (state.connected && !state.disclaimerAccepted) {
+    return { ...state, face: "notice" };
+  }
+  return state;
 }
 
 export function setRulesChecked(
@@ -93,8 +102,12 @@ function markAccepted(state: OnboardingSnapshot): OnboardingSnapshot {
 
 function succeedConnect(state: OnboardingSnapshot): OnboardingSnapshot {
   const firstConnect = !state.connected;
+  if (!state.disclaimerAccepted) {
+    // First run: the soft-launch notice comes next; the grant waits for Enter Nova.
+    return { ...state, connected: true, face: "notice", network: "arc" };
+  }
   return {
-    ...markAccepted(state),
+    ...state,
     connected: true,
     face: "welcome",
     grantPending: firstConnect || state.grantPending,
@@ -102,21 +115,37 @@ function succeedConnect(state: OnboardingSnapshot): OnboardingSnapshot {
   };
 }
 
+/** Connect is open to everyone; the rules gate sits on the notice that follows. */
 export function mockConnect(state: OnboardingSnapshot): OnboardingSnapshot {
-  if (state.geoBlocked || !canProceed(state)) {
+  if (state.geoBlocked) {
     return state;
   }
-  const accepted = markAccepted(state);
-  if (accepted.network === "wrong") {
-    return { ...accepted, face: "network" };
+  if (state.network === "wrong") {
+    return { ...state, face: "network" };
   }
-  if (accepted.fault === "rejected") {
-    return { ...accepted, face: "rejected" };
+  if (state.fault === "rejected") {
+    return { ...state, face: "rejected" };
   }
-  if (accepted.fault === "locked") {
-    return { ...accepted, face: "locked" };
+  if (state.fault === "locked") {
+    return { ...state, face: "locked" };
   }
-  return succeedConnect(accepted);
+  return succeedConnect(state);
+}
+
+/** "Enter Nova" on the soft-launch notice. */
+export function enterNova(state: OnboardingSnapshot): OnboardingSnapshot {
+  if (state.geoBlocked || !state.connected || !canProceed(state)) {
+    return state;
+  }
+  return {
+    ...markAccepted(state),
+    face: "welcome",
+    grantPending: !state.disclaimerAccepted || state.grantPending,
+  };
+}
+
+export function disconnect(state: OnboardingSnapshot): OnboardingSnapshot {
+  return { ...state, connected: false, face: "welcome", grantPending: false };
 }
 
 export function continueOnboarding(state: OnboardingSnapshot): OnboardingSnapshot {

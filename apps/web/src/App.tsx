@@ -1,18 +1,18 @@
-import type { ReactElement } from "react";
-import { NavLink, Navigate, Route, Routes, useLocation } from "react-router";
-import { appConfig } from "@nova/config";
+import { useEffect, type ReactElement } from "react";
+import { NavLink, Navigate, Route, Routes } from "react-router";
 import { DayStoreProvider } from "./day/DayStoreProvider";
+import { GrantDemoPage } from "./demo/GrantDemoPage";
+import { usePref } from "./menu/prefs";
 import { OnboardingProvider } from "./onboarding/OnboardingProvider";
 import { useOnboarding } from "./onboarding/useOnboarding";
 import { BuyPage } from "./pages/BuyPage";
 import { ConfirmationPage } from "./pages/ConfirmationPage";
 import { ConnectPage, GeoBlockPage } from "./pages/ConnectPage";
-import { GrantDemoPage } from "./demo/GrantDemoPage";
 import { HomePage, VotePage } from "./pages/HomePage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
-import { ProfilePage } from "./pages/ProfilePage";
 import { ResultsPage } from "./pages/ResultsPage";
 import { PRODUCT_ROUTES, type ProductRouteId } from "./productRoutes";
+import "./ui";
 import "./App.css";
 
 const pages: Record<ProductRouteId, ReactElement> = {
@@ -23,45 +23,22 @@ const pages: Record<ProductRouteId, ReactElement> = {
   confirmation: <ConfirmationPage />,
   results: <ResultsPage />,
   neighborhood: <PlaceholderPage title="Nova/Neighborhood" />,
-  profile: <ProfilePage />,
+  // Profile lives in the Menu sheet now (UI-KIT-V2 screen 13).
+  profile: <Navigate to="/" replace />,
 };
 
-function isCinemaPath(pathname: string): boolean {
+/** Dev-only route jumper; players navigate through the HUD and Menu. */
+function DevRouteJump() {
   return (
-    pathname === "/" ||
-    pathname === "/connect" ||
-    pathname === "/vote" ||
-    pathname === "/buy" ||
-    pathname === "/confirmation" ||
-    pathname === "/results"
-  );
-}
-
-function ProductNav({ compact }: { compact: boolean }) {
-  const links = [
-    ...PRODUCT_ROUTES.map((route) => (
-      <NavLink key={route.id} to={route.path} end={route.path === "/"}>
-        {route.label}
-      </NavLink>
-    )),
-    <NavLink key="demo" to="/demo">
-      Demo
-    </NavLink>,
-  ];
-
-  if (!compact) {
-    return (
-      <nav className="app-nav" aria-label="Product">
-        {links}
-      </nav>
-    );
-  }
-
-  return (
-    <details className="page-jump">
-      <summary>Menu</summary>
-      <nav className="app-nav app-nav--panel" aria-label="Product">
-        {links}
+    <details className="dev-jump">
+      <summary>Routes</summary>
+      <nav aria-label="Dev routes">
+        {PRODUCT_ROUTES.map((route) => (
+          <NavLink key={route.id} to={route.path} end={route.path === "/"}>
+            {route.label}
+          </NavLink>
+        ))}
+        <NavLink to="/demo">Demo</NavLink>
       </nav>
     </details>
   );
@@ -75,6 +52,20 @@ function PlayGate({ children }: { children: ReactElement }) {
   return children;
 }
 
+/** Calm motion (Menu) applies app-wide, alongside prefers-reduced-motion. */
+function CalmMotionRoot() {
+  const [calm] = usePref("calmMotion");
+  useEffect(() => {
+    const root = document.documentElement;
+    if (calm) {
+      root.dataset.calm = "true";
+    } else {
+      delete root.dataset.calm;
+    }
+  }, [calm]);
+  return null;
+}
+
 export function App() {
   return (
     <DayStoreProvider>
@@ -86,40 +77,33 @@ export function App() {
 }
 
 function AppLayout() {
-  const { pathname } = useLocation();
   const { state } = useOnboarding();
-  const grantDemo = pathname === "/demo";
-  const cinema = !grantDemo && (isCinemaPath(pathname) || state.geoBlocked);
 
   return (
-    <div className={cinema ? "app-shell app-shell--cinema" : "app-shell"}>
-      <header className={cinema ? "app-header app-header--jump" : "app-header"}>
-        {cinema ? null : <p className="brand">{appConfig.name}</p>}
-        <ProductNav compact={cinema} />
-      </header>
-      <main className={cinema ? "app-main app-main--cinema" : "app-main"}>
-        {state.geoBlocked && !grantDemo ? (
-          <GeoBlockPage />
-        ) : (
-          <Routes>
-            <Route path="/demo" element={<GrantDemoPage />} />
-            {PRODUCT_ROUTES.map((route) => (
-              <Route
-                key={route.id}
-                path={route.path}
-                element={
-                  route.id === "connect" ? (
-                    pages[route.id]
-                  ) : (
-                    <PlayGate>{pages[route.id]}</PlayGate>
-                  )
-                }
-              />
-            ))}
-            <Route path="/nova" element={<Navigate to="/neighborhood" replace />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        )}
+    <div className="app-shell">
+      <CalmMotionRoot />
+      {import.meta.env.DEV ? <DevRouteJump /> : null}
+      <main className="app-main">
+        <Routes>
+          <Route path="/demo" element={<GrantDemoPage />} />
+          {PRODUCT_ROUTES.map((route) => (
+            <Route
+              key={route.id}
+              path={route.path}
+              element={
+                state.geoBlocked ? (
+                  <GeoBlockPage />
+                ) : route.id === "connect" ? (
+                  pages[route.id]
+                ) : (
+                  <PlayGate>{pages[route.id]}</PlayGate>
+                )
+              }
+            />
+          ))}
+          <Route path="/nova" element={<Navigate to="/neighborhood" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
     </div>
   );

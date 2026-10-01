@@ -1,5 +1,7 @@
 # Nova — UI Rebuild BIND (Design → Eng)
 
+> **Superseded for chrome (2026-10-02):** tokens, type, layout and screen structure now come from [`UI-KIT-V2.md`](UI-KIT-V2.md). Product locks in this doc still apply.
+
 **Status:** Design-owned rebuild ticket contract · complementary to `research/ai-build/client-bind-contract.md`  
 **Do not delete** the Client bind doc — this is the rebuild claim packet.  
 **Date:** 2026-09-28 · Europe/Istanbul · **Updated:** 2026-09-29 (PR #10 follow-up commit map)  

@@ -14,79 +14,62 @@ describe("client bind contract", () => {
     }
   });
 
-  it("keeps electric blue tokens and no amber primary", () => {
-    const css = [
-      readFileSync("apps/web/src/index.css", "utf8"),
-      readFileSync("apps/web/src/App.css", "utf8"),
-      readFileSync("apps/web/src/hud/HomeHud.css", "utf8"),
-      readFileSync("apps/web/src/buy/BuyHud.css", "utf8"),
-      readFileSync("apps/web/src/results/ResultsHud.css", "utf8"),
-      readFileSync("apps/web/src/confirmation/ConfirmationHud.css", "utf8"),
-      readFileSync("apps/web/src/pages/ProfilePage.css", "utf8"),
-      readFileSync("apps/web/src/onboarding/onboarding.css", "utf8"),
-    ].join("\n");
-    expect(css).toContain("#2775CA");
-    expect(css).toContain("#3B8EF0");
-    expect(css).toContain("#081329");
-    expect(css).toContain("#4880D6");
-    expect(css).toContain("--color-world-gold");
-    expect(css).toContain("Fraunces");
-    expect(css).toContain("DM Sans");
-    expect(css).toContain("IBM Plex Mono");
+  it("keeps the UI-KIT-V2 electric blue tokens and no amber primary", () => {
+    const tokens = readFileSync("apps/web/src/styles/tokens.css", "utf8");
+    const kit = readFileSync("design/ui-kit-v2/nova-theme.css", "utf8");
+    // tokens.css mirrors the kit theme verbatim (minus the header comment).
+    expect(tokens.split("\n").slice(1).join("\n")).toBe(kit.split("\n").slice(1).join("\n"));
+    for (const hex of ["#4880d6", "#2785ff", "#71b9ff", "#06162e", "#f5f8ff"]) {
+      expect(tokens).toContain(hex);
+    }
+    const css = sources
+      .filter((file) => file.endsWith(".css"))
+      .map((file) => readFileSync(file, "utf8"))
+      .join("\n");
     expect(css.toLowerCase()).not.toMatch(
       /#f7f3eb|#fff8ee|#d97706|#f59e0b|#ffbf00|#f6ad55|#d69e2e|amber/,
     );
+    expect(readFileSync("apps/web/src/main.tsx", "utf8")).toContain("@fontsource/inter");
   });
 
-  it("lets the cinema Home HUD scroll on small viewports", () => {
-    const css = readFileSync("apps/web/src/App.css", "utf8");
-    const hud = readFileSync("apps/web/src/hud/HomeHud.css", "utf8");
-    expect(css).toMatch(/max-width: 900px/);
-    expect(css).toMatch(/overflow-y:\s*auto/);
-    expect(hud).toMatch(/flex-direction:\s*column/);
-    expect(hud).toMatch(/height:\s*100dvh/);
-    expect(hud).toMatch(/overflow-y:\s*auto/);
+  it("lets every cinema screen scroll inside the phone frame on small viewports", () => {
+    const ui = readFileSync("apps/web/src/ui/ui.css", "utf8");
+    expect(ui).toMatch(/\.nv-screen__frame \{[^}]*height: 100dvh/);
+    expect(ui).toMatch(/\.nv-screen__hud \{[^}]*overflow-y: auto/);
+    expect(ui).toMatch(/\.nv-screen__hud \{[^}]*flex-direction: column/);
   });
 
-  it("exposes Playwright test ids on the Home HUD", () => {
-    const hud = readFileSync("apps/web/src/hud/HomeHud.tsx", "utf8");
-    const buy = readFileSync("apps/web/src/buy/BuyHud.tsx", "utf8");
-    const results = readFileSync("apps/web/src/results/ResultsHud.tsx", "utf8");
-    const profile = readFileSync("apps/web/src/pages/ProfilePage.tsx", "utf8");
-    const scene = readFileSync("apps/web/src/scene/HomeSceneHost.tsx", "utf8");
-    const connect = readFileSync("apps/web/src/onboarding/ConnectHud.tsx", "utf8");
-    const toast = readFileSync("apps/web/src/onboarding/GrantToast.tsx", "utf8");
-    const confirmation = readFileSync(
-      "apps/web/src/confirmation/ConfirmationHud.tsx",
-      "utf8",
-    );
-    const tutorial = readFileSync(
-      "apps/web/src/onboarding/TutorialOverlay.tsx",
-      "utf8",
-    );
-    expect(hud).toContain('data-testid={`choice-${choice.id}`}');
-    expect(hud).toContain('data-testid="cast-influence"');
-    expect(hud).toContain('data-testid="day-goal"');
-    expect(hud).toContain('data-testid="spend-free"');
-    expect(hud).toContain('data-testid="buy-entry"');
-    expect(buy).toContain('data-testid="buy-cta"');
-    expect(buy).toContain('data-testid={`buy-pack-${pack.id}`}');
-    expect(results).toContain('data-testid="results-claim"');
-    expect(results).toContain('data-testid="results-canon"');
-    expect(results).toContain('data-testid="results-spark"');
-    expect(profile).toContain('data-testid="profile-casts"');
-    expect(profile).not.toMatch(/results-claim|Claim \{/);
-    expect(scene).toContain('data-testid="scene-stage"');
-    expect(connect).toContain('data-testid="connect-cta"');
-    expect(connect).toContain('data-testid="connect-checkbox"');
-    expect(connect).toContain('testId="geo-block"');
-    expect(connect).toContain('testId: "network-switch"');
-    expect(toast).toContain('data-testid="grant-toast"');
-    expect(confirmation).toContain('data-testid="confirmation-results"');
-    expect(confirmation).toContain('data-testid="confirmation-free"');
-    expect(confirmation).toContain('data-testid="confirmation-extra"');
-    expect(confirmation).toContain('data-testid="confirmation-close"');
-    expect(tutorial).toContain('data-testid="tutorial-skip"');
+  it("exposes Playwright test ids on every v2 screen", () => {
+    const read = (file: string) => readFileSync(`apps/web/src/${file}`, "utf8");
+    const has = (text: string, id: string) =>
+      text.includes(`data-testid="${id}"`) ||
+      text.includes(`testId="${id}"`) ||
+      text.includes(`testId: "${id}"`) ||
+      text.includes(`root: "${id}"`);
+    const expectIds = (file: string, ids: string[]) => {
+      const text = read(file);
+      for (const id of ids) {
+        expect(has(text, id), `${file} → ${id}`).toBe(true);
+      }
+    };
+    expectIds("hud/HomeView.tsx", ["day-goal", "hud-free", "hud-extra", "hud-menu", "hud-rank", "home-cta"]);
+    expect(read("hud/HomeView.tsx")).toContain("testId={`choice-${choice.id}`}");
+    expectIds("hud/VoteView.tsx", ["cast-influence", "spend-free", "spend-extra", "spend-split", "buy-entry"]);
+    expectIds("buy/BuyHud.tsx", ["buy-cta", "buy-breakdown", "buy-back"]);
+    expect(read("buy/BuyHud.tsx")).toContain("data-testid={`buy-pack-${pack.id}`}");
+    expectIds("results/ResultsHud.tsx", ["results-claim", "results-winner", "results-shares", "claim-retry", "claim-done"]);
+    expectIds("menu/MenuSheet.tsx", ["menu-sheet", "menu-calm", "menu-disconnect", "profile-casts"]);
+    expectIds("onboarding/ConnectHud.tsx", ["connect-cta", "geo-block", "network-switch"]);
+    expectIds("onboarding/SoftLaunchNotice.tsx", ["connect-checkbox", "notice-enter"]);
+    expectIds("onboarding/GrantToast.tsx", ["grant-toast"]);
+    expectIds("onboarding/TutorialOverlay.tsx", ["tutorial-skip", "tutorial-got-it"]);
+    expectIds("confirmation/ConfirmationHud.tsx", [
+      "confirmation-results",
+      "confirmation-free",
+      "confirmation-extra",
+      "confirmation-close",
+    ]);
+    expectIds("ui/ScreenFrame.tsx", ["nova-scene"]);
   });
 
   it("never uses Submit vote or Circle-official claims in the client", () => {

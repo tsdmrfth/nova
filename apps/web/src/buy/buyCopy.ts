@@ -8,7 +8,9 @@ const percents = buySplitPercents();
 
 /** Locked EN copy for Extra Influence checkout (BUY-INFLUENCE-UX / Hukuk). */
 export const BUY_COPY = {
-  headline: "Extra Influence",
+  backLabel: "Extra Influence",
+  headline: "Add Extra Influence",
+  sub: "Optional. Paid in USDC on Arc.",
   valueProp:
     "Extra Influence increases your share of today's paid prize pool if you're correct. It does not make your pick more likely to win.",
   freeLabel: "Free Influence",
@@ -17,11 +19,12 @@ export const BUY_COPY = {
   details: "Details",
   youPay: "You pay",
   prizePool: "Prize pool",
-  studioNet: PLATFORM_FEE_LABEL,
+  studioNet: PLATFORM_FEE_LABEL.charAt(0).toUpperCase() + PLATFORM_FEE_LABEL.slice(1),
   novaBudget: "Nova operating budget",
   youReceive: "You receive",
   extraUnit: "Extra Influence",
-  cta: "Buy with USDC",
+  splitTitle: (amount: string) => `Where ${amount} USDC goes`,
+  confirmCta: (amount: string) => `Confirm buy · ${amount} USDC`,
   back: "Back to vote",
   feeOneLiner: `${percents.prizePool}% prize pool · ${percents.studioNet}% ${PLATFORM_FEE_LABEL} · ${percents.novaBudget}% ${NOVA_BUDGET_LABEL}`,
   feeExpand: `${percents.prizePool}% of what you pay goes to today's prize pool; ${percents.studioNet}% is the ${PLATFORM_FEE_LABEL}; ${percents.novaBudget}% is the ${NOVA_BUDGET_LABEL}.`,

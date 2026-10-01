@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { getAssetUrl } from "@nova/assets";
 import {
   containsForbiddenFinanceTerm,
   parseUsdc,
@@ -37,8 +36,10 @@ describe("buy HUD model", () => {
     const model = buildBuyModel(createDayState(1, now));
     expect(DEFAULT_PACK_ID).toBe("pulse");
     expect(model.selectedPackId).toBe("pulse");
-    expect(model.headline).toBe("Extra Influence");
-    expect(model.cta).toBe("Buy with USDC");
+    expect(model.headline).toBe("Add Extra Influence");
+    expect(model.cta).toBe("Confirm buy · 5.00 USDC");
+    expect(model.splitTitle).toBe("Where 5.00 USDC goes");
+    expect(model.split).toEqual({ prizePool: 90, studioNet: 8, novaBudget: 2 });
     expect(model.freeInfluence).toBe(10);
     expect(model.extraInfluence).toBe(0);
     expect(model.breakdown.youPay).toBe("5.00 USDC");
@@ -52,6 +53,7 @@ describe("buy HUD model", () => {
     expect(model.ctaEnabled).toBe(true);
     expect(model.packs.map((pack) => pack.id)).toEqual(["spark", "pulse"]);
     expect(model.packs[1]?.badge).toBe("Most chosen");
+    expect(model.packs.map((pack) => pack.price)).toEqual(["1", "5"]);
   });
 
   it("quotes Spark from shared math without mixing Free and Extra", () => {
@@ -77,12 +79,10 @@ describe("buy HUD model", () => {
     expect(model.ctaDisabledReason).toBe(BUY_COPY.capExceeded);
   });
 
-  it("resolves pack art through canon ids and keeps hukuk-safe copy", () => {
+  it("renders the real pack catalog (not the kit's 1:1 placeholder) with hukuk-safe copy", () => {
     const model = buildBuyModel(createDayState(1, now), "spark");
-    for (const pack of packCards()) {
-      expect(getAssetUrl(pack.artId)).toBeTruthy();
-      expect(pack.artId).not.toMatch(/drafts/);
-    }
+    expect(packCards().map((pack) => pack.extraLabel)).toEqual(["10 Extra", "55 Extra"]);
+    expect(model.cta).toBe("Confirm buy · 1.00 USDC");
     const blob = JSON.stringify({ model, copy: BUY_COPY });
     expect(containsForbiddenFinanceTerm(blob)).toBeUndefined();
     expect(blob.toLowerCase()).not.toMatch(/partnered with circle/);

@@ -36,6 +36,24 @@
       "pixelRatio": 1
     },
     {
+      "id": "scene_nova_city",
+      "path": "scene/nova-city.webp",
+      "kind": "scene",
+      "screens": [
+        "home",
+        "vote",
+        "results",
+        "buy",
+        "connect"
+      ],
+      "sha256": "297e61905e761aee0690a77eb9f068e41a1c4018de4a841a62643881b6b6a7e3",
+      "license": "internal-working-set",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-10-02T00:00:00.000Z",
+      "approvedBy": "ui-kit-v2",
+      "pixelRatio": 1
+    },
+    {
       "id": "layer_sky_sunset",
       "path": "scene/layer-sky-sunset.png",
       "kind": "scene",
@@ -413,6 +431,10 @@
     {
       "name": "home",
       "assets": [
+        {
+          "alias": "scene_nova_city",
+          "src": "scene/nova-city.webp"
+        },
         {
           "alias": "scene_home_sunset_city",
           "src": "scene/scene-home-sunset-city.png"

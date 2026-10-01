@@ -1,184 +1,87 @@
-import type { ReactNode } from "react";
-import { ShieldIcon } from "../hud/hudIcons";
-import { canProceed, type ConnectFace } from "./onboardingModel";
+import { Button, FrameOverlay, GlassSheet, Kicker, ScreenFrame, StoryTitle, WalletIcon } from "../ui";
 import { ONBOARDING_COPY } from "./onboardingCopy";
+import { SoftLaunchNotice } from "./SoftLaunchNotice";
 import { useOnboarding } from "./useOnboarding";
 import "./onboarding.css";
 
-type EdgeProps = {
-  testId: string;
-  title: string;
-  body: string;
-  primary: { testId: string; label: string; onClick: () => void };
-  secondary?: { testId: string; label: string; onClick: () => void };
-};
+type Action = { testId: string; label: string; onClick: () => void };
 
-export function OnboardingPanel({
-  testId,
-  title,
-  body,
-  children,
-}: {
-  testId: string;
-  title: string;
-  body?: string;
-  children: ReactNode;
-}) {
+/** Screen 01 hero: wordmark + story line on the plate, left of Nova. */
+function ConnectHero() {
   return (
-    <div className="oboard-hud">
-      <section className="oboard-panel" data-testid={testId}>
-        <p className="oboard-kicker">Nova</p>
-        <h1 className="oboard-title">{title}</h1>
-        {body ? (
-          <div className="oboard-body">
-            <p>{body}</p>
-          </div>
-        ) : null}
-        {children}
-      </section>
-    </div>
+    <header className="oboard-hero nv-plate-copy" data-testid="connect-body">
+      <p className="nv-wordmark">{ONBOARDING_COPY.wordmark}</p>
+      <StoryTitle size="md">{ONBOARDING_COPY.headline}</StoryTitle>
+      <p className="oboard-hero__sub">{ONBOARDING_COPY.subline}</p>
+    </header>
   );
 }
 
-export function EdgePanel({
+/** Bottom sign-in sheet; edge faces reuse it with their own title/body. */
+export function EdgeSheet({
   testId,
   title,
   body,
   primary,
   secondary,
-}: EdgeProps) {
+}: {
+  testId: string;
+  title: string;
+  body: string;
+  primary: Action;
+  secondary?: Action;
+}) {
   return (
-    <OnboardingPanel testId={testId} title={title} body={body}>
-      <div className="oboard-actions">
-        <button
-          type="button"
-          className="oboard-cta"
-          data-testid={primary.testId}
-          onClick={primary.onClick}
-        >
-          {primary.label}
-          <span aria-hidden="true">›</span>
-        </button>
-        {secondary ? (
-          <button
-            type="button"
-            className="oboard-secondary"
-            data-testid={secondary.testId}
-            onClick={secondary.onClick}
-          >
-            {secondary.label}
-          </button>
-        ) : null}
-      </div>
-    </OnboardingPanel>
+    <GlassSheet testId={testId} className="oboard-signin">
+      <Kicker tone="muted">{ONBOARDING_COPY.signInKicker}</Kicker>
+      <StoryTitle size="sm" as="h2">
+        {title}
+      </StoryTitle>
+      <p className="nv-body nv-muted">{body}</p>
+      <Button testId={primary.testId} onClick={primary.onClick}>
+        {primary.label}
+      </Button>
+      {secondary ? (
+        <Button variant="tertiary" testId={secondary.testId} onClick={secondary.onClick}>
+          {secondary.label}
+        </Button>
+      ) : null}
+    </GlassSheet>
   );
 }
 
-function WelcomePanel({ onEnter }: { onEnter: () => void }) {
-  const { state, setRulesChecked, connect, continueAsMock } = useOnboarding();
-  const enabled = canProceed(state);
-
-  const enter = (fn: () => boolean) => {
-    if (fn()) {
-      onEnter();
-    }
-  };
-
+function SignInSheet({ onEnter }: { onEnter: () => void }) {
+  const { connect } = useOnboarding();
   return (
-    <OnboardingPanel testId="connect-welcome" title={ONBOARDING_COPY.headline}>
-      <div className="oboard-body" data-testid="connect-body">
-        {ONBOARDING_COPY.body.map((line) => (
-          <p key={line}>{line}</p>
-        ))}
-      </div>
-      <p className="oboard-disclaimer" data-testid="connect-disclaimer">
-        {ONBOARDING_COPY.disclaimer}
-      </p>
-      <label className="oboard-check">
-        <input
-          type="checkbox"
-          data-testid="connect-checkbox"
-          checked={state.rulesChecked}
-          onChange={(event) => setRulesChecked(event.target.checked)}
-        />
-        <span>{ONBOARDING_COPY.checkbox}</span>
-      </label>
-      <div className="oboard-actions">
-        <button
-          type="button"
-          className="oboard-cta"
-          data-testid="connect-cta"
-          disabled={!enabled}
-          onClick={() => enter(connect)}
-        >
-          {ONBOARDING_COPY.connectCta}
-          <span aria-hidden="true">›</span>
-        </button>
-        <button
-          type="button"
-          className="oboard-secondary"
-          data-testid="connect-continue"
-          disabled={!enabled}
-          onClick={() => enter(continueAsMock)}
-        >
-          {ONBOARDING_COPY.continueCta}
-        </button>
-      </div>
-      <div className="oboard-footnotes">
-        <p>
-          <ShieldIcon className="oboard-shield" />
-          {ONBOARDING_COPY.feePool}
-        </p>
-        <p>{ONBOARDING_COPY.feeRisk}</p>
-        <p>{ONBOARDING_COPY.feeAffiliation}</p>
-      </div>
-      <p className="oboard-footer" data-testid="connect-footer">
+    <GlassSheet testId="connect-welcome" className="oboard-signin">
+      <Kicker tone="muted">{ONBOARDING_COPY.signInKicker}</Kicker>
+      <Button
+        testId="connect-cta"
+        onClick={() => {
+          if (connect()) {
+            onEnter();
+          }
+        }}
+      >
+        <WalletIcon />
+        {ONBOARDING_COPY.connectCta}
+      </Button>
+      <p className="nv-note" data-testid="connect-footer">
         {ONBOARDING_COPY.footerMicro}
       </p>
-    </OnboardingPanel>
+    </GlassSheet>
   );
 }
 
-function faceCopy(face: ConnectFace) {
-  if (face === "network") {
-    return {
-      testId: "network-block",
-      title: ONBOARDING_COPY.networkTitle,
-      body: ONBOARDING_COPY.networkBody,
-    };
-  }
-  if (face === "rejected") {
-    return {
-      testId: "wallet-rejected",
-      title: ONBOARDING_COPY.rejectTitle,
-      body: ONBOARDING_COPY.rejectBody,
-    };
-  }
-  return {
-    testId: "wallet-locked",
-    title: ONBOARDING_COPY.lockedTitle,
-    body: ONBOARDING_COPY.lockedBody,
-  };
-}
-
-export function ConnectHud({ onEnter }: { onEnter: () => void }) {
-  const {
-    state,
-    switchToArc,
-    retryConnect,
-    retryWallet,
-    openWallet,
-  } = useOnboarding();
-
-  if (state.face === "welcome") {
-    return <WelcomePanel onEnter={onEnter} />;
-  }
+function EdgeFace({ onEnter }: { onEnter: () => void }) {
+  const { state, switchToArc, retryConnect, retryWallet, openWallet } = useOnboarding();
 
   if (state.face === "network") {
-    const copy = faceCopy("network");
     return (
-      <EdgePanel
-        {...copy}
+      <EdgeSheet
+        testId="network-block"
+        title={ONBOARDING_COPY.networkTitle}
+        body={ONBOARDING_COPY.networkBody}
         primary={{
           testId: "network-switch",
           label: ONBOARDING_COPY.networkSwitch,
@@ -198,10 +101,11 @@ export function ConnectHud({ onEnter }: { onEnter: () => void }) {
   }
 
   if (state.face === "rejected") {
-    const copy = faceCopy("rejected");
     return (
-      <EdgePanel
-        {...copy}
+      <EdgeSheet
+        testId="wallet-rejected"
+        title={ONBOARDING_COPY.rejectTitle}
+        body={ONBOARDING_COPY.rejectBody}
         primary={{
           testId: "wallet-retry",
           label: ONBOARDING_COPY.rejectCta,
@@ -211,34 +115,79 @@ export function ConnectHud({ onEnter }: { onEnter: () => void }) {
     );
   }
 
-  const copy = faceCopy("locked");
+  if (state.face === "locked") {
+    return (
+      <EdgeSheet
+        testId="wallet-locked"
+        title={ONBOARDING_COPY.lockedTitle}
+        body={ONBOARDING_COPY.lockedBody}
+        primary={{
+          testId: "wallet-open",
+          label: ONBOARDING_COPY.lockedCta,
+          onClick: () => {
+            if (openWallet()) {
+              onEnter();
+            }
+          },
+        }}
+      />
+    );
+  }
+
+  return <SignInSheet onEnter={onEnter} />;
+}
+
+/** Screens 01 (Connect) + 02 (Soft-launch notice) on `/connect`. */
+export function ConnectHud({ onEnter }: { onEnter: () => void }) {
+  const { state, enterNova } = useOnboarding();
+  const notice = state.face === "notice";
+
   return (
-    <EdgePanel
-      {...copy}
-      primary={{
-        testId: "wallet-open",
-        label: ONBOARDING_COPY.lockedCta,
-        onClick: () => {
-          if (openWallet()) {
-            onEnter();
-          }
-        },
-      }}
-    />
+    <ScreenFrame
+      className="home-screen--connect"
+      dim={notice}
+      overlay={
+        notice ? (
+          <FrameOverlay align="center">
+            <SoftLaunchNotice
+              onEnter={() => {
+                if (enterNova()) {
+                  onEnter();
+                }
+              }}
+            />
+          </FrameOverlay>
+        ) : null
+      }
+    >
+      {notice ? null : (
+        <>
+          <ConnectHero />
+          <div className="nv-bottom">
+            <EdgeFace onEnter={onEnter} />
+          </div>
+        </>
+      )}
+    </ScreenFrame>
   );
 }
 
 export function GeoBlockHud() {
   return (
-    <EdgePanel
-      testId="geo-block"
-      title={ONBOARDING_COPY.geoTitle}
-      body={ONBOARDING_COPY.geoBody}
-      primary={{
-        testId: "geo-ok",
-        label: ONBOARDING_COPY.geoCta,
-        onClick: () => undefined,
-      }}
-    />
+    <ScreenFrame className="home-screen--connect">
+      <ConnectHero />
+      <div className="nv-bottom">
+        <EdgeSheet
+          testId="geo-block"
+          title={ONBOARDING_COPY.geoTitle}
+          body={ONBOARDING_COPY.geoBody}
+          primary={{
+            testId: "geo-ok",
+            label: ONBOARDING_COPY.geoCta,
+            onClick: () => undefined,
+          }}
+        />
+      </div>
+    </ScreenFrame>
   );
 }

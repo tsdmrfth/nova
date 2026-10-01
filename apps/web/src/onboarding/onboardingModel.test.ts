@@ -5,12 +5,15 @@ import {
   completeTutorial,
   continueOnboarding,
   createOnboardingSnapshot,
+  disconnect,
   dismissGrant,
+  enterNova,
   isOnboarded,
   mockConnect,
   openWallet,
   parseOnboardingSearch,
   retryConnect,
+  restoreFace,
   retryWallet,
   setRulesChecked,
   switchToArc,
@@ -32,31 +35,56 @@ describe("onboarding model", () => {
     expect(parseOnboardingSearch("edge=locked").fault).toBe("locked");
   });
 
-  it("blocks connect until the disclaimer checkbox is accepted", () => {
-    const closed = createOnboardingSnapshot();
-    expect(canProceed(closed)).toBe(false);
-    expect(mockConnect(closed)).toEqual(closed);
-    const checked = setRulesChecked(closed, true);
-    expect(isOnboarded(mockConnect(checked))).toBe(true);
+  it("connects first, then gates Enter Nova on the soft-launch notice", () => {
+    const fresh = createOnboardingSnapshot();
+    const connected = mockConnect(fresh);
+    expect(connected.connected).toBe(true);
+    expect(connected.face).toBe("notice");
+    expect(connected.grantPending).toBe(false);
+    expect(isOnboarded(connected)).toBe(false);
+
+    expect(canProceed(connected)).toBe(false);
+    expect(enterNova(connected)).toEqual(connected);
+
+    const entered = enterNova(setRulesChecked(connected, true));
+    expect(entered.disclaimerAccepted).toBe(true);
+    expect(entered.face).toBe("welcome");
+    expect(isOnboarded(entered)).toBe(true);
   });
 
-  it("grants a first-run toast on mock connect / continue", () => {
-    const ready = setRulesChecked(createOnboardingSnapshot(), true);
-    const connected = mockConnect(ready);
-    expect(connected.connected).toBe(true);
-    expect(connected.disclaimerAccepted).toBe(true);
-    expect(connected.grantPending).toBe(true);
-    expect(isOnboarded(connected)).toBe(true);
-    expect(dismissGrant(connected).grantPending).toBe(false);
-    expect(completeTutorial(connected).tutorialSeen).toBe(true);
+  it("grants the first-run toast on Enter Nova, not on connect", () => {
+    const entered = enterNova(setRulesChecked(mockConnect(createOnboardingSnapshot()), true));
+    expect(entered.grantPending).toBe(true);
+    expect(dismissGrant(entered).grantPending).toBe(false);
+    expect(completeTutorial(entered).tutorialSeen).toBe(true);
 
-    const continued = continueOnboarding(ready);
-    expect(continued.connected).toBe(true);
-    expect(continued.grantPending).toBe(true);
+    const continued = continueOnboarding(createOnboardingSnapshot());
+    expect(continued.face).toBe("notice");
+  });
+
+  it("skips the notice for a returning player who already accepted", () => {
+    const returning = createOnboardingSnapshot({ disclaimerAccepted: true, rulesChecked: true });
+    const connected = mockConnect(returning);
+    expect(connected.face).toBe("welcome");
+    expect(isOnboarded(connected)).toBe(true);
+  });
+
+  it("restores the notice on reload for a connected wallet that never accepted", () => {
+    const reloaded = restoreFace(createOnboardingSnapshot({ connected: true }));
+    expect(reloaded.face).toBe("notice");
+    expect(restoreFace(createOnboardingSnapshot()).face).toBe("welcome");
+  });
+
+  it("disconnects back to Connect", () => {
+    const entered = enterNova(setRulesChecked(mockConnect(createOnboardingSnapshot()), true));
+    const out = disconnect(entered);
+    expect(out.connected).toBe(false);
+    expect(isOnboarded(out)).toBe(false);
+    expect(out.disclaimerAccepted).toBe(true);
   });
 
   it("holds Home behind wrong-network until Switch to Arc + retry", () => {
-    const ready = applyEdgeQuery(setRulesChecked(createOnboardingSnapshot(), true), {
+    const ready = applyEdgeQuery(createOnboardingSnapshot({ disclaimerAccepted: true }), {
       geoBlocked: false,
       network: "wrong",
       fault: null,
@@ -70,19 +98,21 @@ describe("onboarding model", () => {
   });
 
   it("surfaces wallet reject / locked faces from the connect stub", () => {
-    const rejected = applyEdgeQuery(
-      setRulesChecked(createOnboardingSnapshot(), true),
-      { geoBlocked: false, network: "arc", fault: "rejected" },
-    );
+    const rejected = applyEdgeQuery(createOnboardingSnapshot(), {
+      geoBlocked: false,
+      network: "arc",
+      fault: "rejected",
+    });
     expect(mockConnect(rejected).face).toBe("rejected");
     expect(retryWallet(rejected).face).toBe("welcome");
 
-    const locked = applyEdgeQuery(
-      setRulesChecked(createOnboardingSnapshot(), true),
-      { geoBlocked: false, network: "arc", fault: "locked" },
-    );
+    const locked = applyEdgeQuery(createOnboardingSnapshot(), {
+      geoBlocked: false,
+      network: "arc",
+      fault: "locked",
+    });
     expect(mockConnect(locked).face).toBe("locked");
-    expect(isOnboarded(openWallet(locked))).toBe(true);
+    expect(openWallet(locked).face).toBe("notice");
   });
 
   it("never onboards a geo-blocked snapshot", () => {
@@ -93,5 +123,6 @@ describe("onboarding model", () => {
     expect(blocked.geoBlocked).toBe(true);
     expect(isOnboarded(mockConnect(blocked))).toBe(false);
     expect(isOnboarded(continueOnboarding(blocked))).toBe(false);
+    expect(isOnboarded(enterNova(blocked))).toBe(false);
   });
 });

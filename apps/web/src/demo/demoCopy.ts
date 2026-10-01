@@ -1,6 +1,6 @@
 /** Honest framing for the public Microgrant page. No yield, odds, or partnership claim. */
 export const GRANT_DEMO_COPY = {
-  kicker: "Arc mainnet demo",
+  kicker: "Nova · /demo",
   title: "One Extra Influence buy",
   honesty:
     "Nova is a story you can nudge with programmable USDC on Arc. This page is one real buy, then — after the day settles — one real agent transaction: a public USDC signal from the 2% Nova operating budget to Nova's public wallet. It is not a general intelligence, and it is not affiliated with Circle.",
@@ -14,7 +14,11 @@ export const GRANT_DEMO_COPY = {
   buySpark: "Buy Spark · 1 USDC",
   buyPulse: "Buy Pulse · 5 USDC",
   pendingDeploy: "Mainnet deploy pending",
-  buyTx: "Buy transaction",
+  buyStep: "Buy 1 Extra Influence pack",
+  explorerStep: "Explorer links",
+  buyTx: "Buy tx",
+  signalTx: "NovaSignal tx",
+  openNova: "Open Nova",
   approveTx: "Approval transaction",
   signalTitle: "Nova signal",
   signalBody:

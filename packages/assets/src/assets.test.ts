@@ -133,6 +133,10 @@ describe("buy pack plates", () => {
     expect(getAsset("scene_home_bg_city_nova")?.license).toBe(
       "internal-working-set",
     );
+    expect(getAsset("scene_nova_city")?.path).toBe("scene/nova-city.webp");
+    expect(getAsset("scene_nova_city")?.sha256).toBe(
+      "297e61905e761aee0690a77eb9f068e41a1c4018de4a841a62643881b6b6a7e3",
+    );
   });
 });
 

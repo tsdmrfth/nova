@@ -1,0 +1,36 @@
+/* Mirrors design/ui-kit-v2/nova-theme.css verbatim. Edit there first. */
+:root{
+  --nova-blue:#4880d6;
+  --nova-blue-bright:#2785ff;
+  --nova-blue-light:#71b9ff;
+  --nova-navy:#06162e;
+  --nova-text:#f5f8ff;
+  --nova-muted:#c2d0e7;
+  --nova-subtle:#93a9c9;
+  --nova-border:rgba(113,185,255,.48);
+  --nova-border-soft:rgba(113,185,255,.25);
+  --nova-glass-fill:linear-gradient(145deg,rgba(31,51,83,.87),rgba(5,21,46,.93));
+  --nova-chip-fill:rgba(13,34,65,.84);
+  --nova-shadow:0 12px 32px rgba(0,8,25,.35),inset 0 1px 0 rgba(191,220,255,.12);
+  --nova-selected-fill:linear-gradient(120deg,rgba(6,63,115,.94),rgba(4,34,76,.95));
+  --nova-selected-shadow:0 0 0 1px rgba(39,133,255,.5),0 0 20px rgba(39,133,255,.2),inset 0 1px 0 rgba(175,221,255,.15);
+  --nova-letter-fill:rgba(8,29,58,.82);
+  --nova-step-fill:linear-gradient(180deg,rgba(12,75,132,.9),rgba(5,35,75,.95));
+  --nova-cta-fill:linear-gradient(150deg,#199bf5 0%,#2785ff 55%,#246de1 100%);
+  --nova-cta-shadow:inset 0 1px 0 rgba(195,232,255,.45),0 0 20px rgba(39,133,255,.23);
+  --nova-cta2-fill:rgba(4,24,51,.9);
+  --nova-cta-disabled:rgba(24,80,144,.7);
+  --nova-cta-disabled-text:#a4b9d7;
+  --nova-orb-fill:radial-gradient(circle,rgba(28,92,160,.45),rgba(4,23,49,.8));
+  --nova-orb-shadow:0 0 18px rgba(39,133,255,.3),inset 0 0 16px rgba(39,133,255,.2);
+  --nova-overlay:rgba(2,10,25,.72);
+  --nova-track-off:#193556;
+  --nova-font:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --nova-story-font:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --nova-radius:20px;
+  --nova-r-card:16px;
+  --nova-r-chip:12px;
+  --nova-r-step:9px;
+  --nova-cta-h:52px;
+  --nova-cta2-h:44px;
+}

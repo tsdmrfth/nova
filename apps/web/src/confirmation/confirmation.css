@@ -1,0 +1,45 @@
+/* Screen 07. */
+
+.confirm-sheet {
+  gap: 10px;
+  padding: 48px 16px 16px;
+}
+
+.confirm-lane {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.confirm-lane__grid {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  margin: 0;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.confirm-lane__grid dt,
+.confirm-lane__grid dd {
+  margin: 0;
+}
+
+.confirm-lane__grid dd {
+  text-align: right;
+}
+
+.confirm-lane__grid .nv-muted {
+  font-size: 13px;
+}
+
+.confirm-lane__grid--times {
+  gap: 6px 12px;
+  font-size: 13px;
+}
+
+.confirm-sheet .nv-receipt .nv-divider {
+  margin: 0;
+}

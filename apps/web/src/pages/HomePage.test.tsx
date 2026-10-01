@@ -1,88 +1,123 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { App } from "../App";
+import { PREF_KEYS } from "../menu/prefs";
 import { seedOnboarded } from "../onboarding/onboardingStorage";
 
-vi.mock("../scene/HomeSceneHost", () => ({
-  HomeSceneHost: () => <div data-testid="scene-stage" />,
-}));
+function renderAt(path: string) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <App />
+    </MemoryRouter>,
+  );
+}
 
-describe("Home / Vote cast shell", () => {
+describe("Home / Vote (UI-KIT-V2 05–06)", () => {
   beforeEach(() => {
     seedOnboarded();
   });
-  it("casts Free Influence on Home and keeps the cinema shell", async () => {
+
+  it("renders the story on Home and opens Vote with the tapped card preselected", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <App />
-      </MemoryRouter>,
-    );
+    renderAt("/");
 
+    expect(screen.getByTestId("hud-day").textContent).toBe("DAY 01");
+    expect(screen.getByTestId("day-goal").textContent).toBe("GOAL · MOST");
     expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
-    expect(screen.getByTestId("cast-influence")).toHaveProperty("disabled", true);
-
-    await user.click(screen.getByTestId("choice-A"));
-    await user.click(screen.getByTestId("cast-influence"));
-
-    expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
-    expect(screen.getByTestId("scene-stage")).toBeTruthy();
-    expect(screen.getByTestId("cast-status").textContent).toMatch(/Influence cast/i);
-    expect(screen.getByTestId("hud-free-value").textContent).toBe("0");
-  });
-
-  it("shares the in-memory day store with the Vote route", async () => {
-    const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <App />
-      </MemoryRouter>,
-    );
+    expect(screen.getByTestId("home-cta").textContent).toMatch(/^Choose and vote · closes /);
+    expect(screen.queryByTestId("spend-split")).toBeNull();
+    expect(screen.queryByTestId("hud-usdc")).toBeNull();
 
     await user.click(screen.getByTestId("choice-C"));
+    expect(screen.getByTestId("vote-screen")).toBeTruthy();
+    expect(screen.getByTestId("choice-C").getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByTestId("cast-influence").textContent).toBe("Cast Influence on C");
+  });
+
+  it("casts on Vote with two separate steppers, then locks the day", async () => {
+    const user = userEvent.setup();
+    renderAt("/vote");
+
+    expect(screen.getByTestId("cast-influence")).toHaveProperty("disabled", true);
+    await user.click(screen.getByTestId("choice-B"));
+    expect(screen.getByTestId("spend-amount").textContent).toBe("10");
     await user.click(screen.getByTestId("spend-decrease"));
+    expect(screen.getByTestId("spend-amount").textContent).toBe("9");
+    expect(within(screen.getByTestId("spend-free")).getByText("1 left of 10")).toBeTruthy();
+    expect(screen.getByTestId("spend-extra-increase")).toHaveProperty("disabled", true);
+
     await user.click(screen.getByTestId("cast-influence"));
+    expect(screen.getByTestId("confirmation-title").textContent).toBe("Vote locked");
+
+    await user.click(screen.getByTestId("confirmation-home"));
+    expect(screen.getByTestId("home-cta").textContent).toBe("View your vote");
     expect(screen.getByTestId("hud-free-value").textContent).toBe("1");
-
-    await user.click(screen.getByText("Menu"));
-    await user.click(screen.getByRole("link", { name: "Vote" }));
-
-    expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
-    expect(screen.getByTestId("day-goal").textContent).toMatch(/MOST/);
-    expect(screen.getByTestId("cast-status").textContent).toMatch(/Influence cast/i);
-    expect(screen.getByTestId("choice-C").getAttribute("aria-pressed")).toBe(
-      "true",
-    );
-    expect(screen.getByText("Route")).toBeTruthy();
-    expect(screen.getByText("Find your place")).toBeTruthy();
   });
 
-  it("opens the Vote cinema shell from the compact menu", async () => {
+  it("opens Buy from the EXTRA balance chip", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <App />
-      </MemoryRouter>,
-    );
-
-    await user.click(screen.getByText("Menu"));
-    await user.click(screen.getByRole("link", { name: "Vote" }));
-    expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
-    expect(screen.getByTestId("cast-influence")).toBeTruthy();
+    renderAt("/");
+    await user.click(screen.getByTestId("hud-extra"));
+    expect(screen.getByRole("heading", { name: "Add Extra Influence" })).toBeTruthy();
   });
 
-  it("opens Extra Influence from the USDC chip", async () => {
+  it("opens the Menu from the MENU chip and closes it again", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <App />
-      </MemoryRouter>,
-    );
+    renderAt("/");
 
-    await user.click(screen.getByTestId("hud-usdc"));
-    expect(screen.getByRole("heading", { name: "Extra Influence" })).toBeTruthy();
-    expect(screen.getByTestId("buy-cta")).toBeTruthy();
+    await user.click(screen.getByTestId("hud-menu"));
+    const menu = screen.getByTestId("menu-sheet");
+    expect(within(menu).getByText("Day history")).toBeTruthy();
+    expect(screen.getByTestId("profile-empty")).toBeTruthy();
+    expect(screen.getByTestId("nova-scene-dim")).toBeTruthy();
+
+    await user.click(screen.getByTestId("menu-close"));
+    expect(screen.queryByTestId("menu-sheet")).toBeNull();
+  });
+
+  it("persists Calm motion and applies it app-wide", async () => {
+    const user = userEvent.setup();
+    renderAt("/");
+    await user.click(screen.getByTestId("hud-menu"));
+
+    const calm = screen.getByTestId("menu-calm");
+    expect(calm.getAttribute("aria-checked")).toBe("false");
+    await user.click(calm);
+    expect(calm.getAttribute("aria-checked")).toBe("true");
+    expect(localStorage.getItem(PREF_KEYS.calmMotion)).toBe("1");
+    expect(document.documentElement.dataset.calm).toBe("true");
+
+    await user.click(calm);
+    expect(document.documentElement.dataset.calm).toBeUndefined();
+  });
+
+  it("reopens the tutorial and the read-only notice from Help", async () => {
+    const user = userEvent.setup();
+    renderAt("/");
+
+    await user.click(screen.getByTestId("hud-menu"));
+    await user.click(screen.getByTestId("menu-help-notice"));
+    expect(screen.getByTestId("soft-launch-notice")).toBeTruthy();
+    expect(screen.queryByTestId("connect-checkbox")).toBeNull();
+    await user.click(screen.getByTestId("notice-close"));
+
+    await user.click(screen.getByTestId("menu-help-tutorial"));
+    expect(screen.queryByTestId("menu-sheet")).toBeNull();
+    expect(screen.getByTestId("tutorial-overlay")).toBeTruthy();
+  });
+
+  it("disconnects back to Connect", async () => {
+    const user = userEvent.setup();
+    renderAt("/");
+    await user.click(screen.getByTestId("hud-menu"));
+    await user.click(screen.getByTestId("menu-disconnect"));
+    expect(screen.getByTestId("connect-cta")).toBeTruthy();
+  });
+
+  it("redirects the retired /profile route Home", () => {
+    renderAt("/profile");
+    expect(screen.getByTestId("home-screen")).toBeTruthy();
   });
 });

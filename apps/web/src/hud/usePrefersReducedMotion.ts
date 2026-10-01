@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePref } from "../menu/prefs";
 
 export function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(() => {
@@ -20,4 +21,11 @@ export function usePrefersReducedMotion(): boolean {
   }, []);
 
   return reduced;
+}
+
+/** OS reduced motion OR the Menu's Calm motion toggle. */
+export function useCalmMotion(): boolean {
+  const reduced = usePrefersReducedMotion();
+  const [calm] = usePref("calmMotion");
+  return reduced || calm;
 }

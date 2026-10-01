@@ -1,5 +1,21 @@
+import type { ReactNode } from "react";
+import { BackBar } from "../hud/HomeView";
+import {
+  Button,
+  ChoiceCard,
+  Chip,
+  ClockIcon,
+  ExtraIcon,
+  FreeIcon,
+  GlassSheet,
+  Receipt,
+  ReceiptDivider,
+  SheetHeading,
+  StatusOrb,
+} from "../ui";
+import { CONFIRMATION_COPY } from "./confirmationCopy";
 import type { ConfirmationModel } from "./confirmationModel";
-import "./ConfirmationHud.css";
+import "./confirmation.css";
 
 type ConfirmationHudProps = {
   model: ConfirmationModel;
@@ -9,6 +25,33 @@ type ConfirmationHudProps = {
   onBuy(): void;
 };
 
+function LaneBlock({
+  icon,
+  label,
+  spent,
+  remaining,
+  testId,
+}: {
+  icon: ReactNode;
+  label: string;
+  spent: number;
+  remaining: number;
+  testId: string;
+}) {
+  return (
+    <div className="confirm-lane" data-testid={testId}>
+      {icon}
+      <dl className="confirm-lane__grid">
+        <dt>{label}</dt>
+        <dd>{spent}</dd>
+        <dt className="nv-muted">{CONFIRMATION_COPY.remaining}</dt>
+        <dd className="nv-muted">{remaining}</dd>
+      </dl>
+    </div>
+  );
+}
+
+/** Screen 07. Nova's head stays visible above the panel. */
 export function ConfirmationHud({
   model,
   onHome,
@@ -17,96 +60,88 @@ export function ConfirmationHud({
   onBuy,
 }: ConfirmationHudProps) {
   return (
-    <div className="confirm-hud">
-      <div className="confirm-panel">
-        <header className="confirm-hero">
-          <p className="confirm-kicker" data-testid="confirmation-kicker">
-            {model.kicker}
-          </p>
-          <h1 className="confirm-title" data-testid="confirmation-title">
-            {model.title}
-          </h1>
-          <p className="confirm-day" data-testid="confirmation-day">
-            {model.dayLine}
-          </p>
-          {model.pending ? (
-            <p className="confirm-pending" data-testid="confirmation-pending">
-              {model.pending}
+    <>
+      <div className="nv-top">
+        <BackBar
+          label={CONFIRMATION_COPY.backLabel}
+          onBack={onVote}
+          testId="confirmation-top-back"
+          trailing={<Chip testId="confirmation-day">{model.dayLabel}</Chip>}
+        />
+      </div>
+
+      <div className="nv-bottom">
+        <GlassSheet
+          testId="confirmation-sheet"
+          orb={<StatusOrb kind={model.locked ? "check" : "x"} />}
+          className="confirm-sheet"
+        >
+          <SheetHeading
+            title={model.title}
+            sub={model.sub}
+            titleTestId="confirmation-title"
+          />
+
+          {model.pick ? (
+            <div data-testid="confirmation-choice">
+              <ChoiceCard letter={model.pick.id} label={model.pick.label} />
+            </div>
+          ) : (
+            <p className="nv-note" data-testid="confirmation-empty">
+              {CONFIRMATION_COPY.emptyBody}
             </p>
-          ) : null}
-        </header>
+          )}
 
-        {model.locked ? (
-          <article className="confirm-card" data-testid="confirmation-choice">
-            <p className="confirm-label">{model.choiceLabel}</p>
-            <p className="confirm-value">{model.choiceLine}</p>
-          </article>
-        ) : (
-          <p className="confirm-empty" data-testid="confirmation-empty">
-            {model.emptyBody}
-          </p>
-        )}
+          <Receipt testId="confirmation-receipt">
+            <LaneBlock
+              icon={<FreeIcon size={22} className="nv-icon-accent" />}
+              label={CONFIRMATION_COPY.freeSpent}
+              spent={model.freeSpent}
+              remaining={model.freeRemaining}
+              testId="confirmation-free"
+            />
+            <ReceiptDivider />
+            <LaneBlock
+              icon={<ExtraIcon size={22} className="nv-icon-accent" />}
+              label={CONFIRMATION_COPY.extraSpent}
+              spent={model.extraSpent}
+              remaining={model.extraRemaining}
+              testId="confirmation-extra"
+            />
+            <ReceiptDivider />
+            <div className="confirm-lane">
+              <ClockIcon className="nv-icon-accent" />
+              <dl className="confirm-lane__grid confirm-lane__grid--times">
+                <dt className="nv-muted">{CONFIRMATION_COPY.closeLabel}</dt>
+                <dd data-testid="confirmation-close">{model.closesAt}</dd>
+                <dt className="nv-muted">{CONFIRMATION_COPY.publishLabel}</dt>
+                <dd data-testid="confirmation-publish">{model.publishAt}</dd>
+              </dl>
+            </div>
+          </Receipt>
 
-        <div className="confirm-lanes">
-          <article className="confirm-card" data-testid="confirmation-free">
-            <p className="confirm-label">{model.freeLabel}</p>
-            <p className="confirm-value">{model.freeOnPick}</p>
-            <p className="confirm-meta">{model.freeRemaining}</p>
-          </article>
-          <article className="confirm-card" data-testid="confirmation-extra">
-            <p className="confirm-label">{model.extraLabel}</p>
-            <p className="confirm-value">{model.extraOnPick}</p>
-            <p className="confirm-meta">{model.extraRemaining}</p>
-          </article>
-        </div>
-
-        <div className="confirm-schedule">
-          <p data-testid="confirmation-close">{model.closeLine}</p>
-          <p data-testid="confirmation-publish">{model.publishLine}</p>
-        </div>
-
-        <div className="confirm-actions">
-          <button
-            type="button"
-            className="confirm-cta"
-            data-testid="confirmation-home"
-            onClick={onHome}
-          >
-            {model.homeCta}
-            <span aria-hidden="true">›</span>
-          </button>
-          {model.resultsReady ? (
-            <button
-              type="button"
-              className="confirm-link"
-              data-testid="confirmation-results"
+          <Button testId="confirmation-home" onClick={onHome}>
+            {CONFIRMATION_COPY.homeCta}
+          </Button>
+          {model.locked ? (
+            <Button
+              variant="tertiary"
+              compact
+              testId="confirmation-results"
+              disabled={!model.resultsReady}
               onClick={onResults}
             >
               {model.resultsCta}
-            </button>
+            </Button>
           ) : null}
-          <div className="confirm-secondary">
-            <button
-              type="button"
-              className="confirm-link"
-              data-testid="confirmation-back"
-              onClick={onVote}
-            >
-              {model.back}
-            </button>
-            <button
-              type="button"
-              className="confirm-link"
-              data-testid="confirmation-buy"
-              onClick={onBuy}
-            >
-              {model.buy}
-            </button>
-          </div>
-        </div>
-
-        <p className="confirm-note">{model.lanes}</p>
+          <Button variant="tertiary" compact testId="confirmation-back" onClick={onVote}>
+            {model.locked ? CONFIRMATION_COPY.back : CONFIRMATION_COPY.castCta}
+          </Button>
+          <Button variant="secondary" compact testId="confirmation-buy" onClick={onBuy}>
+            {CONFIRMATION_COPY.buy}
+          </Button>
+        </GlassSheet>
       </div>
-    </div>
+    </>
   );
 }
