@@ -119,7 +119,7 @@ export function GrantDemoPage({
     done ? "done" : unlocked ? "active" : "locked";
 
   return (
-    <ScreenFrame dim className="grant-screen" testId="grant-demo">
+    <ScreenFrame dim scroll className="grant-screen" testId="grant-demo">
       <header className="nv-stack grant-head">
         <Kicker>{model.kicker}</Kicker>
         <StoryTitle size="sm">{model.title}</StoryTitle>

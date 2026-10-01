@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 
-/** Stroke icons lifted from design/ui-kit-v2. 24-unit viewBox, currentColor. */
+/**
+ * Stroke icons lifted from design/ui-kit-v2. 24-unit viewBox, currentColor.
+ * `size` is in artboard px and scales with the frame (`--u`, styles/scale.css).
+ */
 type IconProps = {
   size?: number;
   className?: string;
@@ -18,6 +21,7 @@ function Icon({
       className={className}
       width={size}
       height={size}
+      style={{ width: `calc(${size} * var(--u))`, height: `calc(${size} * var(--u))` }}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

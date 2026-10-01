@@ -1,5 +1,6 @@
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { getAssetUrl } from "@nova/assets";
+import { useFrameFit } from "./useFrameFit";
 
 export const PLATE_ID = "scene_nova_city";
 
@@ -22,23 +23,28 @@ type ScreenFrameProps = {
   /** Rendered above the HUD, pinned to the frame (modals, toasts, sheets). */
   overlay?: ReactNode;
   dim?: boolean;
+  /** Let the HUD scroll (long pages like /demo). Default: shrink to fit, never scroll. */
+  scroll?: boolean;
   className?: string;
   testId?: string;
 };
 
 /**
- * Portrait phone frame. Full screen on mobile; on wider viewports a centred
- * 430px column with a blurred copy of the plate behind it, so Nova stays on
- * the column's right edge.
+ * Portrait phone frame. Full screen on phones; on desktop a centred 430px
+ * column with a blurred copy of the plate behind it, so Nova stays on the
+ * column's right edge. The HUD scales with the frame (`--u`, styles/scale.css).
  */
 export function ScreenFrame({
   children,
   overlay,
   dim = false,
+  scroll = false,
   className,
   testId,
 }: ScreenFrameProps) {
   const plate = getAssetUrl(PLATE_ID);
+  const frameRef = useRef<HTMLDivElement>(null);
+  useFrameFit(frameRef, !scroll);
   return (
     <section
       className={className ? `nv-screen ${className}` : "nv-screen"}
@@ -53,16 +59,18 @@ export function ScreenFrame({
           draggable={false}
         />
       ) : null}
-      <div className="nv-screen__frame">
+      <div className="nv-screen__frame" ref={frameRef}>
         <NovaScene dim={dim} />
-        <div className="nv-screen__hud">{children}</div>
+        <div className="nv-screen__hud" data-nv-fit={scroll ? undefined : ""}>
+          {children}
+        </div>
         {overlay}
       </div>
     </section>
   );
 }
 
-/** Centres a modal card over the frame. */
+/** Centres a modal card over the frame. `fill` sheets (Menu) scroll; the others shrink to fit. */
 export function FrameOverlay({
   children,
   align = "center",
@@ -73,7 +81,11 @@ export function FrameOverlay({
   testId?: string;
 }) {
   return (
-    <div className={`nv-overlay nv-overlay--${align}`} data-testid={testId}>
+    <div
+      className={`nv-overlay nv-overlay--${align}`}
+      data-nv-fit={align === "fill" ? undefined : ""}
+      data-testid={testId}
+    >
       {children}
     </div>
   );

@@ -1,9 +1,8 @@
 @import "./styles/tokens.css";
+@import "./styles/scale.css";
 
 :root {
   --nova-underlay: #030b1a;
-  --nova-column: 430px;
-  --nova-gutter: 24px;
 
   color: var(--nova-text);
   background: var(--nova-underlay);

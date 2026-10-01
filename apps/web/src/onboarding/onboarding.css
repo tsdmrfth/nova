@@ -3,26 +3,26 @@
 .oboard-hero {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  width: 200px;
-  margin-top: 32px;
+  gap: calc(14 * var(--u));
+  width: calc(200 * var(--u));
+  margin-top: calc(32 * var(--u));
 }
 
 .oboard-hero__sub {
   margin: 0;
-  font-size: 15px;
+  font-size: calc(15 * var(--u));
   line-height: 1.45;
   color: var(--nova-muted);
 }
 
 .oboard-signin {
-  padding: 20px;
+  padding: calc(20 * var(--u));
 }
 
 .oboard-bullets {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 * var(--u));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -30,8 +30,8 @@
 
 .oboard-bullets li {
   display: flex;
-  gap: 10px;
-  font-size: 13px;
+  gap: calc(10 * var(--u));
+  font-size: calc(13 * var(--u));
   line-height: 1.5;
   color: var(--nova-muted);
 }
@@ -41,7 +41,7 @@
 }
 
 .oboard-tutorial {
-  gap: 18px;
+  gap: calc(18 * var(--u));
 }
 
 .oboard-tutorial .nv-btn {
@@ -51,7 +51,7 @@
 .oboard-steps {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 * var(--u));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -60,9 +60,9 @@
 .oboard-steps li {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 52px;
-  font-size: 14px;
+  gap: calc(12 * var(--u));
+  min-height: calc(52 * var(--u));
+  font-size: calc(14 * var(--u));
   line-height: 1.45;
   color: var(--nova-muted);
 }
@@ -71,13 +71,13 @@
   display: grid;
   place-items: center;
   flex: none;
-  width: 36px;
-  height: 36px;
+  width: calc(36 * var(--u));
+  height: calc(36 * var(--u));
   border-radius: 50%;
   border: 1px solid var(--nova-blue);
   background: linear-gradient(135deg, #164c89, #082953);
   color: var(--nova-text);
-  font-size: 17px;
+  font-size: calc(17 * var(--u));
 }
 
 .oboard-toast {
@@ -91,7 +91,7 @@
 }
 
 .oboard-toast .nv-sheet--toast {
-  gap: 12px;
+  gap: calc(12 * var(--u));
 }
 
 .oboard-toast--motion {
@@ -117,11 +117,11 @@
 }
 
 .oboard-toast__title {
-  font-size: 14px;
+  font-size: calc(14 * var(--u));
   font-weight: 600;
 }
 
 .oboard-toast__body {
-  font-size: 12px;
+  font-size: calc(12 * var(--u));
   color: var(--nova-muted);
 }

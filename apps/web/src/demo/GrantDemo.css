@@ -1,14 +1,14 @@
 /* Screen 14 (/demo). */
 
 .grant-head {
-  gap: 6px;
-  margin-top: 4px;
+  gap: calc(6 * var(--u));
+  margin-top: calc(4 * var(--u));
 }
 
 .grant-step {
   flex-direction: column;
   align-items: stretch;
-  gap: 10px;
+  gap: calc(10 * var(--u));
 }
 
 .grant-step--locked {
@@ -18,19 +18,19 @@
 .grant-step__head {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: calc(12 * var(--u));
 }
 
 .grant-step__badge {
   display: grid;
   place-items: center;
   flex: none;
-  width: 26px;
-  height: 26px;
+  width: calc(26 * var(--u));
+  height: calc(26 * var(--u));
   border-radius: 50%;
   border: 1px solid var(--nova-border);
   background: var(--nova-letter-fill);
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
 }
 
 .grant-step--done .grant-step__badge {
@@ -42,26 +42,26 @@
 .grant-mono {
   margin: 0;
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 11px;
+  font-size: calc(11 * var(--u));
   color: var(--nova-muted);
   word-break: break-all;
 }
 
 .grant-split-title {
-  padding-top: 6px;
+  padding-top: calc(6 * var(--u));
 }
 
 .grant-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  padding: 0 12px;
+  gap: calc(10 * var(--u));
+  min-height: calc(44 * var(--u));
+  padding: 0 calc(12 * var(--u));
   border-radius: var(--nova-r-chip);
   border: 1px solid var(--nova-border-soft);
   background: var(--nova-cta2-fill);
   color: var(--nova-text);
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
 }
 
 .grant-link__label {
@@ -74,12 +74,12 @@
 }
 
 .grant-signal {
-  gap: 4px;
+  gap: calc(4 * var(--u));
 }
 
 .grant-signal__title {
   margin: 0;
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   font-weight: 600;
 }
 

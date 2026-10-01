@@ -3,11 +3,11 @@
 .hud-chapter {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: 228px;
+  gap: calc(8 * var(--u));
+  width: calc(228 * var(--u));
   max-width: 62%;
-  margin-left: -8px;
-  padding: 14px 16px 16px;
+  margin-left: calc(-8 * var(--u));
+  padding: calc(14 * var(--u)) calc(16 * var(--u)) calc(16 * var(--u));
   border-radius: var(--nova-r-card);
   background: rgba(6, 22, 46, 0.42);
   backdrop-filter: blur(14px) saturate(120%);
@@ -17,13 +17,13 @@
 .hud-vote-head {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 * var(--u));
   width: 62%;
 }
 
 .hud-cast-sheet {
-  gap: 10px;
-  padding: 12px 14px;
+  gap: calc(10 * var(--u));
+  padding: calc(12 * var(--u)) calc(14 * var(--u));
   border-radius: var(--nova-r-card);
 }
 

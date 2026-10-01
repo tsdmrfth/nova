@@ -1,15 +1,15 @@
 /* Screen 13. */
 
 .menu-sheet {
-  gap: 14px;
+  gap: calc(14 * var(--u));
   min-height: 100%;
-  padding: 16px;
+  padding: calc(16 * var(--u));
 }
 
 .menu-head {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: calc(12 * var(--u));
 }
 
 .menu-head__copy {
@@ -21,20 +21,20 @@
 
 .menu-head__title {
   margin: 0;
-  font-size: 20px;
+  font-size: calc(20 * var(--u));
   font-weight: 600;
 }
 
 .menu-head__sub {
-  font-size: 12px;
+  font-size: calc(12 * var(--u));
   color: var(--nova-muted);
 }
 
 .menu-close {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: calc(44 * var(--u));
+  height: calc(44 * var(--u));
   border-radius: var(--nova-r-chip);
   border: 1px solid var(--nova-border);
   background: var(--nova-chip-fill);
@@ -47,14 +47,14 @@
 
 .menu-empty {
   margin: 0;
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   color: var(--nova-muted);
 }
 
 .menu-history {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 * var(--u));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -62,15 +62,15 @@
 
 .menu-history__row {
   display: grid;
-  grid-template-columns: 56px 1fr auto;
+  grid-template-columns: calc(56 * var(--u)) 1fr auto;
   align-items: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 12px;
+  gap: calc(8 * var(--u));
+  min-height: calc(40 * var(--u));
+  padding: 0 calc(12 * var(--u));
   border-radius: var(--nova-r-chip);
   border: 1px solid var(--nova-border-soft);
   background: var(--nova-cta2-fill);
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   font-variant-numeric: tabular-nums;
 }
 

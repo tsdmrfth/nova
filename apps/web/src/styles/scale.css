@@ -1,0 +1,42 @@
+/*
+ * Frame scale: the one place that sizes the UI.
+ *
+ * Every HUD length is written as `calc(N * var(--u))`, where N is the px value
+ * on the 390 × 844 UI Kit v2 artboard. `--u` is one artboard px measured
+ * against the `.nv-screen__frame` size container, so the whole HUD grows or
+ * shrinks with the frame and keeps the artboard's proportions.
+ *
+ * `--nv-fit` (≤ 1) is set by ScreenFrame when content still overflows a
+ * no-scroll frame (long copy, small phones); it shrinks everything further.
+ *
+ * Borders, shadows and blurs stay in px: they are hairlines and effects, not layout.
+ *
+ * Declared on the frame too: custom properties resolve their var()s where they
+ * are declared, so the frame's `--nv-fit` only reaches tokens declared there.
+ */
+:root,
+.nv-screen__frame {
+  --nv-ref-w: 390;
+  --nv-ref-h: 844;
+  --nv-u-min: 0.85px;
+  --nv-u-max: 1.2px;
+  --u: calc(
+    clamp(
+        var(--nv-u-min),
+        min(100cqw / var(--nv-ref-w), 100cqh / var(--nv-ref-h)),
+        var(--nv-u-max)
+      ) * var(--nv-fit, 1)
+  );
+
+  /* Desktop column; phones are always full-bleed (see ui.css). */
+  --nova-column: 430px;
+  --nova-gutter: calc(24 * var(--u));
+
+  /* Scaled copies of the geometry tokens in tokens.css (same artboard values). */
+  --nova-radius: calc(20 * var(--u));
+  --nova-r-card: calc(16 * var(--u));
+  --nova-r-chip: calc(12 * var(--u));
+  --nova-r-step: calc(9 * var(--u));
+  --nova-cta-h: calc(52 * var(--u));
+  --nova-cta2-h: calc(44 * var(--u));
+}

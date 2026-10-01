@@ -1,22 +1,22 @@
 /* Screen 12. */
 
 .buy-balance {
-  font-size: 18px;
+  font-size: calc(18 * var(--u));
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;
 }
 
 .buy-sheet {
-  gap: 12px;
+  gap: calc(12 * var(--u));
 }
 
 .buy-head {
-  gap: 4px;
+  gap: calc(4 * var(--u));
 }
 
 .buy-sub {
   margin: 0;
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   line-height: 1.5;
   color: var(--nova-muted);
 }
@@ -24,7 +24,7 @@
 .buy-packs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: calc(10 * var(--u));
 }
 
 .buy-pack {
@@ -32,8 +32,8 @@
   display: grid;
   place-content: center;
   gap: 2px;
-  min-height: 88px;
-  padding: 18px 8px 10px;
+  min-height: calc(88 * var(--u));
+  padding: calc(18 * var(--u)) calc(8 * var(--u)) calc(10 * var(--u));
   border-radius: var(--nova-r-chip);
   border: 1px solid var(--nova-border);
   background: var(--nova-glass-fill);
@@ -52,42 +52,42 @@
 
 .buy-pack__badge {
   position: absolute;
-  top: 6px;
+  top: calc(6 * var(--u));
   left: 0;
   right: 0;
-  font-size: 10px;
+  font-size: calc(10 * var(--u));
   letter-spacing: 0.06em;
   color: var(--nova-blue-light);
   text-transform: uppercase;
 }
 
 .buy-pack__price {
-  font-size: 24px;
+  font-size: calc(24 * var(--u));
   font-variant-numeric: tabular-nums;
 }
 
 .buy-pack__unit {
-  font-size: 11px;
+  font-size: calc(11 * var(--u));
   letter-spacing: 0.06em;
   color: var(--nova-muted);
 }
 
 .buy-pack__extra {
-  font-size: 12px;
+  font-size: calc(12 * var(--u));
   color: var(--nova-blue-light);
 }
 
 .buy-split {
-  gap: 6px;
-  padding: 10px 14px;
+  gap: calc(6 * var(--u));
+  padding: calc(10 * var(--u)) calc(14 * var(--u));
 }
 
 .buy-split__bar {
   display: flex;
   gap: 2px;
-  height: 6px;
-  margin: 2px 0 4px;
-  border-radius: 999px;
+  height: calc(6 * var(--u));
+  margin: 2px 0 calc(4 * var(--u));
+  border-radius: calc(999 * var(--u));
   overflow: hidden;
 }
 
@@ -115,15 +115,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  min-height: 30px;
+  gap: calc(8 * var(--u));
+  min-height: calc(30 * var(--u));
 }
 
 .buy-row dt {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: calc(8 * var(--u));
+  font-size: calc(13 * var(--u));
 }
 
 .buy-row dd {
@@ -137,7 +137,7 @@
 }
 
 .buy-dot {
-  width: 8px;
-  height: 8px;
+  width: calc(8 * var(--u));
+  height: calc(8 * var(--u));
   border-radius: 2px;
 }

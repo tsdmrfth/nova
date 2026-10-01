@@ -1,16 +1,16 @@
 /* Screens 08–11. */
 
 .results-sheet {
-  gap: 10px;
+  gap: calc(10 * var(--u));
 }
 
 .results-pick {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: calc(8 * var(--u));
   margin: 0;
-  font-size: 14px;
+  font-size: calc(14 * var(--u));
   color: var(--nova-blue-light);
 }
 
@@ -22,8 +22,8 @@
 .results-pick__check {
   display: grid;
   place-items: center;
-  width: 20px;
-  height: 20px;
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
   border-radius: 50%;
   background: var(--nova-blue-bright);
   color: #fff;
@@ -33,41 +33,41 @@
   display: grid;
   place-items: center;
   flex: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: calc(40 * var(--u));
+  height: calc(40 * var(--u));
+  border-radius: calc(12 * var(--u));
   border: 1px solid var(--nova-border-soft);
   background: var(--nova-letter-fill);
 }
 
 .results-tease__title {
   font-family: var(--nova-story-font);
-  font-size: 18px;
+  font-size: calc(18 * var(--u));
 }
 
 .results-claimed {
   display: inline-flex;
   align-self: center;
   align-items: center;
-  gap: 6px;
-  min-height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
+  gap: calc(6 * var(--u));
+  min-height: calc(36 * var(--u));
+  padding: 0 calc(14 * var(--u));
+  border-radius: calc(999 * var(--u));
   border: 1px solid var(--nova-blue-light);
   background: var(--nova-chip-fill);
   color: var(--nova-blue-light);
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   font-weight: 600;
   letter-spacing: 0.04em;
 }
 
 .results-claim-sheet {
-  gap: 12px;
-  padding-top: 24px;
+  gap: calc(12 * var(--u));
+  padding-top: calc(24 * var(--u));
 }
 
 .results-claim-sheet.nv-sheet--orb {
-  padding-top: 46px;
+  padding-top: calc(46 * var(--u));
 }
 
 .results-claim-sheet__orb {
@@ -76,5 +76,5 @@
 }
 
 .results-claim-sheet .nv-receipt__row {
-  min-height: 40px;
+  min-height: calc(40 * var(--u));
 }
