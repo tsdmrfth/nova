@@ -9,6 +9,25 @@ import {
 const buyPercents = buySplitPercents();
 const dailyFree = grantDailyFree();
 
+/**
+ * The winner is picked from every player's Free Influence, so the goal says what to guess.
+ * Plain words: the HUD's GOAL chip only shows the bare MOST / LEAST / MIDDLE.
+ */
+const GOAL_STEPS: Record<DayGoal, { title: string; body: string }> = {
+  MOST: {
+    title: "Today, the most votes wins",
+    body: "Pick the choice you think most players will pick.",
+  },
+  LEAST: {
+    title: "Today, the fewest votes wins",
+    body: "Pick the choice you think most players will skip.",
+  },
+  MIDDLE: {
+    title: "Today, second place wins",
+    body: "Not the most votes, not the fewest. Pick the choice you think will come second.",
+  },
+};
+
 /** UI-KIT-V2 screens 01–04 + ONBOARDING-EDGE-COPY. EN-first. */
 export const ONBOARDING_COPY = {
   wordmark: "NOVA",
@@ -34,10 +53,24 @@ export const ONBOARDING_COPY = {
   grantBody: "Today's refill is in. Spend it on any choice.",
   tutorialKicker: "First light",
   tutorialTitle: "How today works",
+  /** Title + one short line each, in plain words. The goal step changes per goal. */
   tutorialSteps: (goal: DayGoal) => [
-    "Read today's chapter. Nova faces one decision.",
-    `Pick A, B or C and cast Influence. Today's goal is ${goal}.`,
-    "After voting closes, correct voters share the day pool by Influence weight.",
+    {
+      title: "Read the story",
+      body: "Nova must choose: A, B or C.",
+    },
+    {
+      title: "Vote",
+      body: `You get ${dailyFree} Free Influence a day. Each one is a vote. Put them on one choice. You can't change it later.`,
+    },
+    {
+      title: GOAL_STEPS[goal].title,
+      body: `${GOAL_STEPS[goal].body} This changes every day: see GOAL at the top.`,
+    },
+    {
+      title: "Guessed right? Share the prize",
+      body: "Everyone on the winning choice splits today's prize. More votes, bigger share. Some days the prize is zero.",
+    },
   ],
   tutorialGotIt: "Got it",
   tutorialSkip: "Skip",

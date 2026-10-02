@@ -62,7 +62,7 @@ describe("onboarding first-run (UI-KIT-V2 01–04)", () => {
     expect(localStorage.getItem(ONBOARDING_STORAGE_KEYS.disclaimerAccepted)).toBe("1");
 
     await user.click(screen.getByTestId("grant-toast"));
-    expect(screen.getByTestId("tutorial-overlay").textContent).toMatch(/Today's goal is MOST/);
+    expect(screen.getByTestId("tutorial-overlay").textContent).toMatch(/Today, the most votes wins/);
 
     await user.click(screen.getByTestId("tutorial-skip"));
     expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();

@@ -27,9 +27,12 @@ export function TutorialOverlay({ goal, onGotIt, onSkip }: TutorialOverlayProps)
       </div>
       <ol className="oboard-steps">
         {ONBOARDING_COPY.tutorialSteps(goal).map((step, index) => (
-          <li key={step}>
+          <li key={step.title}>
             <span className="oboard-steps__n">{index + 1}</span>
-            <span>{step}</span>
+            <span className="oboard-steps__copy">
+              <span className="oboard-steps__title">{step.title}</span>
+              <span>{step.body}</span>
+            </span>
           </li>
         ))}
       </ol>

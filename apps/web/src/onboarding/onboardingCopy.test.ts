@@ -13,7 +13,12 @@ describe("onboarding copy lock", () => {
     expect(ONBOARDING_COPY.enterCta).toBe("Enter Nova");
     expect(ONBOARDING_COPY.grantTitle).toBe(`Free Influence +${grantDailyFree()}`);
     expect(ONBOARDING_COPY.tutorialTitle).toBe("How today works");
-    expect(ONBOARDING_COPY.tutorialSteps("MOST")[1]).toMatch(/Today's goal is MOST/);
+    expect(ONBOARDING_COPY.tutorialSteps("MOST")).toHaveLength(4);
+    expect(ONBOARDING_COPY.tutorialSteps("MOST")[2].title).toBe("Today, the most votes wins");
+    expect(ONBOARDING_COPY.tutorialSteps("LEAST")[2].title).toBe("Today, the fewest votes wins");
+    expect(ONBOARDING_COPY.tutorialSteps("MIDDLE")[2].title).toBe("Today, second place wins");
+    // Points at the bare goal chip on the HUD.
+    expect(ONBOARDING_COPY.tutorialSteps("LEAST")[2].body).toMatch(/see GOAL at the top/);
     expect(ONBOARDING_COPY.tutorialGotIt).toBe("Got it");
     expect(ONBOARDING_COPY.tutorialSkip).toBe("Skip");
     expect(ONBOARDING_COPY.geoTitle).toBe("Not available here yet");
@@ -26,7 +31,7 @@ describe("onboarding copy lock", () => {
   it("keeps locked geo body and no APR / odds / Circle-official claims", () => {
     const blob = JSON.stringify({
       ...ONBOARDING_COPY,
-      tutorialSteps: ONBOARDING_COPY.tutorialSteps("MOST"),
+      tutorialSteps: (["MOST", "LEAST", "MIDDLE"] as const).map(ONBOARDING_COPY.tutorialSteps),
     });
     expect(blob).toMatch(/Nova isn't available in your region yet/);
     expect(containsForbiddenFinanceTerm(blob)).toBeUndefined();

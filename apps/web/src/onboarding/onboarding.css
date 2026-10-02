@@ -51,20 +51,33 @@
 .oboard-steps {
   display: flex;
   flex-direction: column;
-  gap: calc(6 * var(--u));
+  gap: calc(14 * var(--u));
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* Number sits level with the step title; the body wraps under the title. */
 .oboard-steps li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: calc(12 * var(--u));
-  min-height: calc(52 * var(--u));
-  font-size: calc(14 * var(--u));
+  font-size: calc(13 * var(--u));
   line-height: 1.45;
   color: var(--nova-muted);
+}
+
+.oboard-steps__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: calc(7 * var(--u));
+}
+
+.oboard-steps__title {
+  font-size: calc(15 * var(--u));
+  font-weight: 600;
+  color: var(--nova-text);
 }
 
 .oboard-steps__n {
