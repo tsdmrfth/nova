@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { PLATFORM_FEE_LABEL, quotePack } from "@nova/shared";
 import {
   connectAccount,
@@ -57,6 +57,30 @@ export function GrantDemoPage({
   const resolvedProvider = provider === undefined ? readInjectedProvider() : provider;
   const onArc = chainId === config.chainId;
   const canBuy = Boolean(model.deployed && account && onArc && !busy);
+
+  useEffect(() => {
+    if (!resolvedProvider) return;
+    const accountsChanged = (accounts: unknown) => {
+      setAccount(Array.isArray(accounts) && typeof accounts[0] === "string" ? accounts[0] : null);
+      setPoolSnap(null);
+      setSignalSnap(null);
+    };
+    const chainChanged = () => {
+      setChainId(null);
+      setPoolSnap(null);
+      setSignalSnap(null);
+      void readChainId(resolvedProvider).then(setChainId).catch(() => setChainId(null));
+    };
+    const disconnected = () => { setAccount(null); setChainId(null); };
+    resolvedProvider.on?.("accountsChanged", accountsChanged);
+    resolvedProvider.on?.("chainChanged", chainChanged);
+    resolvedProvider.on?.("disconnect", disconnected);
+    return () => {
+      resolvedProvider.removeListener?.("accountsChanged", accountsChanged);
+      resolvedProvider.removeListener?.("chainChanged", chainChanged);
+      resolvedProvider.removeListener?.("disconnect", disconnected);
+    };
+  }, [resolvedProvider]);
 
   async function refresh(nextProvider: Eip1193Provider) {
     if (config.poolAddress) {
@@ -148,7 +172,7 @@ export function GrantDemoPage({
         ) : null}
         {account && !onArc ? (
           <p className="nv-note" data-testid="grant-wrong-chain">
-            {GRANT_DEMO_COPY.wrongChain}
+            {`Switch to ${config.chainName} (chain id ${config.chainId}) before buying.`}
           </p>
         ) : null}
       </StepCard>

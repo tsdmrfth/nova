@@ -1,3 +1,4 @@
+import { useArcWallet } from "../wallet/useArcWallet";
 import { useCallback, useMemo, useReducer, type ReactNode } from "react";
 import { useSearchParams } from "react-router";
 import { OnboardingContext } from "./onboardingContext";
@@ -65,6 +66,7 @@ function readInitial(search: string): OnboardingSnapshot {
   const persisted = readPersistedOnboarding();
   const snapshot = createOnboardingSnapshot({
     ...persisted,
+    connected: import.meta.env.VITE_WALLET_MODE === "mock" && persisted.connected,
     rulesChecked: persisted.disclaimerAccepted,
     grantPending: readGrantPending(),
     geoBlocked: envGeoBlocked() || readSessionGeoBlocked(),
@@ -107,6 +109,8 @@ function reducer(state: OnboardingSnapshot, action: Action): OnboardingSnapshot 
 }
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
+  const realWallet = import.meta.env.VITE_WALLET_MODE !== "mock";
+  const wallet = useArcWallet(realWallet);
   const [searchParams] = useSearchParams();
   const search = searchParams.toString();
   const [state, dispatch] = useReducer(reducer, search, (initialSearch) => {
@@ -126,20 +130,28 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     run({ type: "check", checked });
   }, [run]);
 
-  const connect = useCallback(() => isOnboarded(run({ type: "connect" })), [run]);
+  const connect = useCallback(async () => {
+    if (!realWallet) return isOnboarded(run({ type: "connect" }));
+    if (state.geoBlocked || !await wallet.connect()) return false;
+    const next = mockConnect({ ...state, network: "arc", fault: null });
+    persist(next);
+    dispatch({ type: "hydrate", snapshot: next });
+    return isOnboarded(next);
+  }, [realWallet, run, state, wallet]);
 
   const continueAsMock = useCallback(
-    () => isOnboarded(run({ type: "continue" })),
-    [run],
+    () => !realWallet && isOnboarded(run({ type: "continue" })),
+    [realWallet, run],
   );
 
-  const switchToArc = useCallback(() => {
+  const switchToArc = useCallback(async () => {
+    if (realWallet) { await connect(); return; }
     run({ type: "switchArc" });
-  }, [run]);
+  }, [realWallet, connect, run]);
 
   const retryConnect = useCallback(
-    () => isOnboarded(run({ type: "retry" })),
-    [run],
+    async () => realWallet ? connect() : isOnboarded(run({ type: "retry" })),
+    [realWallet, connect, run],
   );
 
   const retryWallet = useCallback(() => {
@@ -147,15 +159,22 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   }, [run]);
 
   const openWallet = useCallback(
-    () => isOnboarded(run({ type: "openWallet" })),
-    [run],
+    async () => realWallet ? connect() : isOnboarded(run({ type: "openWallet" })),
+    [realWallet, connect, run],
   );
 
-  const enterNova = useCallback(() => isOnboarded(run({ type: "enter" })), [run]);
+  const enterNova = useCallback(() => {
+    if (realWallet && (!wallet.account || !wallet.onArc)) return false;
+    const next = enterNovaState({ ...state, connected: realWallet ? Boolean(wallet.account) : state.connected });
+    persist(next);
+    dispatch({ type: "hydrate", snapshot: next });
+    return isOnboarded(next);
+  }, [realWallet, wallet, state]);
 
   const disconnect = useCallback(() => {
+    wallet.disconnect();
     run({ type: "disconnect" });
-  }, [run]);
+  }, [run, wallet]);
 
   const reopenTutorial = useCallback(() => {
     run({ type: "reopenTutorial" });
@@ -169,10 +188,16 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     run({ type: "completeTutorial" });
   }, [run]);
 
+  const effectiveState = useMemo(() => realWallet ? { ...state, connected: Boolean(wallet.account && wallet.onArc), network: wallet.onArc ? "arc" as const : "wrong" as const, face: wallet.account && !wallet.onArc ? "network" as const : !wallet.account ? "welcome" as const : !state.disclaimerAccepted ? "notice" as const : state.face } : state, [realWallet, state, wallet.account, wallet.onArc]);
+
   const value = useMemo(
     () => ({
-      state,
-      onboarded: isOnboarded(state),
+      state: effectiveState,
+      account: wallet.account,
+      walletBusy: wallet.busy,
+      walletError: wallet.error,
+      chainName: wallet.chainName,
+      onboarded: isOnboarded(effectiveState),
       setRulesChecked: setChecked,
       connect,
       continueAsMock,
@@ -187,7 +212,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       reopenTutorial,
     }),
     [
-      state,
+      effectiveState,
+      wallet,
       setChecked,
       connect,
       continueAsMock,

@@ -1,6 +1,8 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  readonly VITE_ARC_NETWORK?: "mainnet" | "testnet";
+  readonly VITE_WALLET_MODE?: "real" | "mock";
   readonly VITE_APP_TITLE?: string;
   readonly VITE_GEO_BLOCKED?: string;
   readonly VITE_ARC_RPC_URL?: string;

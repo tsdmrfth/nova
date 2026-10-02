@@ -200,3 +200,26 @@ It runs on pushes to `main` and on pull requests:
 4. `pnpm test`
 5. `pnpm build`
 6. `forge test` and `forge build` in `contracts/`
+
+## Browser wallet connection and testnet rehearsal
+
+The Connect CTA now requests a real injected browser wallet (MetaMask/Rabby),
+adds or switches to the configured Arc network, and follows account/network changes.
+Wallet permissions are checked again on page load; a stored onboarding flag alone
+cannot establish a wallet connection. Disconnect clears the app session; browser
+wallet permissions can be revoked from the wallet itself.
+
+For a local Arc testnet rehearsal set these in the root `.env.local` and restart Vite:
+
+```dotenv
+VITE_WALLET_MODE=real
+VITE_ARC_NETWORK=testnet
+VITE_ARC_RPC_URL=https://rpc.testnet.arc.io
+VITE_ARC_EXPLORER_URL=https://explorer.testnet.arc.io
+```
+
+Mainnet remains the default when no network is configured. `VITE_WALLET_MODE=mock`
+is an explicit offline preview mode. Wallet connection does not deploy contracts;
+the game routes still use their offline state and `/demo` buys remain disabled until
+addresses are configured for the selected network. Never reuse mainnet deployment
+addresses for testnet. Private keys are not needed for browser connection.

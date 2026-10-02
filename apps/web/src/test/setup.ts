@@ -1,5 +1,5 @@
 import { cleanup } from "@testing-library/react";
-import { afterEach } from "vitest";
+import { afterEach, beforeEach, vi } from "vitest";
 import { clearOnboardingStorage } from "../onboarding/onboardingStorage";
 
 // Node ≥ 25 ships its own global `localStorage` / `sessionStorage` (undefined
@@ -23,3 +23,6 @@ afterEach(() => {
     // Node environment without storage.
   }
 });
+
+// Existing game UX tests exercise the explicit offline preview mode.
+beforeEach(() => { vi.stubEnv("VITE_WALLET_MODE", "mock"); });

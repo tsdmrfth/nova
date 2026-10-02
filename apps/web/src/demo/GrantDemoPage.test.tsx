@@ -21,7 +21,7 @@ function mockProvider(chainId = "0x13b2"): Eip1193Provider & { methods: string[]
     methods,
     request: async ({ method, params }) => {
       methods.push(method);
-      if (method === "eth_requestAccounts") return [ACCOUNT];
+      if (method === "eth_requestAccounts" || method === "eth_accounts") return [ACCOUNT];
       if (method === "eth_chainId") return chainId;
       if (method === "wallet_switchEthereumChain") return null;
       if (method === "eth_sendTransaction") {

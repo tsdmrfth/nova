@@ -1,3 +1,4 @@
+import { useOnboarding } from "../onboarding/useOnboarding";
 import { useLayoutEffect, useRef, useState } from "react";
 import { formatUsdc } from "@nova/shared";
 import { useDayStore } from "../day/useDayStore";
@@ -70,6 +71,7 @@ function HelpRow({
  * screen; tapping the overlay closes it.
  */
 export function MenuSheet({ onClose, onHowTo, onGuide, onDisconnect }: MenuSheetProps) {
+  const { account, chainName } = useOnboarding();
   const { state } = useDayStore();
   const [reminder, setReminder] = usePref("dailyReminder");
   const [calm, setCalm] = usePref("calmMotion");
@@ -192,7 +194,7 @@ export function MenuSheet({ onClose, onHowTo, onGuide, onDisconnect }: MenuSheet
               </div>
               <div className="nv-list__row">
                 <span className="nv-list__label">{MENU_COPY.walletRow}</span>
-                <span className="nv-muted">{MENU_COPY.walletValue}</span>
+                <span className="nv-muted">{account ? `${account.slice(0, 6)}…${account.slice(-4)} · ${chainName}` : MENU_COPY.walletValue}</span>
               </div>
             </div>
           </section>

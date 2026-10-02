@@ -48,8 +48,8 @@ export function buildGrantDemoModel(config: DemoConfig): GrantDemoModel {
     title: GRANT_DEMO_COPY.title,
     honesty: GRANT_DEMO_COPY.honesty,
     notLive: deployed ? null : GRANT_DEMO_COPY.notLive,
-    testnetNote: GRANT_DEMO_COPY.testnetNote,
-    chainHint: GRANT_DEMO_COPY.chainHint,
+    testnetNote: config.chainId === 5042002 ? "Testnet rehearsal · test USDC only. This deployment is not a mainnet Microgrant submission." : GRANT_DEMO_COPY.testnetNote,
+    chainHint: config.chainId === 5042002 ? "Arc testnet · chain id 5042002" : GRANT_DEMO_COPY.chainHint,
     splitTitle: GRANT_DEMO_COPY.splitTitle,
     rows: [
       {
