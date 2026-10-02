@@ -8,6 +8,7 @@ import { useOnboarding } from "./onboarding/useOnboarding";
 import { BuyPage } from "./pages/BuyPage";
 import { ConfirmationPage } from "./pages/ConfirmationPage";
 import { ConnectPage, GeoBlockPage } from "./pages/ConnectPage";
+import { GuidePage } from "./pages/GuidePage";
 import { HomePage, VotePage } from "./pages/HomePage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { ResultsPage } from "./pages/ResultsPage";
@@ -21,6 +22,7 @@ const pages: Record<ProductRouteId, ReactElement> = {
   home: <HomePage />,
   vote: <VotePage />,
   buy: <BuyPage />,
+  guide: <GuidePage />,
   confirmation: <ConfirmationPage />,
   results: <ResultsPage />,
   neighborhood: <PlaceholderPage title="Nova/Neighborhood" />,

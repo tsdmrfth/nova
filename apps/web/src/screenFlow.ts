@@ -10,7 +10,7 @@ export const SCREEN_FLOW = ["/connect", "/", "/vote", "/confirmation", "/results
  * Layers over whatever is open. They rise from the bottom and cover it; closing
  * one drops it back down and uncovers the screen that stayed underneath.
  */
-export const SCREEN_LAYERS = ["/buy", "/demo"] as const;
+export const SCREEN_LAYERS = ["/buy", "/guide", "/demo"] as const;
 
 /**
  * A place beside the day, not a step in it and not a layer on it. It arrives

@@ -41,7 +41,7 @@ export function HomePage() {
           setMenuOpen(false);
           onboarding.reopenTutorial();
         }}
-        onPools={() => navigate("/buy")}
+        onGuide={() => navigate("/guide")}
         onDisconnect={onboarding.disconnect}
       />
     );

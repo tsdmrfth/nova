@@ -159,6 +159,32 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
     expect(screen.queryByTestId("tutorial-overlay")).toBeNull();
   });
 
+  it("opens the full guide from Help and comes back Home", async () => {
+    const user = userEvent.setup();
+    renderAt("/");
+
+    await user.click(screen.getByTestId("hud-menu"));
+    await user.click(screen.getByTestId("menu-help-guide"));
+    expect(screen.getByRole("heading", { name: "How Nova works" })).toBeTruthy();
+    expect(screen.getByTestId("guide-nova").textContent).toMatch(/Nova operating budget/);
+
+    // The goal tabs open on today's goal (Day 1 is MOST) and mark the example winner.
+    expect(screen.getByTestId("guide-goal-MOST").getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByTestId("guide-goal-panel").textContent).toMatch(/most votes wins.*A.*WINNER/s);
+    await user.click(screen.getByTestId("guide-goal-LEAST"));
+    expect(screen.getByTestId("guide-goal-panel").textContent).toMatch(/fewest votes wins/);
+    expect(screen.getByTestId("guide-goal-panel").textContent).toMatch(/C210WINNER/);
+
+    // The first chip starts selected; tapping one selects it.
+    expect(screen.getByTestId("guide-jump-day").getAttribute("aria-current")).toBe("true");
+    await user.click(screen.getByTestId("guide-jump-pool"));
+    expect(screen.getByTestId("guide-jump-pool").getAttribute("aria-current")).toBe("true");
+    expect(screen.getByTestId("guide-jump-day").getAttribute("aria-current")).toBeNull();
+
+    await user.click(screen.getByTestId("guide-back"));
+    expect(screen.getByTestId("home-screen")).toBeTruthy();
+  });
+
   it("disconnects back to Connect", async () => {
     const user = userEvent.setup();
     renderAt("/");

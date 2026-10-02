@@ -107,7 +107,7 @@ The direction comes from how the two screens relate, not from browser history (`
 | Relationship | Screens | Moving on | Moving back |
 |---|---|---|---|
 | Daily loop (full horizontal handoff) | Connect → Home → Vote → Confirmation → Results | New screen enters from the right, the old one leaves left | New screen enters from the left, the old one leaves right |
-| Layer (vertical cover) | Buy, `/demo` | Rises from the bottom and covers; the screen underneath only shifts up | The layer drops down; the screen underneath settles back |
+| Layer (vertical cover) | Buy, Guide (`/guide`, Menu › Help › Full guide), `/demo` | Rises from the bottom and covers; the screen underneath only shifts up | The layer drops down; the screen underneath settles back |
 | Place (full vertical handoff) | Neighborhood | Arrives from the top while the open screen leaves downward | The place leaves upward; the day screen enters from the bottom |
 
 Calm motion and `prefers-reduced-motion` switch the slide off. Every route must render its own page component, so the frame remounts and the slide runs (`ui/screenMotion.ts`).

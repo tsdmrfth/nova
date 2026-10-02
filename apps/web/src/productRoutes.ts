@@ -3,6 +3,7 @@ export const PRODUCT_ROUTES = [
   { id: "home", path: "/", label: "Home" },
   { id: "vote", path: "/vote", label: "Vote" },
   { id: "buy", path: "/buy", label: "Buy" },
+  { id: "guide", path: "/guide", label: "Guide" },
   { id: "confirmation", path: "/confirmation", label: "Confirmation" },
   { id: "results", path: "/results", label: "Results" },
   { id: "neighborhood", path: "/neighborhood", label: "Nova/Neighborhood" },

@@ -2,12 +2,13 @@ import { describe, expect, it } from "vitest";
 import { PRODUCT_ROUTES } from "./productRoutes";
 
 describe("product routes", () => {
-  it("defines the 8 product routes", () => {
+  it("defines the 9 product routes", () => {
     expect(PRODUCT_ROUTES.map((route) => route.id)).toEqual([
       "connect",
       "home",
       "vote",
       "buy",
+      "guide",
       "confirmation",
       "results",
       "neighborhood",

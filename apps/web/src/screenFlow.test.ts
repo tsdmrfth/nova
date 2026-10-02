@@ -29,6 +29,8 @@ describe("screen flow", () => {
     expect(screenMotion("/confirmation", "/demo")).toBe("up");
     expect(screenMotion("/neighborhood", "/buy")).toBe("up");
     expect(screenMotion("/buy", "/vote")).toBe("down");
+    expect(screenMotion("/", "/guide")).toBe("up");
+    expect(screenMotion("/guide", "/")).toBe("down");
     expect(screenMotion("/buy", "/confirmation")).toBe("down");
     expect(screenMotion("/demo", "/")).toBe("down");
   });

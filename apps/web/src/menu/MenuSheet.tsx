@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { buySplitPercents, formatUsdc } from "@nova/shared";
+import { formatUsdc } from "@nova/shared";
 import { useDayStore } from "../day/useDayStore";
 import { HUD_COPY, padDay } from "../hud/homeHudModel";
 import { useCalmMotion } from "../hud/usePrefersReducedMotion";
@@ -17,8 +17,6 @@ import {
 import { usePref } from "./prefs";
 import "./menu.css";
 
-const split = buySplitPercents();
-
 /** The drawer drops from the top edge and pulls back up the same way. Translate only. */
 const DRAWER_IN = { duration: 360, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" };
 const DRAWER_OUT = { duration: 260, easing: "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" as const };
@@ -35,7 +33,7 @@ export const MENU_COPY = {
   walletValue: "Arc",
   help: "Help",
   howTo: "How today works",
-  pools: `Pools and the ${split.prizePool} / ${split.studioNet} / ${split.novaBudget} split`,
+  guide: "Full guide: how Nova works",
   notice: "Soft-launch notice",
   disconnect: "Disconnect",
   locked: "locked",
@@ -45,7 +43,7 @@ export const MENU_COPY = {
 type MenuSheetProps = {
   onClose(): void;
   onHowTo(): void;
-  onPools(): void;
+  onGuide(): void;
   onDisconnect(): void;
 };
 
@@ -71,7 +69,7 @@ function HelpRow({
  * frame-wide drawer pinned to the top edge over an overlay on the rest of the
  * screen; tapping the overlay closes it.
  */
-export function MenuSheet({ onClose, onHowTo, onPools, onDisconnect }: MenuSheetProps) {
+export function MenuSheet({ onClose, onHowTo, onGuide, onDisconnect }: MenuSheetProps) {
   const { state } = useDayStore();
   const [reminder, setReminder] = usePref("dailyReminder");
   const [calm, setCalm] = usePref("calmMotion");
@@ -207,7 +205,7 @@ export function MenuSheet({ onClose, onHowTo, onPools, onDisconnect }: MenuSheet
                 onClick={() => leave(onHowTo)}
                 testId="menu-help-tutorial"
               />
-              <HelpRow label={MENU_COPY.pools} onClick={onPools} testId="menu-help-pools" />
+              <HelpRow label={MENU_COPY.guide} onClick={onGuide} testId="menu-help-guide" />
               <HelpRow
                 label={MENU_COPY.notice}
                 onClick={() => setShowNotice(true)}
