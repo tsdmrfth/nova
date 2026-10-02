@@ -19,6 +19,7 @@ export function HomePage() {
   const navigate = useNavigate();
   const calm = useCalmMotion();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [tutorialLeaving, setTutorialLeaving] = useState(false);
   const model = useMemo(() => buildHomeModel(state), [state]);
 
   const grant = onboarding.state.grantPending;
@@ -56,11 +57,21 @@ export function HomePage() {
     );
   } else if (tutorial) {
     overlay = (
-      <FrameOverlay align="center">
+      <FrameOverlay
+        align="center"
+        scrim
+        rise={!calm}
+        leaving={tutorialLeaving}
+        onLeft={() => {
+          setTutorialLeaving(false);
+          onboarding.completeTutorial();
+        }}
+        testId="tutorial-layer"
+      >
         <TutorialOverlay
           goal={state.goal}
-          onGotIt={onboarding.completeTutorial}
-          onSkip={onboarding.completeTutorial}
+          onGotIt={() => setTutorialLeaving(true)}
+          onSkip={() => setTutorialLeaving(true)}
         />
       </FrameOverlay>
     );
@@ -69,7 +80,6 @@ export function HomePage() {
   return (
     <ScreenFrame
       className={grant ? "home-screen home-screen--home is-behind-toast" : "home-screen home-screen--home"}
-      dim={tutorial}
       overlay={overlay}
       testId="home-screen"
     >

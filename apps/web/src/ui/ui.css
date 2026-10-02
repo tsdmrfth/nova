@@ -170,7 +170,39 @@
   overflow-y: auto;
 }
 
-/* The dim itself comes from ScreenFrame `dim`, so overlays never double it. */
+/* Modal overlay over the whole screen, HUD included, no fade (FrameOverlay `scrim`). */
+.nv-overlay-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: var(--nova-overlay);
+  backdrop-filter: blur(3px);
+}
+
+/*
+ * The overlay box itself rises from below the frame (FrameOverlay `rise`).
+ * Moving the box, not the card, keeps the card out of the box's scrollHeight,
+ * so the fit guard never reads the off-screen start as overflow.
+ */
+.nv-overlay--rise {
+  animation: nv-overlay-rise 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* No second tap while the card slides away. */
+.nv-overlay.is-leaving {
+  pointer-events: none;
+}
+
+@keyframes nv-overlay-rise {
+  from {
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* Without `scrim`, the dim comes from ScreenFrame `dim`, so overlays never double it. */
 .nv-overlay--center {
   align-items: center;
 }

@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -110,6 +110,53 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
     await user.click(screen.getByTestId("menu-help-tutorial"));
     expect(screen.queryByTestId("menu-sheet")).toBeNull();
     expect(screen.getByTestId("tutorial-overlay")).toBeTruthy();
+    // The overlay covers the HUD too, so the scene-only dim stays off.
+    expect(screen.getByTestId("frame-overlay-scrim")).toBeTruthy();
+    expect(screen.queryByTestId("nova-scene-dim")).toBeNull();
+    expect(screen.getByTestId("tutorial-layer").classList.contains("nv-overlay--rise")).toBe(true);
+  });
+
+  it("slides the tutorial back down before closing it", async () => {
+    const calls: { el: Element; to: string; anim: { onfinish: (() => void) | null } }[] = [];
+    HTMLElement.prototype.animate = function animate(this: HTMLElement, keyframes: Keyframe[]) {
+      const anim = { onfinish: null };
+      calls.push({ el: this, to: String(keyframes[1].transform), anim });
+      return anim as unknown as Animation;
+    } as HTMLElement["animate"];
+    try {
+      const user = userEvent.setup();
+      renderAt("/");
+      await user.click(screen.getByTestId("hud-menu"));
+      calls.length = 0;
+      await user.click(screen.getByTestId("menu-help-tutorial"));
+      // The Menu pulls back up first; the tutorial opens when that finishes.
+      act(() => calls.at(-1)?.anim.onfinish?.());
+      calls.length = 0;
+
+      await user.click(screen.getByTestId("tutorial-got-it"));
+      const layer = screen.getByTestId("tutorial-layer");
+      expect(calls.map(({ el, to }) => [el, to])).toEqual([[layer, "translate3d(0, 100%, 0)"]]);
+      expect(layer.classList.contains("is-leaving")).toBe(true);
+
+      act(() => calls[0].anim.onfinish?.());
+      expect(screen.queryByTestId("tutorial-overlay")).toBeNull();
+      expect(screen.queryByTestId("frame-overlay-scrim")).toBeNull();
+    } finally {
+      delete (HTMLElement.prototype as Partial<HTMLElement>).animate;
+    }
+  });
+
+  it("shows the tutorial without the rise under Calm motion", async () => {
+    localStorage.setItem(PREF_KEYS.calmMotion, "1");
+    const user = userEvent.setup();
+    renderAt("/");
+
+    await user.click(screen.getByTestId("hud-menu"));
+    await user.click(screen.getByTestId("menu-help-tutorial"));
+    expect(screen.getByTestId("frame-overlay-scrim")).toBeTruthy();
+    expect(screen.getByTestId("tutorial-layer").classList.contains("nv-overlay--rise")).toBe(false);
+    await user.click(screen.getByTestId("tutorial-skip"));
+    expect(screen.queryByTestId("tutorial-overlay")).toBeNull();
   });
 
   it("disconnects back to Connect", async () => {

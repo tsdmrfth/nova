@@ -96,6 +96,7 @@ How to implement it:
 - Selection border / shadow transitions 180 ms.
 - No confetti, no shake, no red.
 - Menu (13) is a frame-wide drawer pinned to the top edge with no gap (the safe-area inset is padding inside it). It drops in 360 ms and pulls back up 260 ms, translate only. An overlay covers the rest of the screen, HUD buttons included, with no fade; tapping it closes the Menu.
+- How today works (04) rises from the bottom edge 360 ms, `cubic-bezier(0.2, 0.8, 0.2, 1)`, and on Got it / Skip drops back down 260 ms, `cubic-bezier(0.4, 0, 1, 1)`; translate only. An overlay covers the whole screen, HUD included, with no fade. Calm motion and `prefers-reduced-motion` drop both slides.
 
 ### 6.1 Screen transitions (user feedback, 2026-10-02)
 
