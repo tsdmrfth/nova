@@ -65,6 +65,15 @@
     linear-gradient(90deg, rgba(4, 17, 40, 0.34), rgba(4, 17, 40, 0) 60%);
 }
 
+/* Soft blur under the bottom HUD; the mask fades it in so it has no hard top edge. */
+.nv-scene__blur {
+  position: absolute;
+  inset: auto 0 0;
+  height: 45%;
+  backdrop-filter: blur(14px) saturate(120%);
+  mask-image: linear-gradient(180deg, transparent, #000 70%);
+}
+
 /* One screen's layers (dim, HUD, overlay). Route changes slide this over the fixed plate. */
 .nv-screen__stage {
   position: absolute;

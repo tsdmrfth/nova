@@ -5,7 +5,7 @@ import { useFrameFit } from "./useFrameFit";
 
 export const PLATE_ID = "scene_nova_city";
 
-/** City + Nova plate with the kit's two readability gradients. It stays put while screens slide. */
+/** City + Nova plate with the kit's two readability gradients and a feathered bottom blur. It stays put while screens slide. */
 export function NovaScene() {
   const plate = getAssetUrl(PLATE_ID);
   return (
@@ -14,6 +14,7 @@ export function NovaScene() {
         <img className="nv-scene__plate" src={plate} alt="" draggable={false} />
       ) : null}
       <div className="nv-scene__shade" />
+      <div className="nv-scene__blur" />
     </div>
   );
 }
