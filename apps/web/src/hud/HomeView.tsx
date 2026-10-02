@@ -94,7 +94,7 @@ export function HomeView({ model, onPick, onPrimary, onBuyExtra, onMenu }: HomeV
         <BalanceRow model={model} onBuyExtra={onBuyExtra} />
       </div>
 
-      <article className="hud-chapter nv-plate-copy" data-testid="hud-chapter">
+      <article className="hud-chapter nv-plate-copy nv-text-plate" data-testid="hud-chapter">
         <Kicker>{model.chapterLabel}</Kicker>
         <StoryTitle size="md" testId="hud-title">
           {model.title}

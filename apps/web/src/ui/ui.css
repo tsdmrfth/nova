@@ -302,6 +302,15 @@
   text-shadow: 0 2px 12px rgba(0, 9, 28, 0.7);
 }
 
+/* Frosted backing for title + description copy that sits straight on the scene art. */
+.nv-text-plate {
+  margin-left: calc(-8 * var(--u));
+  padding: calc(14 * var(--u)) calc(16 * var(--u)) calc(16 * var(--u));
+  border-radius: var(--nova-r-card);
+  background: rgba(6, 22, 46, 0.3);
+  backdrop-filter: blur(14px) saturate(120%);
+}
+
 .nv-note {
   margin: 0;
   font-size: calc(12 * var(--u));

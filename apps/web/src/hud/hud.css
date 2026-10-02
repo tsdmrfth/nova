@@ -6,11 +6,6 @@
   gap: calc(8 * var(--u));
   width: calc(228 * var(--u));
   max-width: 62%;
-  margin-left: calc(-8 * var(--u));
-  padding: calc(14 * var(--u)) calc(16 * var(--u)) calc(16 * var(--u));
-  border-radius: var(--nova-r-card);
-  background: rgba(6, 22, 46, 0.42);
-  backdrop-filter: blur(14px) saturate(120%);
   text-shadow: 0 1px 8px rgba(0, 9, 28, 0.5);
 }
 

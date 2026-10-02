@@ -9,7 +9,7 @@ type Action = { testId: string; label: string; onClick: () => void };
 /** Screen 01 hero: wordmark + story line on the plate, left of Nova. */
 function ConnectHero() {
   return (
-    <header className="oboard-hero nv-plate-copy" data-testid="connect-body">
+    <header className="oboard-hero nv-plate-copy nv-text-plate" data-testid="connect-body">
       <p className="nv-wordmark">{ONBOARDING_COPY.wordmark}</p>
       <StoryTitle size="md">{ONBOARDING_COPY.headline}</StoryTitle>
       <p className="oboard-hero__sub">{ONBOARDING_COPY.subline}</p>

@@ -38,7 +38,7 @@ export function VoteView({
         <BalanceRow model={model} onBuyExtra={onBuyExtra} />
       </div>
 
-      <header className="hud-vote-head nv-plate-copy">
+      <header className="hud-vote-head nv-plate-copy nv-text-plate">
         <StoryTitle size="lg">{HUD_COPY.voteTitle}</StoryTitle>
         <p className="nv-body">{HUD_COPY.voteSub}</p>
       </header>

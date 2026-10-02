@@ -402,7 +402,7 @@ export function GuideHud({ goal, calm, onBack }: { goal: DayGoal; calm: boolean;
         <BackBar label={GUIDE_COPY.backLabel} onBack={onBack} trailing={null} testId="guide-back" />
       </div>
 
-      <header className="guide-head">
+      <header className="guide-head nv-text-plate">
         <StoryTitle size="lg">{GUIDE_COPY.title}</StoryTitle>
         <p className="guide-head__sub">{GUIDE_COPY.sub}</p>
       </header>

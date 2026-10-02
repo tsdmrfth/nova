@@ -120,7 +120,7 @@ export function GrantDemoPage({
 
   return (
     <ScreenFrame dim scroll className="grant-screen" testId="grant-demo">
-      <header className="nv-stack grant-head">
+      <header className="nv-stack grant-head nv-text-plate">
         <Kicker>{model.kicker}</Kicker>
         <StoryTitle size="sm">{model.title}</StoryTitle>
       </header>
