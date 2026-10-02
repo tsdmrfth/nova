@@ -13,9 +13,11 @@
  *
  * Declared on the frame too: custom properties resolve their var()s where they
  * are declared, so the frame's `--nv-fit` only reaches tokens declared there.
+ * And on the stage, so a sliding copy of the previous screen keeps its own fit.
  */
 :root,
-.nv-screen__frame {
+.nv-screen__frame,
+.nv-screen__stage {
   --nv-ref-w: 390;
   --nv-ref-h: 844;
   --nv-u-min: 0.85px;

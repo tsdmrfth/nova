@@ -65,11 +65,25 @@
     linear-gradient(90deg, rgba(4, 17, 40, 0.34), rgba(4, 17, 40, 0) 60%);
 }
 
+/* One screen's layers (dim, HUD, overlay). Route changes slide this over the fixed plate. */
+.nv-screen__stage {
+  position: absolute;
+  inset: 0;
+}
+
+/* Holds the previous screen's stage copy while it slides out (screenMotion.tsx). */
+.nv-screen__ghost {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
 .nv-scene__dim {
   position: absolute;
   inset: 0;
   background: var(--nova-overlay);
   backdrop-filter: blur(3px);
+  pointer-events: none;
 }
 
 .nv-screen__hud {

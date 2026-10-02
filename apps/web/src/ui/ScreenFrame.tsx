@@ -1,11 +1,12 @@
 import { useRef, type ReactNode } from "react";
 import { getAssetUrl } from "@nova/assets";
+import { useScreenSlide } from "./screenMotion";
 import { useFrameFit } from "./useFrameFit";
 
 export const PLATE_ID = "scene_nova_city";
 
-/** City + Nova plate with the kit's two readability gradients. */
-export function NovaScene({ dim = false }: { dim?: boolean }) {
+/** City + Nova plate with the kit's two readability gradients. It stays put while screens slide. */
+export function NovaScene() {
   const plate = getAssetUrl(PLATE_ID);
   return (
     <div className="nv-scene" aria-hidden="true" data-testid="nova-scene">
@@ -13,7 +14,6 @@ export function NovaScene({ dim = false }: { dim?: boolean }) {
         <img className="nv-scene__plate" src={plate} alt="" draggable={false} />
       ) : null}
       <div className="nv-scene__shade" />
-      {dim ? <div className="nv-scene__dim" data-testid="nova-scene-dim" /> : null}
     </div>
   );
 }
@@ -33,6 +33,10 @@ type ScreenFrameProps = {
  * Portrait phone frame. Full screen on phones; on desktop a centred 430px
  * column with a blurred copy of the plate behind it, so Nova stays on the
  * column's right edge. The HUD scales with the frame (`--u`, styles/scale.css).
+ *
+ * Everything that belongs to one screen (dim, HUD, overlay) sits in the stage,
+ * which slides on route changes over the fixed plate (screenMotion.tsx).
+ * `className` lands on the stage too, so a sliding copy keeps its screen styles.
  */
 export function ScreenFrame({
   children,
@@ -44,7 +48,10 @@ export function ScreenFrame({
 }: ScreenFrameProps) {
   const plate = getAssetUrl(PLATE_ID);
   const frameRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const slotRef = useRef<HTMLDivElement>(null);
   useFrameFit(frameRef, !scroll);
+  useScreenSlide(frameRef, stageRef, slotRef);
   return (
     <section
       className={className ? `nv-screen ${className}` : "nv-screen"}
@@ -60,11 +67,18 @@ export function ScreenFrame({
         />
       ) : null}
       <div className="nv-screen__frame" ref={frameRef}>
-        <NovaScene dim={dim} />
-        <div className="nv-screen__hud" data-nv-fit={scroll ? undefined : ""}>
-          {children}
+        <NovaScene />
+        <div
+          className={className ? `nv-screen__stage ${className}` : "nv-screen__stage"}
+          ref={stageRef}
+        >
+          {dim ? <div className="nv-scene__dim" data-testid="nova-scene-dim" /> : null}
+          <div className="nv-screen__hud" data-nv-fit={scroll ? undefined : ""}>
+            {children}
+          </div>
+          {overlay}
         </div>
-        {overlay}
+        <div className="nv-screen__ghost" ref={slotRef} aria-hidden="true" />
       </div>
     </section>
   );

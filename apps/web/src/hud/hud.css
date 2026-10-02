@@ -32,10 +32,10 @@
 }
 
 /* Screen 03: Home sits at half opacity behind the grant toast, then fades up. */
-.home-screen--home .nv-screen__hud {
+.nv-screen__stage.home-screen--home > .nv-screen__hud {
   transition: opacity 240ms ease;
 }
 
-.home-screen--home.is-behind-toast .nv-screen__hud {
+.nv-screen__stage.home-screen--home.is-behind-toast > .nv-screen__hud {
   opacity: 0.5;
 }

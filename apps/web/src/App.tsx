@@ -1,5 +1,5 @@
 import { useEffect, type ReactElement } from "react";
-import { NavLink, Navigate, Route, Routes } from "react-router";
+import { NavLink, Navigate, Route, Routes, useLocation } from "react-router";
 import { DayStoreProvider } from "./day/DayStoreProvider";
 import { GrantDemoPage } from "./demo/GrantDemoPage";
 import { usePref } from "./menu/prefs";
@@ -12,7 +12,8 @@ import { HomePage, VotePage } from "./pages/HomePage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { ResultsPage } from "./pages/ResultsPage";
 import { PRODUCT_ROUTES, type ProductRouteId } from "./productRoutes";
-import "./ui";
+import { screenMotion } from "./screenFlow";
+import { ScreenMotionProvider } from "./ui";
 import "./App.css";
 
 const pages: Record<ProductRouteId, ReactElement> = {
@@ -78,32 +79,35 @@ export function App() {
 
 function AppLayout() {
   const { state } = useOnboarding();
+  const { pathname } = useLocation();
 
   return (
     <div className="app-shell">
       <CalmMotionRoot />
       {import.meta.env.DEV ? <DevRouteJump /> : null}
       <main className="app-main">
-        <Routes>
-          <Route path="/demo" element={<GrantDemoPage />} />
-          {PRODUCT_ROUTES.map((route) => (
-            <Route
-              key={route.id}
-              path={route.path}
-              element={
-                state.geoBlocked ? (
-                  <GeoBlockPage />
-                ) : route.id === "connect" ? (
-                  pages[route.id]
-                ) : (
-                  <PlayGate>{pages[route.id]}</PlayGate>
-                )
-              }
-            />
-          ))}
-          <Route path="/nova" element={<Navigate to="/neighborhood" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <ScreenMotionProvider path={pathname} resolve={screenMotion}>
+          <Routes>
+            <Route path="/demo" element={<GrantDemoPage />} />
+            {PRODUCT_ROUTES.map((route) => (
+              <Route
+                key={route.id}
+                path={route.path}
+                element={
+                  state.geoBlocked ? (
+                    <GeoBlockPage />
+                  ) : route.id === "connect" ? (
+                    pages[route.id]
+                  ) : (
+                    <PlayGate>{pages[route.id]}</PlayGate>
+                  )
+                }
+              />
+            ))}
+            <Route path="/nova" element={<Navigate to="/neighborhood" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ScreenMotionProvider>
       </main>
     </div>
   );

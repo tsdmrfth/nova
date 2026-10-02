@@ -96,6 +96,20 @@ How to implement it:
 - Selection border / shadow transitions 180 ms.
 - No confetti, no shake, no red.
 
+### 6.1 Screen transitions (user feedback, 2026-10-02)
+
+Route changes slide; they never fade. The city plate (and Nova in it) stays still: only the screen's stage (dim, HUD, overlays) moves. A step in the day and a change of place are a full handoff, so both screens stay visible. A layer covers the open screen instead, and that screen only shifts. 420 ms, `cubic-bezier(0.65, 0, 0.35, 1)` (ease-in-out, so the travel reads instead of jumping).
+
+The direction comes from how the two screens relate, not from browser history (`apps/web/src/screenFlow.ts`):
+
+| Relationship | Screens | Moving on | Moving back |
+|---|---|---|---|
+| Daily loop (full horizontal handoff) | Connect → Home → Vote → Confirmation → Results | New screen enters from the right, the old one leaves left | New screen enters from the left, the old one leaves right |
+| Layer (vertical cover) | Buy, `/demo` | Rises from the bottom and covers; the screen underneath only shifts up | The layer drops down; the screen underneath settles back |
+| Place (full vertical handoff) | Neighborhood | Arrives from the top while the open screen leaves downward | The place leaves upward; the day screen enters from the bottom |
+
+Calm motion and `prefers-reduced-motion` switch the slide off. Every route must render its own page component, so the frame remounts and the slide runs (`ui/screenMotion.ts`).
+
 ## 7. Open items and known issues
 
 | Item | Notes |
