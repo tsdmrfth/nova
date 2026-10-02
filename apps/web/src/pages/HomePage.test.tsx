@@ -71,9 +71,13 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
     const menu = screen.getByTestId("menu-sheet");
     expect(within(menu).getByText("Day history")).toBeTruthy();
     expect(screen.getByTestId("profile-empty")).toBeTruthy();
-    expect(screen.getByTestId("nova-scene-dim")).toBeTruthy();
+    expect(screen.getByTestId("menu-scrim")).toBeTruthy();
 
     await user.click(screen.getByTestId("menu-close"));
+    expect(screen.queryByTestId("menu-sheet")).toBeNull();
+
+    await user.click(screen.getByTestId("hud-menu"));
+    await user.click(screen.getByTestId("menu-scrim"));
     expect(screen.queryByTestId("menu-sheet")).toBeNull();
   });
 

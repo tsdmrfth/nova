@@ -34,17 +34,15 @@ export function HomePage() {
   let overlay = null;
   if (menuOpen) {
     overlay = (
-      <FrameOverlay align="fill" testId="menu-overlay">
-        <MenuSheet
-          onClose={() => setMenuOpen(false)}
-          onHowTo={() => {
-            setMenuOpen(false);
-            onboarding.reopenTutorial();
-          }}
-          onPools={() => navigate("/buy")}
-          onDisconnect={onboarding.disconnect}
-        />
-      </FrameOverlay>
+      <MenuSheet
+        onClose={() => setMenuOpen(false)}
+        onHowTo={() => {
+          setMenuOpen(false);
+          onboarding.reopenTutorial();
+        }}
+        onPools={() => navigate("/buy")}
+        onDisconnect={onboarding.disconnect}
+      />
     );
   } else if (grant) {
     overlay = (
@@ -71,7 +69,7 @@ export function HomePage() {
   return (
     <ScreenFrame
       className={grant ? "home-screen home-screen--home is-behind-toast" : "home-screen home-screen--home"}
-      dim={menuOpen || tutorial}
+      dim={tutorial}
       overlay={overlay}
       testId="home-screen"
     >

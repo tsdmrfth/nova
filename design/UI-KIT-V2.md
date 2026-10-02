@@ -95,6 +95,7 @@ How to implement it:
 - Spinner turns once per 1.8 s, linear. It stops under Calm motion or `prefers-reduced-motion`.
 - Selection border / shadow transitions 180 ms.
 - No confetti, no shake, no red.
+- Menu (13) is a frame-wide drawer pinned to the top edge with no gap (the safe-area inset is padding inside it). It drops in 360 ms and pulls back up 260 ms, translate only. An overlay covers the rest of the screen, HUD buttons included, with no fade; tapping it closes the Menu.
 
 ### 6.1 Screen transitions (user feedback, 2026-10-02)
 

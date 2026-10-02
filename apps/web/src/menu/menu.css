@@ -1,9 +1,50 @@
-/* Screen 13. */
+/* Screen 13: a frame-wide drawer pinned to the top edge (no gap), over an overlay on the rest. */
 
-.menu-sheet {
+.menu-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  font-size: calc(15 * var(--u));
+}
+
+/* Overlay on the rest of the screen (HUD included), no fade; a tap closes the Menu. */
+.menu-scrim {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: var(--nova-overlay);
+  backdrop-filter: blur(3px);
+  cursor: default;
+}
+
+/* Leaves a band of scene below so there is always somewhere to tap away. */
+.menu-drawer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100% - 56 * var(--u));
+}
+
+/* The safe-area inset goes inside, so the panel itself starts at the very top. */
+.nv-sheet.menu-sheet {
   gap: calc(14 * var(--u));
-  min-height: 100%;
-  padding: calc(16 * var(--u));
+  min-height: 0;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 16 * var(--u))
+    var(--nova-gutter)
+    calc(20 * var(--u));
+  border-width: 0 0 1px;
+  border-radius: 0 0 var(--nova-radius) var(--nova-radius);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.nv-sheet.menu-sheet::-webkit-scrollbar {
+  display: none;
 }
 
 .menu-head {
