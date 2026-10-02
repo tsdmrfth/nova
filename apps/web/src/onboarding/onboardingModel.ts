@@ -100,7 +100,7 @@ function markAccepted(state: OnboardingSnapshot): OnboardingSnapshot {
   };
 }
 
-function succeedConnect(state: OnboardingSnapshot): OnboardingSnapshot {
+export function succeedConnect(state: OnboardingSnapshot): OnboardingSnapshot {
   const firstConnect = !state.connected;
   if (!state.disclaimerAccepted) {
     // First run: the soft-launch notice comes next; the grant waits for Enter Nova.

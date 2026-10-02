@@ -1,7 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DayStoreProvider } from "../day/DayStoreProvider";
+import { BuyPage } from "./BuyPage";
 import { App } from "../App";
 import { seedOnboarded } from "../onboarding/onboardingStorage";
 
@@ -96,4 +98,16 @@ describe("Buy Extra Influence", () => {
     );
     expect(screen.getByTestId("hud-extra-value").textContent).toBe("55");
   });
+});
+
+ it("disables real purchases when the selected network has no configured pool", () => {
+  vi.stubEnv("VITE_WALLET_MODE", "real");
+  vi.stubEnv("VITE_ARC_NETWORK", "testnet");
+  vi.stubEnv("VITE_NOVA_POOL_ADDRESS", "");
+  render(<MemoryRouter><DayStoreProvider><BuyPage /></DayStoreProvider></MemoryRouter>);
+  expect(screen.getByTestId("buy-cta")).toHaveProperty("disabled", true);
+  expect(screen.getByTestId("buy-cap").textContent).toContain("Purchases on Arc Testnet");
+  expect(screen.getByTestId("buy-cap").textContent).toContain("contract has not been configured");
+  expect(screen.getByTestId("buy-extra-value").textContent).toBe("0");
+  vi.unstubAllEnvs();
 });

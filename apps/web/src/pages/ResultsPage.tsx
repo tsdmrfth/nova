@@ -9,7 +9,7 @@ import { ScreenFrame } from "../ui";
 
 /** Screens 08–11. Claim Done shows once, right after confirmation. */
 export function ResultsPage() {
-  const { state, claim } = useDayStore();
+  const { state, claim, offline } = useDayStore();
   const navigate = useNavigate();
   const calm = useCalmMotion();
   const settled = useMemo(() => settleOffline(state), [state]);
@@ -26,6 +26,13 @@ export function ResultsPage() {
 
   const submitClaim = () => claim(snapshotFromSettle(settled));
   const home = () => navigate("/");
+
+  if (!offline) return (
+    <ScreenFrame className="home-screen home-screen--results" testId="results-screen">
+      <p>Results and payout claims are not available yet.</p>
+      <button onClick={home}>Back home</button>
+    </ScreenFrame>
+  );
 
   let body;
   if (state.claimStatus === "pending" || state.claimStatus === "failed") {

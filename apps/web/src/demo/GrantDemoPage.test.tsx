@@ -30,6 +30,7 @@ function mockProvider(chainId = "0x13b2"): Eip1193Provider & { methods: string[]
           ? `0x${"11".repeat(32)}`
           : `0x${"22".repeat(32)}`;
       }
+      if (method === "eth_getTransactionReceipt") return { status: "0x1" };
       if (method === "eth_call") {
         const to = (params?.[0] as { to?: string } | undefined)?.to?.toLowerCase();
         if (to === SIGNAL) {

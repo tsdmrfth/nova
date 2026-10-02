@@ -1,3 +1,4 @@
+import { offlineWalletPreview } from "../wallet/walletMode";
 import { useArcWallet } from "../wallet/useArcWallet";
 import { useCallback, useMemo, useReducer, type ReactNode } from "react";
 import { useSearchParams } from "react-router";
@@ -12,6 +13,7 @@ import {
   enterNova as enterNovaState,
   isOnboarded,
   mockConnect,
+  succeedConnect,
   openWallet as openWalletState,
   parseOnboardingSearch,
   retryConnect as retryConnectState,
@@ -66,7 +68,7 @@ function readInitial(search: string): OnboardingSnapshot {
   const persisted = readPersistedOnboarding();
   const snapshot = createOnboardingSnapshot({
     ...persisted,
-    connected: import.meta.env.VITE_WALLET_MODE === "mock" && persisted.connected,
+    connected: offlineWalletPreview() && persisted.connected,
     rulesChecked: persisted.disclaimerAccepted,
     grantPending: readGrantPending(),
     geoBlocked: envGeoBlocked() || readSessionGeoBlocked(),
@@ -109,7 +111,7 @@ function reducer(state: OnboardingSnapshot, action: Action): OnboardingSnapshot 
 }
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const realWallet = import.meta.env.VITE_WALLET_MODE !== "mock";
+  const realWallet = !offlineWalletPreview();
   const wallet = useArcWallet(realWallet);
   const [searchParams] = useSearchParams();
   const search = searchParams.toString();
@@ -133,7 +135,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const connect = useCallback(async () => {
     if (!realWallet) return isOnboarded(run({ type: "connect" }));
     if (state.geoBlocked || !await wallet.connect()) return false;
-    const next = mockConnect({ ...state, network: "arc", fault: null });
+    const next = succeedConnect({ ...state, network: "arc", fault: null });
     persist(next);
     dispatch({ type: "hydrate", snapshot: next });
     return isOnboarded(next);

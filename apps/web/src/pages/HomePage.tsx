@@ -96,12 +96,13 @@ export function HomePage() {
 
 /** Screen 06. */
 export function VotePage() {
-  const { state, select, setSpend, setExtraSpend, cast } = useDayStore();
+  const { state, select, setSpend, setExtraSpend, cast, error } = useDayStore();
   const navigate = useNavigate();
   const model = useMemo(() => buildVoteModel(state), [state]);
 
   return (
     <ScreenFrame className="home-screen home-screen--vote" testId="vote-screen">
+      {error ? <p role="alert">{error}</p> : null}
       <VoteView
         model={model}
         onBack={() => navigate("/")}
@@ -109,8 +110,7 @@ export function VotePage() {
         onSpend={setSpend}
         onExtraSpend={setExtraSpend}
         onCast={() => {
-          cast();
-          navigate("/confirmation");
+          if (cast()) navigate("/confirmation");
         }}
         onViewLocked={() => navigate("/confirmation")}
         onBuyExtra={() => navigate("/buy")}
