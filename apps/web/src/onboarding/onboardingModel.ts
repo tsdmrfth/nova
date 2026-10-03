@@ -115,23 +115,6 @@ export function succeedConnect(state: OnboardingSnapshot): OnboardingSnapshot {
   };
 }
 
-/** Connect is open to everyone; the rules gate sits on the notice that follows. */
-export function mockConnect(state: OnboardingSnapshot): OnboardingSnapshot {
-  if (state.geoBlocked) {
-    return state;
-  }
-  if (state.network === "wrong") {
-    return { ...state, face: "network" };
-  }
-  if (state.fault === "rejected") {
-    return { ...state, face: "rejected" };
-  }
-  if (state.fault === "locked") {
-    return { ...state, face: "locked" };
-  }
-  return succeedConnect(state);
-}
-
 /** "Enter Nova" on the soft-launch notice. */
 export function enterNova(state: OnboardingSnapshot): OnboardingSnapshot {
   if (state.geoBlocked || !state.connected || !canProceed(state)) {
@@ -148,24 +131,8 @@ export function disconnect(state: OnboardingSnapshot): OnboardingSnapshot {
   return { ...state, connected: false, face: "welcome", grantPending: false };
 }
 
-export function continueOnboarding(state: OnboardingSnapshot): OnboardingSnapshot {
-  return mockConnect({ ...state, fault: null });
-}
-
-export function switchToArc(state: OnboardingSnapshot): OnboardingSnapshot {
-  return { ...state, network: "arc" };
-}
-
-export function retryConnect(state: OnboardingSnapshot): OnboardingSnapshot {
-  return mockConnect({ ...state, face: "welcome", fault: null });
-}
-
 export function retryWallet(state: OnboardingSnapshot): OnboardingSnapshot {
   return { ...state, face: "welcome", fault: null };
-}
-
-export function openWallet(state: OnboardingSnapshot): OnboardingSnapshot {
-  return mockConnect({ ...state, face: "welcome", fault: null });
 }
 
 export function dismissGrant(state: OnboardingSnapshot): OnboardingSnapshot {

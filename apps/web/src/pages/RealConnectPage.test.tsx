@@ -9,7 +9,6 @@ const ADDRESS = "0xF2FDeE747478A34deaf79811A4f87581dc01bBBD";
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 function renderReal() {
-  vi.stubEnv("VITE_WALLET_MODE", "real");
   vi.stubEnv("VITE_ARC_NETWORK", "testnet");
   return render(<MemoryRouter initialEntries={["/"]}><App /></MemoryRouter>);
 }
@@ -33,7 +32,7 @@ describe("real Connect route", () => {
       return null;
     }) });
     renderReal();
-    await userEvent.click(screen.getByTestId("connect-cta"));
+    await userEvent.click(await screen.findByTestId("connect-cta"));
     expect(await screen.findByTestId("soft-launch-notice")).toBeTruthy();
     expect(screen.getByTestId("connected-wallet").textContent).toBe(ADDRESS);
     expect(screen.getByTestId("notice-enter")).toHaveProperty("disabled", true);

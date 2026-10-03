@@ -1,6 +1,10 @@
-import { useEffect, type ReactElement } from "react";
+import { useEffect, useMemo, type ReactElement } from "react";
 import { NavLink, Navigate, Route, Routes, useLocation } from "react-router";
+import { lazyArcChain } from "./chain/lazyArcChain";
+import { NovaChainContext } from "./chain/chainContext";
+import type { NovaChain } from "./chain/novaChain";
 import { DayStoreProvider } from "./day/DayStoreProvider";
+import { readDemoConfig } from "./demo/demoConfig";
 import { GrantDemoPage } from "./demo/GrantDemoPage";
 import { usePref } from "./menu/prefs";
 import { OnboardingProvider } from "./onboarding/OnboardingProvider";
@@ -48,7 +52,10 @@ function DevRouteJump() {
 }
 
 function PlayGate({ children }: { children: ReactElement }) {
-  const { onboarded } = useOnboarding();
+  const { onboarded, walletChecked } = useOnboarding();
+  if (!onboarded && !walletChecked) {
+    return null;
+  }
   if (!onboarded) {
     return <Navigate to="/connect" replace />;
   }
@@ -69,13 +76,20 @@ function CalmMotionRoot() {
   return null;
 }
 
-export function App() {
+/** `chain` is injectable for tests; the app reads the configured Arc pool. */
+export function App({ chain }: { chain?: NovaChain | null }) {
+  const resolved = useMemo(
+    () => (chain !== undefined ? chain : lazyArcChain(readDemoConfig())),
+    [chain],
+  );
   return (
-    <DayStoreProvider>
+    <NovaChainContext.Provider value={resolved}>
       <OnboardingProvider>
-        <AppLayout />
+        <DayStoreProvider>
+          <AppLayout />
+        </DayStoreProvider>
       </OnboardingProvider>
-    </DayStoreProvider>
+    </NovaChainContext.Provider>
   );
 }
 

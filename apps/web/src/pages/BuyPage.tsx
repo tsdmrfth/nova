@@ -8,22 +8,24 @@ import { ScreenFrame } from "../ui";
 import { useBack } from "./useBack";
 
 export function BuyPage() {
-  const { state, buy, busy, error, transactionUrl, offline } = useDayStore();
+  const { state, buy, busy, error, transactionUrl, available, ready } = useDayStore();
   const back = useBack(state.status === "cast" ? "/confirmation" : "/vote");
   const [selectedPackId, setSelectedPackId] = useState<PackId>(DEFAULT_PACK_ID);
   const config = useMemo(() => readDemoConfig(), []);
-  const unavailable = !offline && !config.poolAddress
+  const unavailable = !available
     ? `Purchases on ${config.chainName} are not available yet. The purchase contract has not been configured.`
-    : null;
+    : ready && !state.votingOpen
+      ? "Today's round is closed. Extra opens again with the next day."
+      : null;
   const model = useMemo(() => {
     const base = buildBuyModel(state, selectedPackId);
     return {
       ...base,
-      ctaEnabled: !busy && !unavailable && base.ctaEnabled,
+      ctaEnabled: ready && !busy && !unavailable && base.ctaEnabled,
       ctaDisabledReason: unavailable ?? base.ctaDisabledReason,
       status: error ?? (busy ? "Confirm in your wallet and wait for confirmation…" : base.status),
     };
-  }, [state, selectedPackId, busy, error, unavailable]);
+  }, [state, selectedPackId, busy, error, unavailable, ready]);
 
   return (
     <ScreenFrame className="home-screen home-screen--buy" testId="buy-screen">
@@ -32,7 +34,7 @@ export function BuyPage() {
         model={model}
         selectedPackId={selectedPackId}
         onSelectPack={setSelectedPackId}
-        onBuy={() => buy(selectedPackId)}
+        onBuy={() => void buy(selectedPackId)}
         onBack={back}
       />
     </ScreenFrame>

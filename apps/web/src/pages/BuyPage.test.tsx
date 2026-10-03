@@ -1,23 +1,17 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { DayStoreProvider } from "../day/DayStoreProvider";
-import { BuyPage } from "./BuyPage";
-import { App } from "../App";
 import { seedOnboarded } from "../onboarding/onboardingStorage";
+import { FakeNovaChain } from "../test/fakeChain";
+import { PLAYER, renderApp } from "../test/renderApp";
 
 describe("Buy Extra Influence", () => {
   beforeEach(() => {
     seedOnboarded();
   });
-  it("quotes Pulse 90/8/2, mock-buys Extra, and keeps Free separate", async () => {
+  it("quotes Pulse 90/8/2, buys onchain, and keeps Free separate", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/buy"]}>
-        <App />
-      </MemoryRouter>,
-    );
+    const { chain } = await renderApp("/buy");
 
     expect(screen.getByRole("heading", { name: "Add Extra Influence" })).toBeTruthy();
     expect(screen.getByTestId("buy-extra-value").textContent).toBe("0");
@@ -38,10 +32,14 @@ describe("Buy Extra Influence", () => {
     expect(screen.getByTestId("buy-breakdown").textContent).toMatch(/Platform service fee · 8%/);
 
     await user.click(screen.getByTestId("buy-cta"));
-    expect(screen.getByTestId("buy-extra-value").textContent).toBe("55");
-    expect(screen.getByTestId("buy-status").textContent).toMatch(
+    expect((await screen.findByTestId("buy-status")).textContent).toMatch(
       /You received 55 Extra Influence/,
     );
+    expect(screen.getByTestId("buy-extra-value").textContent).toBe("55");
+    expect(screen.getByText("View confirmed purchase").getAttribute("href")).toMatch(
+      /^https:\/\/explorer\.test\/tx\/0x/,
+    );
+    expect(await chain.readDay(PLAYER)).toMatchObject({ spentMicro: 5_000_000n, entry: { extraBought: 55 } });
 
     await user.click(screen.getByTestId("buy-pack-spark"));
     expect(screen.getByTestId("buy-you-pay").textContent).toBe("1.00 USDC");
@@ -53,16 +51,15 @@ describe("Buy Extra Influence", () => {
     );
   });
 
-  it("disables Confirm buy after 10 USDC mock spend and returns Extra to Vote", async () => {
+  it("disables Confirm buy after 10 USDC spent today and returns Extra to Vote", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/buy"]}>
-        <App />
-      </MemoryRouter>,
-    );
+    const chain = new FakeNovaChain();
+    await chain.buy(PLAYER, "pulse");
+    await renderApp("/buy", chain);
+    expect(screen.getByTestId("buy-extra-value").textContent).toBe("55");
 
     await user.click(screen.getByTestId("buy-cta"));
-    await user.click(screen.getByTestId("buy-cta"));
+    await screen.findByTestId("buy-status");
     expect(screen.getByTestId("buy-extra-value").textContent).toBe("110");
     expect(screen.getByTestId("buy-cta")).toHaveProperty("disabled", true);
 
@@ -78,11 +75,7 @@ describe("Buy Extra Influence", () => {
 
   it("opens Buy from the Vote Extra prompt and keeps the selected tile", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/vote"]}>
-        <App />
-      </MemoryRouter>,
-    );
+    await renderApp("/vote");
 
     await user.click(screen.getByTestId("choice-B"));
     expect(screen.getByTestId("buy-entry").textContent).toMatch(
@@ -92,22 +85,43 @@ describe("Buy Extra Influence", () => {
     expect(screen.getByRole("heading", { name: "Add Extra Influence" })).toBeTruthy();
 
     await user.click(screen.getByTestId("buy-cta"));
+    await screen.findByTestId("buy-status");
     await user.click(screen.getByTestId("buy-back"));
     expect(screen.getByTestId("choice-B").getAttribute("aria-pressed")).toBe(
       "true",
     );
     expect(screen.getByTestId("hud-extra-value").textContent).toBe("55");
   });
-});
 
- it("disables real purchases when the selected network has no configured pool", () => {
-  vi.stubEnv("VITE_WALLET_MODE", "real");
-  vi.stubEnv("VITE_ARC_NETWORK", "testnet");
-  vi.stubEnv("VITE_NOVA_POOL_ADDRESS", "");
-  render(<MemoryRouter><DayStoreProvider><BuyPage /></DayStoreProvider></MemoryRouter>);
-  expect(screen.getByTestId("buy-cta")).toHaveProperty("disabled", true);
-  expect(screen.getByTestId("buy-cap").textContent).toContain("Purchases on Arc Testnet");
-  expect(screen.getByTestId("buy-cap").textContent).toContain("contract has not been configured");
-  expect(screen.getByTestId("buy-extra-value").textContent).toBe("0");
-  vi.unstubAllEnvs();
+  it("keeps Confirm buy off while the wallet confirms, then shows a rejection", async () => {
+    const user = userEvent.setup();
+    const chain = new FakeNovaChain();
+    chain.hold = true;
+    chain.failNext = "Not enough USDC. Get test USDC at faucet.circle.com, then try again.";
+    await renderApp("/buy", chain);
+    await user.click(screen.getByTestId("buy-cta"));
+    expect(screen.getByTestId("buy-cta")).toHaveProperty("disabled", true);
+    expect(screen.getByText(/Confirm in your wallet/)).toBeTruthy();
+    chain.release();
+    expect((await screen.findByText(/faucet\.circle\.com/)).textContent).toMatch(/Not enough USDC/);
+    expect(screen.getByTestId("buy-extra-value").textContent).toBe("0");
+  });
+
+  it("disables purchases when the selected network has no configured pool", async () => {
+    vi.stubEnv("VITE_ARC_NETWORK", "testnet");
+    await renderApp("/buy", null);
+    expect(screen.getByTestId("buy-cta")).toHaveProperty("disabled", true);
+    expect(screen.getByTestId("buy-cap").textContent).toContain("Purchases on Arc Testnet");
+    expect(screen.getByTestId("buy-cap").textContent).toContain("contract has not been configured");
+    expect(screen.getByTestId("buy-extra-value").textContent).toBe("0");
+    vi.unstubAllEnvs();
+  });
+
+  it("closes Buy once the pool day has settled", async () => {
+    const chain = new FakeNovaChain();
+    chain.settle();
+    await renderApp("/buy", chain);
+    expect(screen.getByTestId("buy-cta")).toHaveProperty("disabled", true);
+    expect(screen.getByTestId("buy-cap").textContent).toMatch(/round is closed/);
+  });
 });

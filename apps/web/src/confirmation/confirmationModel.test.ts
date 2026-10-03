@@ -1,21 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { containsForbiddenFinanceTerm, grantDailyFree } from "@nova/shared";
-import {
-  buyPack,
-  castSelected,
-  createDayState,
-  formatLocalTime,
-  selectChoice,
-  setExtraSpendAmount,
-} from "../day/dayStore";
+import { formatLocalTime } from "../day/dayStore";
+import { FIXTURE_NOW, dayState, votedState } from "../test/dayFixtures";
 import { buildConfirmationModel } from "./confirmationModel";
-
-const now = new Date("2026-09-18T12:00:00");
 
 describe("confirmation model", () => {
   it("reads an open day without inventing a cast", () => {
-    const state = createDayState(1, now);
-    const model = buildConfirmationModel(state);
+    const model = buildConfirmationModel(dayState());
     expect(model.locked).toBe(false);
     expect(model.resultsReady).toBe(false);
     expect(model.title).toBe("Nothing locked yet");
@@ -24,20 +15,18 @@ describe("confirmation model", () => {
     expect(model.freeRemaining).toBe(grantDailyFree());
     expect(model.extraSpent).toBe(0);
     expect(model.extraRemaining).toBe(0);
-    expect(model.closesAt).toBe(formatLocalTime(state.schedule.voteCloseAt));
-    expect(model.publishAt).toBe(formatLocalTime(state.schedule.publishAt));
-    expect(model.resultsCta).toBe(`See results · ${model.publishAt}`);
+    expect(model.closesAt).toBe("At settle");
+    expect(model.publishAt).toBe("After settle");
+    expect(model.resultsCta).toBe("Results after the day settles");
+
+    const closesAt = FIXTURE_NOW + 3_600_000;
+    expect(buildConfirmationModel(dayState({ closesAt })).closesAt).toBe(formatLocalTime(closesAt));
   });
 
   it("summarizes Free vs Extra on the locked pick", () => {
-    let state = createDayState(1, now);
-    state = buyPack(state, "spark");
-    state = selectChoice(state, "B");
-    state = setExtraSpendAmount(state, 4);
-    state = castSelected(state);
-    const model = buildConfirmationModel(state);
+    const model = buildConfirmationModel(votedState("B", 10, 4, 10));
     expect(model.locked).toBe(true);
-    expect(model.resultsReady).toBe(true);
+    expect(model.resultsReady).toBe(false);
     expect(model.title).toBe("Vote locked");
     expect(model.dayLabel).toBe("DAY 01");
     expect(model.pick).toEqual({ id: "B", label: "Say hello" });
@@ -45,13 +34,16 @@ describe("confirmation model", () => {
     expect(model.freeRemaining).toBe(0);
     expect(model.extraSpent).toBe(4);
     expect(model.extraRemaining).toBe(6);
-    expect(model.resultsCta).toBe("See results");
+
+    const settled = buildConfirmationModel(
+      dayState({ open: false, settled: true, entry: { voted: true, option: "B", free: 10 } }),
+    );
+    expect(settled.resultsReady).toBe(true);
+    expect(settled.resultsCta).toBe("See results");
   });
 
   it("keeps confirmation copy free of yield and odds claims", () => {
-    const model = buildConfirmationModel(
-      castSelected(selectChoice(createDayState(1, now), "A")),
-    );
+    const model = buildConfirmationModel(votedState("A", 10));
     const blob = JSON.stringify(model);
     expect(containsForbiddenFinanceTerm(blob)).toBeUndefined();
     expect(blob).not.toMatch(/Submit vote/i);

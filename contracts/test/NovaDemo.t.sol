@@ -306,7 +306,7 @@ contract NovaDemoTest is Test {
         vm.prank(owner);
         pool.settleDay();
         vm.prank(owner);
-        pool.openNextDay();
+        pool.openNextDay(0);
 
         vm.prank(buyer);
         pool.buyExtraInfluence(1);
@@ -418,5 +418,328 @@ contract NovaDemoTest is Test {
             assertTrue(pool.conserved());
             assertEq(pool.prizePool() + pool.studioNet() + pool.novaBudget(), pool.gross());
         }
+    }
+}
+
+/// @notice Vote, onchain W*, claim, and rollover. Numbers mirror `@nova/shared` settleDay.
+contract NovaGameTest is Test {
+    MockUSDC internal usdc;
+    NovaDemoPool internal pool;
+    NovaSignal internal signalContract;
+
+    address internal owner = makeAddr("owner");
+    address internal studio = makeAddr("studio");
+    address internal novaWallet = makeAddr("nova");
+    address internal agent = makeAddr("agent");
+
+    uint8 internal constant A = 0;
+    uint8 internal constant B = 1;
+    uint8 internal constant C = 2;
+
+    function setUp() public {
+        usdc = new MockUSDC();
+        pool = new NovaDemoPool(address(usdc), studio, owner);
+        address[] memory agents = new address[](1);
+        agents[0] = agent;
+        signalContract = new NovaSignal(address(pool), novaWallet, 1_000_000, owner, agents);
+        vm.prank(owner);
+        pool.setSignal(address(signalContract));
+    }
+
+    function _player(string memory name) internal returns (address who) {
+        who = makeAddr(name);
+        usdc.mint(who, 100_000_000);
+        vm.prank(who);
+        usdc.approve(address(pool), type(uint256).max);
+    }
+
+    function _buy(address who, uint8 packId) internal {
+        vm.prank(who);
+        pool.buyExtraInfluence(packId);
+    }
+
+    function _vote(address who, uint8 option, uint256 free, uint256 extra) internal {
+        vm.prank(who);
+        pool.castVote(option, free, extra);
+    }
+
+    function _settle() internal {
+        vm.prank(owner);
+        pool.settleDay();
+    }
+
+    function _entry(address who) internal view returns (uint64 bought, uint64 placed, uint8 free, uint8 option, bool voted, bool claimed) {
+        return pool.entries(pool.dayId(), who);
+    }
+
+    function test_voteRecordsTalliesAndEntry() public {
+        address p = _player("p");
+        _buy(p, 1);
+        _vote(p, B, 7, 10);
+
+        (uint64 bought, uint64 placed, uint8 free, uint8 option, bool voted,) = _entry(p);
+        assertEq(bought, 10);
+        assertEq(placed, 10);
+        assertEq(free, 7);
+        assertEq(option, B);
+        assertTrue(voted);
+        (uint256[3] memory freeT, uint256[3] memory extraT) = pool.optionTallies(1);
+        assertEq(freeT[B], 7);
+        assertEq(extraT[B], 10);
+        assertEq(freeT[A] + freeT[C] + extraT[A] + extraT[C], 0);
+    }
+
+    function test_voteGuards() public {
+        address p = _player("p");
+        vm.startPrank(p);
+        vm.expectRevert(NovaDemoPool.UnknownOption.selector);
+        pool.castVote(3, 1, 0);
+        vm.expectRevert(NovaDemoPool.ZeroAmount.selector);
+        pool.castVote(A, 0, 0);
+        vm.expectRevert(NovaDemoPool.FreeExceeded.selector);
+        pool.castVote(A, 11, 0);
+        vm.expectRevert(NovaDemoPool.ExtraExceeded.selector);
+        pool.castVote(A, 10, 1);
+        pool.castVote(A, 10, 0);
+        vm.expectRevert(NovaDemoPool.AlreadyVoted.selector);
+        pool.castVote(B, 1, 0);
+        vm.stopPrank();
+
+        _settle();
+        address late = _player("late");
+        vm.expectRevert(NovaDemoPool.DayNotOpen.selector);
+        vm.prank(late);
+        pool.castVote(A, 1, 0);
+    }
+
+    function test_buyAfterVotePlacesExtraOnPickWithCap() public {
+        address p = _player("p");
+        _vote(p, C, 10, 0);
+        _buy(p, 2);
+        _buy(p, 2);
+        (uint64 bought, uint64 placed,,,,) = _entry(p);
+        assertEq(bought, 110);
+        assertEq(placed, 110);
+        (, uint256[3] memory extraT) = pool.optionTallies(1);
+        assertEq(extraT[C], 100, "effective Extra caps at 100");
+    }
+
+    function test_goalRotationPicksFromFreeOnly() public {
+        // Day 1 MOST, day 2 LEAST, day 3 MIDDLE. Free A 2 / B 5 / C 3; whale Extra on A.
+        for (uint256 day = 1; day <= 3; day++) {
+            address whale = _player(string.concat("whale", vm.toString(day)));
+            _buy(whale, 2);
+            _buy(whale, 2);
+            _vote(whale, A, 0, 110);
+            _vote(_player(string.concat("a", vm.toString(day))), A, 2, 0);
+            _vote(_player(string.concat("b", vm.toString(day))), B, 5, 0);
+            _vote(_player(string.concat("c", vm.toString(day))), C, 3, 0);
+            uint8 expected = day == 1 ? B : day == 2 ? A : C;
+            assertEq(pool.pickWinner(day), expected);
+            _settle();
+            (,,,,,,,,,, uint8 winner) = pool.days_(day);
+            assertEq(winner, expected);
+            vm.prank(owner);
+            pool.openNextDay(0);
+        }
+    }
+
+    function test_tiesBreakByOptionAscending() public {
+        assertEq(pool.pickWinner(1), A, "all zero, MOST takes A");
+        _vote(_player("b"), B, 4, 0);
+        _vote(_player("c"), C, 4, 0);
+        assertEq(pool.pickWinner(1), B);
+    }
+
+    address internal w40;
+    address internal w30a;
+    address internal w30b;
+    address internal loser;
+    address internal freeB1;
+    address internal freeB2;
+
+    function _seedClaimDay() internal {
+        w40 = _player("w40");
+        w30a = _player("w30a");
+        w30b = _player("w30b");
+        loser = _player("loser");
+        freeB1 = _player("freeB1");
+        freeB2 = _player("freeB2");
+        // 40 Extra: 4 Spark. 30 Extra: 3 Spark each. Loser: 2 Pulse on A.
+        for (uint256 i = 0; i < 4; i++) _buy(w40, 1);
+        for (uint256 i = 0; i < 3; i++) {
+            _buy(w30a, 1);
+            _buy(w30b, 1);
+        }
+        _buy(loser, 2);
+        _buy(loser, 2);
+        _vote(w40, B, 0, 40);
+        _vote(w30a, B, 0, 30);
+        _vote(w30b, B, 0, 30);
+        _vote(loser, A, 0, 110);
+        _vote(freeB1, B, 10, 0);
+        _vote(freeB2, B, 5, 0);
+        _vote(_player("freeA"), A, 10, 0);
+    }
+
+    function _claimableTotal(address who) internal view returns (uint256) {
+        (uint256 paid, uint256 free) = pool.claimable(1, who);
+        return paid + free;
+    }
+
+    /// gross 4 + 3 + 3 + 10 = 20 USDC → prize 18 USDC → paid 16.2 / free 1.8.
+    function test_claimSplitsLanesProRata() public {
+        _seedClaimDay();
+        assertEq(pool.prizePool(), 18_000_000);
+        _settle();
+        (uint256 paidBucket, uint256 freeBucket, uint256 pot, bool settled) = pool.dayBuckets(1);
+        assertTrue(settled);
+        assertEq(pot, 18_000_000);
+        assertEq(paidBucket, 16_200_000);
+        assertEq(freeBucket, 1_800_000);
+
+        assertEq(_claimableTotal(w40), 6_480_000);
+        assertEq(_claimableTotal(w30a), 4_860_000);
+        assertEq(_claimableTotal(w30b), 4_860_000);
+        assertEq(_claimableTotal(freeB1), 1_200_000);
+        assertEq(_claimableTotal(freeB2), 600_000);
+        assertEq(_claimableTotal(loser), 0);
+    }
+
+    function test_claimPaysOnceAndConserves() public {
+        _seedClaimDay();
+        _settle();
+        uint256 before = usdc.balanceOf(w40);
+        vm.prank(w40);
+        assertEq(pool.claim(1), 6_480_000);
+        assertEq(usdc.balanceOf(w40) - before, 6_480_000);
+        assertEq(pool.prizePool(), 18_000_000 - 6_480_000);
+        assertEq(pool.prizeClaimed(), 6_480_000);
+        assertEq(_claimableTotal(w40), 0);
+        assertTrue(pool.conserved());
+
+        vm.expectRevert(NovaDemoPool.AlreadyClaimed.selector);
+        vm.prank(w40);
+        pool.claim(1);
+        vm.expectRevert(NovaDemoPool.NothingToClaim.selector);
+        vm.prank(loser);
+        pool.claim(1);
+
+        address[4] memory rest = [w30a, w30b, freeB1, freeB2];
+        for (uint256 i = 0; i < rest.length; i++) {
+            vm.prank(rest[i]);
+            pool.claim(1);
+        }
+        assertEq(pool.prizePool(), 0, "exact split leaves no dust");
+        assertTrue(pool.conserved());
+    }
+
+    function test_claimBeforeSettleOrForMissReverts() public {
+        address p = _player("p");
+        _vote(p, A, 10, 0);
+        vm.expectRevert(NovaDemoPool.NothingToClaim.selector);
+        vm.prank(p);
+        pool.claim(1);
+    }
+
+    function test_emptyLanesRollIntoNextDay() public {
+        // Only Free votes on the winner: the paid bucket rolls.
+        address buyer = _player("buyer");
+        _buy(buyer, 1);
+        _vote(buyer, A, 0, 10);
+        address freeB = _player("freeB");
+        _vote(freeB, B, 10, 0);
+        _vote(_player("freeB2"), B, 10, 0);
+        _settle();
+        (,,,,,,,, uint256 rolledOut,, uint8 winner) = pool.days_(1);
+        assertEq(winner, B);
+        assertEq(rolledOut, 810_000, "90% of 0.9 USDC");
+
+        vm.prank(owner);
+        pool.openNextDay(0);
+        (,,,,,,, uint256 rollover,,,) = pool.days_(2);
+        assertEq(rollover, 810_000);
+
+        // Day 2 is LEAST. Nobody votes; everything rolls again, nothing is lost.
+        _settle();
+        (uint256 paid2, uint256 free2, uint256 pot2,) = pool.dayBuckets(2);
+        assertEq(pot2, 810_000);
+        assertEq(paid2 + free2, 810_000);
+        (,,,,,,,, uint256 rolled2,,) = pool.days_(2);
+        assertEq(rolled2, 810_000);
+
+        vm.prank(freeB);
+        assertEq(pool.claim(1), 45_000, "half the 0.09 USDC free bucket");
+        assertTrue(pool.conserved());
+    }
+
+    function test_closeTimeGatesVotingAndSettle() public {
+        uint64 closesAt = uint64(block.timestamp + 1 hours);
+        vm.expectRevert(NovaDemoPool.NotOwner.selector);
+        pool.setDayClose(closesAt);
+        vm.prank(owner);
+        pool.setDayClose(closesAt);
+
+        address p = _player("p");
+        _vote(p, A, 10, 0);
+        vm.expectRevert(NovaDemoPool.VotingStillOpen.selector);
+        vm.prank(owner);
+        pool.settleDay();
+
+        vm.warp(closesAt);
+        address late = _player("late");
+        vm.expectRevert(NovaDemoPool.VotingClosed.selector);
+        vm.prank(late);
+        pool.castVote(B, 1, 0);
+        vm.expectRevert(NovaDemoPool.VotingClosed.selector);
+        _buy(p, 1);
+
+        _settle();
+        vm.expectRevert(NovaDemoPool.BadCloseTime.selector);
+        vm.prank(owner);
+        pool.openNextDay(uint64(block.timestamp));
+        vm.prank(owner);
+        pool.openNextDay(uint64(block.timestamp + 1 days));
+        assertEq(pool.dayId(), 2);
+    }
+
+    function test_signalCannotTouchClaimablePrize() public {
+        address p = _player("p");
+        _buy(p, 2);
+        _vote(p, A, 10, 55);
+        _settle();
+        uint256 prize = pool.prizePool();
+        vm.prank(agent);
+        signalContract.signal(100_000);
+        assertEq(pool.prizePool(), prize);
+        vm.prank(p);
+        assertEq(pool.claim(1), prize);
+        assertEq(pool.prizePool(), 0);
+        assertTrue(pool.conserved());
+    }
+
+    function testFuzz_claimsNeverExceedPot(uint8 seed) public {
+        uint256 players = (uint256(seed) % 6) + 2;
+        address[] memory list = new address[](players);
+        for (uint256 i = 0; i < players; i++) {
+            list[i] = _player(string.concat("f", vm.toString(i)));
+            uint256 r = uint256(keccak256(abi.encode(seed, i)));
+            uint8 pack = r % 3 == 0 ? 2 : 1;
+            _buy(list[i], pack);
+            _vote(list[i], uint8(r % 3), (r >> 8) % 11, pack == 1 ? 10 : 55);
+        }
+        uint256 pot = pool.prizePool();
+        _settle();
+        uint256 paidOut;
+        for (uint256 i = 0; i < players; i++) {
+            (uint256 paid, uint256 free) = pool.claimable(1, list[i]);
+            if (paid + free == 0) continue;
+            vm.prank(list[i]);
+            paidOut += pool.claim(1);
+        }
+        (,,,,,,,, uint256 rolledOut,,) = pool.days_(1);
+        assertLe(paidOut + rolledOut, pot);
+        assertEq(pool.prizePool(), pot - paidOut);
+        assertTrue(pool.conserved());
     }
 }

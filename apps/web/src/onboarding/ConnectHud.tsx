@@ -88,7 +88,11 @@ function EdgeFace({ onEnter }: { onEnter: () => void }) {
         primary={{
           testId: "network-switch",
           label: ONBOARDING_COPY.networkSwitch,
-          onClick: switchToArc,
+          onClick: async () => {
+            if (await switchToArc()) {
+              onEnter();
+            }
+          },
         }}
         secondary={{
           testId: "network-retry",

@@ -5,7 +5,7 @@ import { CONFIRMATION_COPY } from "./confirmationCopy";
 
 export type ConfirmationModel = {
   locked: boolean;
-  /** Offline slice: a locked cast may open Results without waiting on the clock. */
+  /** The pool has settled this day, so Results can open. */
   resultsReady: boolean;
   dayLabel: string;
   title: string;
@@ -26,8 +26,9 @@ export function buildConfirmationModel(state: DayState): ConfirmationModel {
   const choice = cast
     ? state.choices.find((item) => item.id === cast.optionId)
     : undefined;
-  const resultsReady = locked;
-  const publishAt = formatLocalTime(state.schedule.publishAt);
+  const resultsReady = state.settled;
+  const publishAt = CONFIRMATION_COPY.publishAtSettle;
+  const close = state.schedule.voteCloseAt;
 
   return {
     locked,
@@ -40,10 +41,10 @@ export function buildConfirmationModel(state: DayState): ConfirmationModel {
     freeRemaining: state.freeInfluence,
     extraSpent: cast?.extra ?? 0,
     extraRemaining: Math.max(0, state.extraInfluence - (cast?.extra ?? 0)),
-    closesAt: formatLocalTime(state.schedule.voteCloseAt),
+    closesAt: close === null ? CONFIRMATION_COPY.closesAtSettle : formatLocalTime(close),
     publishAt,
     resultsCta: resultsReady
       ? CONFIRMATION_COPY.resultsCta
-      : CONFIRMATION_COPY.resultsAt(publishAt),
+      : CONFIRMATION_COPY.resultsPending,
   };
 }

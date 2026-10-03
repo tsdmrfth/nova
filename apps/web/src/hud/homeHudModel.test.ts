@@ -1,18 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { containsForbiddenFinanceTerm } from "@nova/shared";
 import {
-  buyPack,
-  castSelected,
-  createDayState,
   formatLocalTime,
   selectChoice,
   setExtraSpendAmount,
   setSpendAmount,
 } from "../day/dayStore";
+import { FIXTURE_NOW, dayState, votedState } from "../test/dayFixtures";
 import { buildHomeModel, buildVoteModel } from "./homeHudModel";
 
-const now = new Date("2026-09-18T12:00:00");
-const DAY_1 = createDayState(1, now);
+const DAY_1 = dayState();
 
 describe("home model (screen 05)", () => {
   it("uses Day 1 First light copy on A / B / C", () => {
@@ -31,14 +28,17 @@ describe("home model (screen 05)", () => {
     ]);
   });
 
-  it("leads to Vote with the close time, then to the locked vote after a cast", () => {
-    const open = buildHomeModel(DAY_1);
+  it("leads to Vote with the pool close time, then to the locked vote after a cast", () => {
+    expect(buildHomeModel(DAY_1).ctaLabel).toBe("Choose and vote");
+    const closesAt = FIXTURE_NOW + 3_600_000;
+    const open = buildHomeModel(dayState({ closesAt }));
     expect(open.locked).toBe(false);
-    expect(open.ctaLabel).toBe(
-      `Choose and vote · closes ${formatLocalTime(DAY_1.schedule.voteCloseAt)}`,
+    expect(open.ctaLabel).toBe(`Choose and vote · closes ${formatLocalTime(closesAt)}`);
+    expect(buildHomeModel(dayState({ open: false, settled: true })).ctaLabel).toBe(
+      "Voting closed · see results",
     );
 
-    const cast = buildHomeModel(castSelected(selectChoice(DAY_1, "B")));
+    const cast = buildHomeModel(votedState("B", 10));
     expect(cast.locked).toBe(true);
     expect(cast.ctaLabel).toBe("View your vote");
     expect(cast.choices.find((choice) => choice.selected)?.id).toBe("B");
@@ -67,7 +67,7 @@ describe("vote model (screen 06)", () => {
   });
 
   it("runs Free and Extra as two independent steppers", () => {
-    let state = buyPack(selectChoice(DAY_1, "A"), "spark");
+    let state = selectChoice(dayState({ entry: { extraBought: 10 } }), "A");
     state = setSpendAmount(state, 4);
     state = setExtraSpendAmount(state, 3);
     const model = buildVoteModel(state);
@@ -86,7 +86,7 @@ describe("vote model (screen 06)", () => {
   });
 
   it("goes read-only after the cast", () => {
-    const model = buildVoteModel(castSelected(selectChoice(DAY_1, "B")));
+    const model = buildVoteModel(votedState("B", 10));
     expect(model.locked).toBe(true);
     expect(model.castLabel).toBe("Vote locked · view");
     expect(model.spendAmount).toBe(10);

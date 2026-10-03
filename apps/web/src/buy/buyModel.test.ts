@@ -4,7 +4,7 @@ import {
   parseUsdc,
   quotePack,
 } from "@nova/shared";
-import { buyPack, createDayState } from "../day/dayStore";
+import { dayState } from "../test/dayFixtures";
 import {
   BUY_COPY,
   DEFAULT_PACK_ID,
@@ -13,7 +13,6 @@ import {
   packCards,
 } from "./buyModel";
 
-const now = new Date("2026-09-18T12:00:00");
 
 describe("checkout formatting", () => {
   it("pads quotePack amounts to two decimal places", () => {
@@ -33,7 +32,7 @@ describe("checkout formatting", () => {
 
 describe("buy HUD model", () => {
   it("defaults to Pulse with a 90/8/2 Details breakdown from quotePack", () => {
-    const model = buildBuyModel(createDayState(1, now));
+    const model = buildBuyModel(dayState());
     expect(DEFAULT_PACK_ID).toBe("pulse");
     expect(model.selectedPackId).toBe("pulse");
     expect(model.headline).toBe("Add Extra Influence");
@@ -57,7 +56,10 @@ describe("buy HUD model", () => {
   });
 
   it("quotes Spark from shared math without mixing Free and Extra", () => {
-    const bought = buyPack(createDayState(1, now), "spark");
+    const bought = dayState(
+      { spentMicro: 1_000_000n, entry: { extraBought: 10 } },
+      { lastBuy: { ok: true, packId: "spark", extraInfluence: 10 } },
+    );
     const model = buildBuyModel(bought, "spark");
     expect(model.freeInfluence).toBe(10);
     expect(model.extraInfluence).toBe(10);
@@ -70,9 +72,7 @@ describe("buy HUD model", () => {
   });
 
   it("disables the CTA after the 10 USDC daily buy cap", () => {
-    let state = createDayState(1, now);
-    state = buyPack(state, "pulse");
-    state = buyPack(state, "pulse");
+    const state = dayState({ spentMicro: 10_000_000n, entry: { extraBought: 110 } });
     const model = buildBuyModel(state, "pulse");
     expect(model.extraInfluence).toBe(110);
     expect(model.ctaEnabled).toBe(false);
@@ -80,7 +80,7 @@ describe("buy HUD model", () => {
   });
 
   it("renders the real pack catalog (not the kit's 1:1 placeholder) with hukuk-safe copy", () => {
-    const model = buildBuyModel(createDayState(1, now), "spark");
+    const model = buildBuyModel(dayState(), "spark");
     expect(packCards().map((pack) => pack.extraLabel)).toEqual(["10 Extra", "55 Extra"]);
     expect(model.cta).toBe("Confirm buy · 1.00 USDC");
     const blob = JSON.stringify({ model, copy: BUY_COPY });

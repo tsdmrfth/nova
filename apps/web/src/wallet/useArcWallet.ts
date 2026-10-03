@@ -7,6 +7,8 @@ export function useArcWallet(enabled: boolean) {
   const [chainId, setChainId] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // False until the first silent account read lands, so a reload doesn't bounce to Connect.
+  const [checked, setChecked] = useState(() => !enabled || !readInjectedProvider());
   const active = useRef(true);
   const generation = useRef(0);
   const pending = useRef(false);
@@ -26,10 +28,12 @@ export function useArcWallet(enabled: boolean) {
         if (!mounted || !active.current || version !== generation.current) return;
         setAccount(Array.isArray(accounts) && typeof accounts[0] === "string" && /^0x[a-fA-F0-9]{40}$/.test(accounts[0]) ? accounts[0] : null);
         setChainId(chain);
+        setChecked(true);
       } catch {
         if (mounted && version === generation.current) {
           setAccount(null);
           setChainId(null);
+          setChecked(true);
         }
       }
     };
@@ -92,5 +96,5 @@ export function useArcWallet(enabled: boolean) {
     setError(null);
   }, []);
 
-  return { account, chainId, busy, error, connect, disconnect, onArc: chainId === config.chainId, chainName: config.chainName };
+  return { account, chainId, busy, error, checked, connect, disconnect, onArc: chainId === config.chainId, chainName: config.chainName };
 }

@@ -28,7 +28,7 @@ export type HomeModel = HudChrome & {
   rankTitle: string;
   rankXp: { current: number; next: number };
   locked: boolean;
-  closesLabel: string;
+  closesLabel: string | null;
   ctaLabel: string;
 };
 
@@ -55,7 +55,11 @@ export type VoteModel = HudChrome & {
 export const HUD_COPY = {
   rankTitle: "Architect · Apprentice",
   rankXp: { current: 1250, next: 2000 },
-  chooseCta: (closes: string) => `Choose and vote · closes ${closes}`,
+  chooseCta: (closes: string | null) =>
+    closes ? `Choose and vote · closes ${closes}` : "Choose and vote",
+  votingClosedCta: "Voting closed · see results",
+  loadingCta: "Reading today from Arc…",
+  castingCta: "Confirm in your wallet…",
   viewVoteCta: "View your vote",
   voteTitle: "Your choice",
   voteSub: "Choose the path for Nova today.",
@@ -109,7 +113,8 @@ function choices(state: DayState): HudChoice[] {
 
 export function buildHomeModel(state: DayState): HomeModel {
   const locked = state.status === "cast";
-  const closesLabel = formatLocalTime(state.schedule.voteCloseAt);
+  const close = state.schedule.voteCloseAt;
+  const closesLabel = close === null ? null : formatLocalTime(close);
   return {
     ...chrome(state),
     chapterLabel: `CHAPTER ${padDay(state.day)}`,
@@ -120,7 +125,11 @@ export function buildHomeModel(state: DayState): HomeModel {
     rankXp: HUD_COPY.rankXp,
     locked,
     closesLabel,
-    ctaLabel: locked ? HUD_COPY.viewVoteCta : HUD_COPY.chooseCta(closesLabel),
+    ctaLabel: locked
+      ? HUD_COPY.viewVoteCta
+      : state.votingOpen
+        ? HUD_COPY.chooseCta(closesLabel)
+        : HUD_COPY.votingClosedCta,
   };
 }
 

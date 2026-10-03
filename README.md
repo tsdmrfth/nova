@@ -1,6 +1,6 @@
 # Nova
 
-pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. **P1-09** added first-run onboarding. **P1-07** added Confirmation for the in-memory day. This branch is **P1.5**: an Arc mainnet money-path demo (contracts + `/demo`). The game loop itself is still the offline day. Mainnet is not live in this repo — deploy keys, a public host, and a public GitHub repo are human steps.
+pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. **P1-09** added first-run onboarding. **P1-07** added Confirmation for the in-memory day. This branch is **P1.5**: an Arc money-path demo (contracts + `/demo`). The game loop runs onchain against `NovaDemoPool` v2 through a browser wallet: buy, vote, settle, claim. Mainnet is not live in this repo — deploy keys, a public host, and a public GitHub repo are human steps.
 
 ## Status
 
@@ -36,26 +36,19 @@ Casting spends Free Influence through `@nova/shared` `grantDailyFree` / `spendIn
 
 ## Extra Influence buy
 
-`/buy` is a cinema HUD over the same sunset plate. Free and Extra balances stay on separate cards. Pack math is not duplicated in the UI: `quotePack` supplies Extra granted and the 90/8/2 USDC split; `attemptBuy` enforces the 10 USDC / day cap. **Buy with USDC** on this route is still mock pay (credits Extra in memory). The on-chain buy is `/demo`. Pulse is the default / Most chosen pack. Canon art ids: `pack_spark`, `pack_pulse`.
+`/buy` is a cinema HUD over the same sunset plate. Free and Extra balances stay on separate cards. Pack math is not duplicated in the UI: `quotePack` supplies Extra granted and the 90/8/2 USDC split; `attemptBuy` mirrors the 10 USDC / day cap the pool enforces. **Confirm buy** is a wallet transaction: one bounded USDC approval when needed, then `buyExtraInfluence`; Extra and spent-today are read back from the pool. Pulse is the default / Most chosen pack. Canon art ids: `pack_spark`, `pack_pulse`.
 
 Vote links in with `Need more Extra Influence?` (and the USDC chip). Selected A/B/C tiles stay selected when you return.
 
 ## Results + settle
 
-`/results` runs an **offline** day close after cast (optional mock buy). Fake crowd tallies seed a demo pool; player packs/casts merge in. Math is not duplicated in the HUD:
-
-- `pickWinningOption` scores W* from **Free** tallies + the day goal (Extra never picks the winner)
-- `buildDayPrizePool` builds P and the paid/free buckets
-- `settleDay` / `payoutsByWallet` pro-rate USDC
-- `sparkForDay` awards in-game SPARK points (not money)
+`/results` reads the pool's latest settled day (today once settled, otherwise yesterday). `NovaDemoPool.settleDay` picks W* onchain from **Free** tallies + the day goal (Extra never picks the winner) and snapshots the 90/10 buckets; each winner pulls their share with `claim`. The HUD shows the same floor pro-rata the contract pays (`shareFor` in `apps/web/src/chain/novaChain.ts`). `@nova/shared` (`pickWinningOption`, `settleDay`, …) stays the reference math and drives the test fake. `sparkForDay` awards in-game SPARK points (not money) on the client.
 
 COPY-S1 B6: **Canon today**, day goal, paid/free share rows (hide 0), miss / roll-over, **Claim {n} USDC** as the primary CTA. Profile (`/profile`) shows cast + claim history only — no claim button. Optional winner badge art: canon id `badge_winner`.
 
-Day 1 demo crowd: MOST lands on **Expand / Say hello**.
-
 ## First-run onboarding
 
-Unseen visitors are gated to `/connect` until they accept the locked disclaimer and mock-connect (or Continue — no real wallet). After that:
+Unseen visitors are gated to `/connect` until a browser wallet connects on Arc and they accept the locked disclaimer. After that:
 
 1. Home Day 1 (`First light`) with a **+10 Free Influence** grant toast (first-day body, tap or ~4s dismiss)
 2. Skippable **How today works** overlay (MOST / LEAST / MIDDLE + Free vs Extra)
@@ -143,7 +136,7 @@ After a human deploy, set `VITE_NOVA_POOL_ADDRESS` and `VITE_NOVA_SIGNAL_ADDRESS
 | Profile | `/profile` |
 | Arc demo | `/demo` (public; not one of the 8 game routes) |
 
-Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout (mock pay, shared 90/8/2 quote). Confirmation is the pending lock for the current fake day: cast summary, Free vs Extra lanes, and device-local voting-close / results-publish stamps. **See results** is offered once Influence is cast (this offline day does not wait on the clock). Results is the day-settle + claim HUD. Profile is history-only. Connect is the first-run Welcome / disclaimer / mock wallet gate. Neighborhood remains a placeholder. `/demo` is the Arc mainnet money path and stays reachable when the geo gate or Connect gate is on.
+Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout (USDC approve + `buyExtraInfluence`, shared 90/8/2 quote). Confirmation is the onchain vote lock: cast summary, Free vs Extra lanes, and the pool's close time. **See results** opens once the pool settles the day. Results is the day-settle + claim HUD. Profile is history-only. Connect is the first-run Welcome / disclaimer / browser wallet gate. Neighborhood remains a placeholder. `/demo` is the Arc mainnet money path and stays reachable when the geo gate or Connect gate is on.
 
 After a cast, Vote offers **Review confirmation**. Buy offers the same once the day is locked, so Extra bought after the cast shows up on that pick. Back links and the product menu only change the route — they do not reset the day store. PlayGate still sends anyone who has not finished Connect to `/connect`.
 
@@ -212,14 +205,18 @@ wallet permissions can be revoked from the wallet itself.
 For a local Arc testnet rehearsal set these in the root `.env.local` and restart Vite:
 
 ```dotenv
-VITE_WALLET_MODE=real
 VITE_ARC_NETWORK=testnet
 VITE_ARC_RPC_URL=https://rpc.testnet.arc.io
 VITE_ARC_EXPLORER_URL=https://explorer.testnet.arc.io
 ```
 
-Mainnet remains the default when no network is configured. `VITE_WALLET_MODE=mock`
-is an explicit offline preview mode. Wallet connection does not deploy contracts;
-the game routes still use their offline state and `/demo` buys remain disabled until
-addresses are configured for the selected network. Never reuse mainnet deployment
-addresses for testnet. Private keys are not needed for browser connection.
+Mainnet remains the default when no network is configured. There is no offline
+mode: every game screen reads `NovaDemoPool` (v2) and every action is a wallet
+transaction. Buy approves at most the rest of today's 10 USDC limit, then calls
+`buyExtraInfluence`; Cast calls `castVote`; Results read the latest settled day and
+Claim calls `claim`. The pool is re-read every 20 seconds and when the tab regains
+focus. Without `VITE_NOVA_POOL_ADDRESS` the game routes load but every action stays
+disabled. Never reuse mainnet deployment addresses for testnet. Private keys are not
+needed for browser connection.
+
+Test USDC for Arc testnet comes from https://faucet.circle.com (it also pays gas).

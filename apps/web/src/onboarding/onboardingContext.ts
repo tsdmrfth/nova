@@ -5,13 +5,15 @@ export type OnboardingContextValue = {
   state: OnboardingSnapshot;
   account: string | null;
   walletBusy: boolean;
+  /** The first silent wallet read has finished. */
+  walletChecked: boolean;
   walletError: string | null;
   chainName: string;
   onboarded: boolean;
   setRulesChecked(checked: boolean): void;
   connect(): Promise<boolean>;
-  continueAsMock(): boolean;
-  switchToArc(): Promise<void>;
+  /** Switches (or adds) the Arc chain; true once the player can reach Home. */
+  switchToArc(): Promise<boolean>;
   retryConnect(): Promise<boolean>;
   retryWallet(): void;
   openWallet(): Promise<boolean>;
