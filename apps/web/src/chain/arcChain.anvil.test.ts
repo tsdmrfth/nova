@@ -86,10 +86,12 @@ describe.skipIf(!rpc || !pool || !usdc)("arc chain client on anvil", () => {
     wallet = walletOf(PLAYER);
 
     expect(await chain.readResult(1, PLAYER)).toBeNull();
+    expect(await chain.readWinners(1)).toEqual([]);
     await ownerSend("settleDay");
 
     const result = await chain.readResult(1, PLAYER);
     expect(result).toMatchObject({ dayId: 1, winnerId: "B", pot: 1_800_000n, rolledOut: 0n });
+    expect(await chain.readWinners(1)).toEqual([{ day: 1, winner: "B" }]);
     expect(result?.share).toEqual({ paid: 1_620_000n, free: 180_000n, total: 1_800_000n });
     await expect(chain.buy(PLAYER, "spark")).rejects.toThrow(/round is closed/);
 

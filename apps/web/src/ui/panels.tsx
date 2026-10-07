@@ -271,6 +271,43 @@ export function StatusNotice({
   );
 }
 
+export function TraitBars({
+  traits,
+  testId,
+}: {
+  traits: readonly { id: string; label: string; value: number; max: number }[];
+  testId?: string;
+}) {
+  return (
+    <div className="nv-rank" data-testid={testId}>
+      <div className="nv-rank__head">
+        <span>Nova</span>
+      </div>
+      <div className="nv-traits">
+        {traits.map((trait) => {
+          const ratio = trait.max === 0 ? 0 : Math.min(1, trait.value / trait.max);
+          return (
+            <div key={trait.id} className="nv-trait" data-testid={`hud-bar-${trait.id}`}>
+              <span>{trait.label}</span>
+              <span
+                className="nv-trait__track"
+                role="progressbar"
+                aria-label={`${trait.label} ${trait.value} of ${trait.max}`}
+                aria-valuemin={0}
+                aria-valuemax={trait.max}
+                aria-valuenow={trait.value}
+              >
+                <span className="nv-trait__fill" style={{ width: `${ratio * 100}%` }} />
+              </span>
+              <span className="nv-muted nv-num">{trait.value}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function RankBar({
   title,
   current,

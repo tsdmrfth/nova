@@ -2,7 +2,7 @@ import type { ChoiceId } from "@nova/assets";
 import { BPS_DENOMINATOR, DAY_SPLIT_BPS, type DayGoal, type MicroUsdc } from "@nova/shared";
 import { formatCheckoutUsdc } from "../buy/buyModel";
 import type { ChainDayResult } from "../chain/novaChain";
-import { getSeasonDay } from "../content/season1";
+import { getSeasonDay, nextOpening } from "../content/season1";
 import type { ClaimStatus } from "../day/dayStore";
 import { padDay } from "../hud/homeHudModel";
 import { RESULTS_COPY } from "./resultsCopy";
@@ -121,7 +121,7 @@ export function buildResultsModel(
     yourFree: usdc(free),
     claimable: usdc(total),
     teaseKicker: RESULTS_COPY.teaseKicker(next),
-    teaseTitle: RESULTS_COPY.tease(next),
+    teaseTitle: nextOpening(copy, winner.id) ?? RESULTS_COPY.tease(next),
     claimStatus,
     claimCta:
       claimStatus === "claimed"

@@ -1,7 +1,15 @@
 import type { ChoiceId } from "@nova/assets";
 import { FREE_DAILY_GRANT, type DayGoal, type MicroUsdc, type PackId } from "@nova/shared";
 import type { ChainDay } from "../chain/novaChain";
-import { getSeasonDay, type DayChoiceCopy } from "../content/season1";
+import {
+  EMPTY_TRAITS,
+  sceneForDay,
+  traitBarsFromWinners,
+  getSeasonDay,
+  type DayChoiceCopy,
+  type StoryWinner,
+  type TraitBars,
+} from "../content/season1";
 
 export type CastStatus = "open" | "cast";
 
@@ -44,6 +52,8 @@ export type DayState = {
   freeHint: string;
   dayHint: string;
   choices: [DayChoiceCopy, DayChoiceCopy, DayChoiceCopy];
+  /** Week-1 trait points from settled winners. Today's open vote is not in here yet. */
+  traits: TraitBars;
   freeInfluence: number;
   /** Extra bought today that is not on a pick yet: the spendable balance. */
   extraInfluence: number;
@@ -96,6 +106,14 @@ export function formatLocalTime(at: number): string {
   });
 }
 
+function withStory(state: DayState, winners: readonly StoryWinner[]): DayState {
+  return {
+    ...state,
+    scene: sceneForDay(state.day, winners),
+    traits: traitBarsFromWinners(winners),
+  };
+}
+
 /** Content for a day with nothing onchain yet; voting stays shut until the pool is read. */
 export function createDayState(day = 1): DayState {
   const copy = getSeasonDay(day);
@@ -107,6 +125,7 @@ export function createDayState(day = 1): DayState {
     freeHint: copy.freeHint,
     dayHint: copy.dayHint,
     choices: copy.choices,
+    traits: { ...EMPTY_TRAITS },
     freeInfluence: FREE_DAILY_GRANT,
     extraInfluence: 0,
     extraBought: 0,
@@ -140,8 +159,9 @@ export function dayStateFromChain(
   ui: DayUi,
   account: string | null,
   now: number = Date.now(),
+  winners: readonly StoryWinner[] = [],
 ): DayState {
-  const base = createDayState(chain?.dayId ?? 1);
+  const base = withStory(createDayState(chain?.dayId ?? 1), winners);
   if (!chain) {
     return { ...base, selected: ui.selected, lastBuy: ui.lastBuy };
   }

@@ -9,8 +9,8 @@ import {
   Chip,
   Kicker,
   MenuIcon,
-  RankBar,
   StoryTitle,
+  TraitBars,
 } from "../ui";
 import type { HudChrome, HomeModel } from "./homeHudModel";
 import "./hud.css";
@@ -116,12 +116,7 @@ export function HomeView({ model, onPick, onPrimary, onBuyExtra, onMenu }: HomeV
             onClick={() => onPick(choice.id)}
           />
         ))}
-        <RankBar
-          title={model.rankTitle}
-          current={model.rankXp.current}
-          next={model.rankXp.next}
-          testId="hud-rank"
-        />
+        <TraitBars traits={model.traits} testId="hud-rank" />
         <Button testId="home-cta" onClick={onPrimary}>
           {model.ctaLabel}
         </Button>

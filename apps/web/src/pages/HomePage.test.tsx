@@ -13,6 +13,27 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
     seedOnboarded();
   });
 
+  it("opens day 2 with the line day 1's winner wrote", async () => {
+    const chain = new FakeNovaChain();
+    await chain.seed("0x00000000000000000000000000000000000000a1", { option: "A", free: 10 });
+    chain.settle();
+    chain.openNextDay();
+    await renderAt("/", chain);
+
+    expect(screen.getByTestId("hud-day").textContent).toBe("DAY 02");
+    expect(screen.getByTestId("day-goal").textContent).toBe("GOAL · LEAST");
+    expect(screen.getByRole("heading", { name: "First task" })).toBeTruthy();
+    expect(screen.getByTestId("hud-scene").textContent).toMatch(/stayed quiet/i);
+    expect(screen.getByTestId("hud-scene").textContent).toMatch(/today's plan/i);
+    expect(screen.getByTestId("choice-A").textContent).toMatch(/Ask the deadline/);
+    expect(
+      screen.getByTestId("hud-bar-Stabilize").querySelector("[role='progressbar']")?.getAttribute("aria-valuenow"),
+    ).toBe("1");
+    expect(
+      screen.getByTestId("hud-bar-Expand").querySelector("[role='progressbar']")?.getAttribute("aria-valuenow"),
+    ).toBe("0");
+  });
+
   it("renders the story on Home and opens Vote with the tapped card preselected", async () => {
     const user = userEvent.setup();
     await renderAt("/");

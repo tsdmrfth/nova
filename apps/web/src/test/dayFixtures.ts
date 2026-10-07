@@ -1,5 +1,6 @@
 import type { ChoiceId } from "@nova/assets";
 import { EMPTY_ENTRY, type ChainDay, type ChainEntry } from "../chain/novaChain";
+import type { StoryWinner } from "../content/season1";
 import { EMPTY_DAY_UI, dayStateFromChain, type DayState, type DayUi } from "../day/dayStore";
 
 export const FIXTURE_ACCOUNT = "0xF2FDeE747478A34deaf79811A4f87581dc01bBBD";
@@ -26,8 +27,15 @@ export function chainDay(
 export function dayState(
   overrides: Parameters<typeof chainDay>[0] = {},
   ui: Partial<DayUi> = {},
+  winners: readonly StoryWinner[] = [],
 ): DayState {
-  return dayStateFromChain(chainDay(overrides), { ...EMPTY_DAY_UI, ...ui }, FIXTURE_ACCOUNT, FIXTURE_NOW);
+  return dayStateFromChain(
+    chainDay(overrides),
+    { ...EMPTY_DAY_UI, ...ui },
+    FIXTURE_ACCOUNT,
+    FIXTURE_NOW,
+    winners,
+  );
 }
 
 /** The wallet's vote is onchain. */

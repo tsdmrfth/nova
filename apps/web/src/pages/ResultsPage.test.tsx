@@ -102,7 +102,8 @@ describe("Results + claim from the pool (UI-KIT-V2 08–11)", () => {
     expect(screen.getByTestId("results-winner").textContent).toMatch(/WINNER/);
     expect(screen.getByTestId("results-pick").textContent).toMatch(/Your pick · A/);
     expect(screen.getByTestId("results-share-paid").textContent).toContain("0.00 USDC");
-    expect(screen.getByTestId("results-tease").textContent).toMatch(/Chapter 02 opens tomorrow/);
+    expect(screen.getByTestId("results-tease").textContent).toMatch(/DAY 02/);
+    expect(screen.getByTestId("results-tease").textContent).toMatch(/said hello/);
     expect(screen.queryByTestId("results-claim")).toBeNull();
   });
 

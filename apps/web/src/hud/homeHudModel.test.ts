@@ -26,6 +26,31 @@ describe("home model (screen 05)", () => {
       ["B", "Say hello"],
       ["C", "Find your place"],
     ]);
+    expect(model.traits.map((trait) => trait.value)).toEqual([0, 0, 0]);
+  });
+
+  it("opens day 2 from yesterday's winner and marks day 7 as the turning point", () => {
+    const day2 = buildHomeModel(dayState({ dayId: 2 }, {}, [{ day: 1, winner: "B" }]));
+    expect(day2.title).toBe("First task");
+    expect(day2.goal).toBe("LEAST");
+    expect(day2.scene).toMatch(/said hello/i);
+    expect(day2.scene).toMatch(/today's plan/i);
+    expect(day2.traits.map((trait) => [trait.id, trait.value])).toEqual([
+      ["Stabilize", 0],
+      ["Expand", 1],
+      ["Route", 0],
+    ]);
+
+    const day7 = buildHomeModel(
+      dayState(
+        { dayId: 7 },
+        {},
+        [1, 2, 3, 4, 5, 6, 7].map((day) => ({ day, winner: "A" as const })),
+      ),
+    );
+    expect(day7.chapterLabel).toBe("Turning point");
+    expect(day7.title).toBe("Week's close");
+    expect(day7.traits.find((trait) => trait.id === "Stabilize")?.value).toBe(8);
   });
 
   it("leads to Vote with the pool close time, then to the locked vote after a cast", () => {

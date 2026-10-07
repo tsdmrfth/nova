@@ -61,6 +61,12 @@ export type ChainDayResult = {
   share: { paid: MicroUsdc; free: MicroUsdc; total: MicroUsdc };
 };
 
+/** One settled day's winning choice. Unsettled days are omitted. */
+export type DayWinner = {
+  day: number;
+  winner: ChoiceId;
+};
+
 /** Pool reads and wallet writes. Writes resolve with the confirmed tx hash. */
 export type NovaChain = {
   chainName: string;
@@ -68,6 +74,8 @@ export type NovaChain = {
   readDay(account: string | null): Promise<ChainDay>;
   /** Null until that day is settled. */
   readResult(dayId: number, account: string | null): Promise<ChainDayResult | null>;
+  /** Settled winners from day 1 through `throughDay`, in day order. */
+  readWinners(throughDay: number): Promise<DayWinner[]>;
   buy(account: string, pack: PackId): Promise<string>;
   castVote(account: string, option: ChoiceId, free: number, extra: number): Promise<string>;
   claim(account: string, dayId: number): Promise<string>;

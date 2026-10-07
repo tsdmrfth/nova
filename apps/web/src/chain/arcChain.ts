@@ -207,6 +207,27 @@ export function createArcChain(
       };
     },
 
+    async readWinners(throughDay) {
+      if (throughDay < 1) return [];
+      const ledgers = await Promise.all(
+        Array.from({ length: throughDay }, (_, index) =>
+          client.readContract({
+            address: pool,
+            abi: NOVA_POOL_ABI,
+            functionName: "days_",
+            args: [BigInt(index + 1)],
+          }),
+        ),
+      );
+      const winners = [];
+      for (let index = 0; index < ledgers.length; index += 1) {
+        const ledger = ledgers[index];
+        if (!ledger || !ledger[6]) continue;
+        winners.push({ day: index + 1, winner: optionToChoice(ledger[10]) });
+      }
+      return winners;
+    },
+
     async buy(account, pack) {
       const price = quotePack(pack).youPay;
       try {

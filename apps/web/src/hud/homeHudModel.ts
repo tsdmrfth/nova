@@ -1,6 +1,12 @@
 import type { ChoiceId } from "@nova/assets";
 import { EFFECTIVE_EXTRA_CAP } from "@nova/shared";
 import { BUY_COPY } from "../buy/buyCopy";
+import {
+  TRAIT_ORDER,
+  WEEK1_BAR_MAX,
+  isTurningDay,
+  type WorldFamily,
+} from "../content/season1";
 import { canCast, formatLocalTime, type DayState } from "../day/dayStore";
 
 export type HudChoice = {
@@ -19,14 +25,20 @@ export type HudChrome = {
   freeHint: string;
 };
 
+export type TraitMeter = {
+  id: WorldFamily;
+  label: string;
+  value: number;
+  max: number;
+};
+
 /** Screen 05. Read-only story + picks; voting happens on Vote. */
 export type HomeModel = HudChrome & {
   chapterLabel: string;
   title: string;
   scene: string;
   choices: HudChoice[];
-  rankTitle: string;
-  rankXp: { current: number; next: number };
+  traits: TraitMeter[];
   locked: boolean;
   closesLabel: string | null;
   ctaLabel: string;
@@ -54,7 +66,6 @@ export type VoteModel = HudChrome & {
 
 export const HUD_COPY = {
   rankTitle: "Architect · Apprentice",
-  rankXp: { current: 1250, next: 2000 },
   chooseCta: (closes: string | null) =>
     closes ? `Choose and vote · closes ${closes}` : "Choose and vote",
   votingClosedCta: "Voting closed · see results",
@@ -117,12 +128,16 @@ export function buildHomeModel(state: DayState): HomeModel {
   const closesLabel = close === null ? null : formatLocalTime(close);
   return {
     ...chrome(state),
-    chapterLabel: `CHAPTER ${padDay(state.day)}`,
+    chapterLabel: isTurningDay(state.day) ? "Turning point" : `CHAPTER ${padDay(state.day)}`,
     title: state.roundTitle,
     scene: state.scene,
     choices: choices(state),
-    rankTitle: HUD_COPY.rankTitle,
-    rankXp: HUD_COPY.rankXp,
+    traits: TRAIT_ORDER.map((id) => ({
+      id,
+      label: id,
+      value: state.traits[id],
+      max: WEEK1_BAR_MAX,
+    })),
     locked,
     closesLabel,
     ctaLabel: locked

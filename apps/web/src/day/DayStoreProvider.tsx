@@ -3,7 +3,7 @@ import type { ChoiceId } from "@nova/assets";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { chainErrorMessage } from "../chain/chainErrors";
 import { useNovaChain } from "../chain/chainContext";
-import { resultsDayFor, type ChainDay, type ChainDayResult } from "../chain/novaChain";
+import { resultsDayFor, type ChainDay, type ChainDayResult, type DayWinner } from "../chain/novaChain";
 import { explorerTxUrl } from "../demo/demoConfig";
 import { useOnboarding } from "../onboarding/useOnboarding";
 import { DayStoreContext } from "./dayStoreContext";
@@ -23,7 +23,14 @@ import {
 /** How often the pool is re-read while the app is open. */
 export const CHAIN_POLL_MS = 20_000;
 
-type Loaded = { account: string | null; day: ChainDay; result: ChainDayResult | null };
+const NO_WINNERS: DayWinner[] = [];
+
+type Loaded = {
+  account: string | null;
+  day: ChainDay;
+  result: ChainDayResult | null;
+  winners: DayWinner[];
+};
 type Keyed<T> = { account: string | null; value: T };
 
 export function DayStoreProvider({ children }: { children: ReactNode }) {
@@ -50,9 +57,13 @@ export function DayStoreProvider({ children }: { children: ReactNode }) {
     const version = ++generation.current;
     try {
       const day = await chain.readDay(account);
-      const result = await chain.readResult(resultsDayFor(day), account);
+      const through = day.settled ? day.dayId : day.dayId - 1;
+      const [result, winners] = await Promise.all([
+        chain.readResult(resultsDayFor(day), account),
+        through >= 1 ? chain.readWinners(through) : Promise.resolve([]),
+      ]);
       if (version !== generation.current) return;
-      setLoaded({ account, day, result });
+      setLoaded({ account, day, result, winners });
       setLoadError(null);
     } catch (caught) {
       if (version === generation.current) {
@@ -83,9 +94,10 @@ export function DayStoreProvider({ children }: { children: ReactNode }) {
     [action, account],
   );
   const result = current?.result ?? null;
+  const winners = current?.winners ?? NO_WINNERS;
 
   const state = useMemo<DayState>(() => {
-    const next = dayStateFromChain(current?.day ?? null, dayUi, account);
+    const next = dayStateFromChain(current?.day ?? null, dayUi, account, Date.now(), winners);
     if (result && result.dayId === next.day && result.entry.claimed) {
       const correct = result.entry.option === result.winnerId;
       return {
@@ -98,7 +110,7 @@ export function DayStoreProvider({ children }: { children: ReactNode }) {
       };
     }
     return next;
-  }, [current, dayUi, account, result]);
+  }, [current, dayUi, account, result, winners]);
 
   const updateUi = useCallback(
     (change: (state: DayState) => DayState) => {

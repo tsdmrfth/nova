@@ -114,18 +114,16 @@ export function ResultsHud({ model, calm, onClaim, onBack, onVote }: ResultsHudP
 
           {matched ? <Note>{RESULTS_COPY.lanesNote}</Note> : null}
 
-          {!matched && voted ? (
-            <div className="nv-card" data-testid="results-tease">
-              <span className="results-tease__icon">
-                <BookIcon size={22} className="nv-icon-accent" />
-              </span>
-              <span className="nv-card__copy">
-                <span className="nv-kicker nv-kicker--accent">{model.teaseKicker}</span>
-                <span className="results-tease__title">{model.teaseTitle}</span>
-              </span>
-              <ChevronRightIcon size={18} />
-            </div>
-          ) : null}
+          <div className="nv-card" data-testid="results-tease">
+            <span className="results-tease__icon">
+              <BookIcon size={22} className="nv-icon-accent" />
+            </span>
+            <span className="nv-card__copy">
+              <span className="nv-kicker nv-kicker--accent">{model.teaseKicker}</span>
+              <span className="results-tease__title">{model.teaseTitle}</span>
+            </span>
+            <ChevronRightIcon size={18} />
+          </div>
 
           {model.variant === "needCast" ? (
             <Button testId="results-vote" onClick={onVote}>

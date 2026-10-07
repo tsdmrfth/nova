@@ -21,6 +21,7 @@ export function lazyArcChain(config: DemoConfig): NovaChain | null {
     explorerUrl: config.explorerUrl,
     readDay: async (account) => (await load()).readDay(account),
     readResult: async (dayId, account) => (await load()).readResult(dayId, account),
+    readWinners: async (throughDay) => (await load()).readWinners(throughDay),
     buy: async (account, pack) => (await load()).buy(account, pack),
     castVote: async (account, option, free, extra) => (await load()).castVote(account, option, free, extra),
     claim: async (account, dayId) => (await load()).claim(account, dayId),

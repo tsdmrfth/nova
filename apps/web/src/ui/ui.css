@@ -1072,6 +1072,35 @@ button.nv-choice:disabled {
   background: linear-gradient(90deg, var(--nova-blue), var(--nova-blue-light));
 }
 
+.nv-traits {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--u));
+}
+
+.nv-trait {
+  display: grid;
+  grid-template-columns: calc(78 * var(--u)) 1fr auto;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  font-size: calc(11 * var(--u));
+}
+
+.nv-trait__track {
+  display: block;
+  height: calc(5 * var(--u));
+  border-radius: calc(999 * var(--u));
+  background: rgba(151, 185, 228, 0.22);
+  overflow: hidden;
+}
+
+.nv-trait__fill {
+  display: block;
+  height: 100%;
+  border-radius: calc(999 * var(--u));
+  background: linear-gradient(90deg, var(--nova-blue), var(--nova-blue-light));
+}
+
 /* ---------- List rows (menu, settings) ---------- */
 
 .nv-list {

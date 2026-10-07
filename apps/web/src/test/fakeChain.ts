@@ -140,6 +140,15 @@ export class FakeNovaChain implements NovaChain {
     };
   }
 
+  async readWinners(throughDay: number) {
+    const winners = [];
+    for (let day = 1; day <= throughDay; day += 1) {
+      const row = this.days.get(day);
+      if (row?.settled) winners.push({ day, winner: row.winner });
+    }
+    return winners;
+  }
+
   async readResult(dayId: number, account: string | null): Promise<ChainDayResult | null> {
     const day = this.days.get(dayId);
     if (!day?.settled) return null;
