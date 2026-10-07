@@ -3,7 +3,7 @@ pragma solidity 0.8.28;
 
 import {Test} from "forge-std/Test.sol";
 import {BuySplit} from "../src/BuySplit.sol";
-import {NovaDemoPool} from "../src/NovaDemoPool.sol";
+import {NovaPool} from "../src/NovaPool.sol";
 import {NovaSignal} from "../src/NovaSignal.sol";
 
 contract MockUSDC {
@@ -19,7 +19,7 @@ contract MockUSDC {
         return true;
     }
 
-    function transfer(address to, uint256 amount) external returns (bool) {
+    function transfer(address to, uint256 amount) external virtual returns (bool) {
         balanceOf[msg.sender] -= amount;
         balanceOf[to] += amount;
         return true;
@@ -37,11 +37,11 @@ contract MockUSDC {
 }
 
 contract ReenterOnPull is MockUSDC {
-    NovaDemoPool public pool;
+    NovaPool public pool;
     bool public armed;
 
     function setPool(address next) external {
-        pool = NovaDemoPool(next);
+        pool = NovaPool(next);
     }
 
     function arm() external {
@@ -63,12 +63,29 @@ contract ReenterOnPull is MockUSDC {
     }
 }
 
-contract NovaDemoTest is Test {
+/// @dev Arc USDC reverts transfers to or from a blocklisted address.
+contract BlocklistUSDC is MockUSDC {
+    mapping(address => bool) public blocked;
+
+    function setBlocked(address who, bool value) external {
+        blocked[who] = value;
+    }
+
+    function transfer(address to, uint256 amount) external override returns (bool) {
+        require(!blocked[to] && !blocked[msg.sender], "blocklisted");
+        balanceOf[msg.sender] -= amount;
+        balanceOf[to] += amount;
+        return true;
+    }
+}
+
+contract NovaPoolTest is Test {
     MockUSDC internal usdc;
-    NovaDemoPool internal pool;
+    NovaPool internal pool;
     NovaSignal internal signalContract;
 
     address internal owner = makeAddr("owner");
+    address internal operator = makeAddr("operator");
     address internal studio = makeAddr("studio");
     address internal novaWallet = makeAddr("nova");
     address internal agent = makeAddr("agent");
@@ -79,7 +96,7 @@ contract NovaDemoTest is Test {
 
     function setUp() public {
         usdc = new MockUSDC();
-        pool = new NovaDemoPool(address(usdc), studio, owner);
+        pool = new NovaPool(address(usdc), studio, owner, operator);
         address[] memory agents = new address[](1);
         agents[0] = agent;
         signalContract = new NovaSignal(address(pool), novaWallet, CAP, owner, agents);
@@ -189,7 +206,7 @@ contract NovaDemoTest is Test {
             vm.prank(buyer);
             pool.buyExtraInfluence(1);
         }
-        vm.expectRevert(NovaDemoPool.DailyCapExceeded.selector);
+        vm.expectRevert(NovaPool.DailyCapExceeded.selector);
         vm.prank(buyer);
         pool.buyExtraInfluence(1);
 
@@ -199,13 +216,13 @@ contract NovaDemoTest is Test {
         usdc.approve(address(pool), type(uint256).max);
         pool.buyExtraInfluence(2);
         pool.buyExtraInfluence(2);
-        vm.expectRevert(NovaDemoPool.DailyCapExceeded.selector);
+        vm.expectRevert(NovaPool.DailyCapExceeded.selector);
         pool.buyExtraInfluence(2);
         vm.stopPrank();
     }
 
     function test_unknownPackAndNativeSendRevert() public {
-        vm.expectRevert(NovaDemoPool.UnknownPack.selector);
+        vm.expectRevert(NovaPool.UnknownPack.selector);
         vm.prank(buyer);
         pool.buyExtraInfluence(0);
 
@@ -229,7 +246,7 @@ contract NovaDemoTest is Test {
         uint256 prize = pool.prizePool();
         uint256 studioNet = pool.studioNet();
 
-        vm.expectRevert(NovaDemoPool.BudgetExceeded.selector);
+        vm.expectRevert(NovaPool.BudgetExceeded.selector);
         vm.prank(agent);
         signalContract.signal(1);
 
@@ -259,7 +276,7 @@ contract NovaDemoTest is Test {
         vm.prank(stranger);
         signalContract.signal(1);
 
-        vm.expectRevert(NovaDemoPool.BudgetExceeded.selector);
+        vm.expectRevert(NovaPool.BudgetExceeded.selector);
         vm.prank(agent);
         signalContract.signal(20_001);
 
@@ -270,7 +287,7 @@ contract NovaDemoTest is Test {
 
     function test_capBlocksSecondSignalEvenWhenBudgetRemains() public {
         MockUSDC token = new MockUSDC();
-        NovaDemoPool local = new NovaDemoPool(address(token), studio, owner);
+        NovaPool local = new NovaPool(address(token), studio, owner, operator);
         address[] memory agents = new address[](1);
         agents[0] = agent;
         NovaSignal localSignal = new NovaSignal(address(local), novaWallet, 50_000, owner, agents);
@@ -316,7 +333,7 @@ contract NovaDemoTest is Test {
         assertEq(pool.novaBudget(), 20_000);
         assertEq(pool.spendableNovaBudget(), 0);
 
-        vm.expectRevert(NovaDemoPool.BudgetExceeded.selector);
+        vm.expectRevert(NovaPool.BudgetExceeded.selector);
         vm.prank(agent);
         signalContract.signal(1);
 
@@ -335,7 +352,7 @@ contract NovaDemoTest is Test {
         uint256 prize = pool.prizePool();
         uint256 budget = pool.novaBudget();
 
-        vm.expectRevert(NovaDemoPool.NotStudio.selector);
+        vm.expectRevert(NovaPool.NotStudio.selector);
         vm.prank(owner);
         pool.withdrawStudioNet(1);
 
@@ -381,13 +398,13 @@ contract NovaDemoTest is Test {
 
     function test_reentrancyOnBuyReverts() public {
         ReenterOnPull evil = new ReenterOnPull();
-        NovaDemoPool trapped = new NovaDemoPool(address(evil), studio, owner);
+        NovaPool trapped = new NovaPool(address(evil), studio, owner, operator);
         evil.setPool(address(trapped));
         evil.mint(buyer, 5_000_000);
         vm.startPrank(buyer);
         evil.approve(address(trapped), type(uint256).max);
         evil.arm();
-        vm.expectRevert(NovaDemoPool.TransferFailed.selector);
+        vm.expectRevert(NovaPool.TransferFailed.selector);
         trapped.buyExtraInfluence(1);
         vm.stopPrank();
         assertEq(trapped.gross(), 0);
@@ -395,14 +412,14 @@ contract NovaDemoTest is Test {
     }
 
     function test_setSignalOnce() public {
-        NovaDemoPool fresh = new NovaDemoPool(address(usdc), studio, owner);
-        vm.expectRevert(NovaDemoPool.NotOwner.selector);
+        NovaPool fresh = new NovaPool(address(usdc), studio, owner, operator);
+        vm.expectRevert(NovaPool.NotOwner.selector);
         vm.prank(stranger);
         fresh.setSignal(address(signalContract));
 
         vm.prank(owner);
         fresh.setSignal(address(signalContract));
-        vm.expectRevert(NovaDemoPool.SignalLocked.selector);
+        vm.expectRevert(NovaPool.SignalLocked.selector);
         vm.prank(owner);
         fresh.setSignal(address(0x1234));
     }
@@ -424,13 +441,15 @@ contract NovaDemoTest is Test {
 /// @notice Vote, onchain W*, claim, and rollover. Numbers mirror `@nova/shared` settleDay.
 contract NovaGameTest is Test {
     MockUSDC internal usdc;
-    NovaDemoPool internal pool;
+    NovaPool internal pool;
     NovaSignal internal signalContract;
 
     address internal owner = makeAddr("owner");
+    address internal operator = makeAddr("operator");
     address internal studio = makeAddr("studio");
     address internal novaWallet = makeAddr("nova");
     address internal agent = makeAddr("agent");
+    address internal stranger = makeAddr("stranger");
 
     uint8 internal constant A = 0;
     uint8 internal constant B = 1;
@@ -438,7 +457,7 @@ contract NovaGameTest is Test {
 
     function setUp() public {
         usdc = new MockUSDC();
-        pool = new NovaDemoPool(address(usdc), studio, owner);
+        pool = new NovaPool(address(usdc), studio, owner, operator);
         address[] memory agents = new address[](1);
         agents[0] = agent;
         signalContract = new NovaSignal(address(pool), novaWallet, 1_000_000, owner, agents);
@@ -464,7 +483,7 @@ contract NovaGameTest is Test {
     }
 
     function _settle() internal {
-        vm.prank(owner);
+        vm.prank(operator);
         pool.settleDay();
     }
 
@@ -492,34 +511,41 @@ contract NovaGameTest is Test {
     function test_voteGuards() public {
         address p = _player("p");
         vm.startPrank(p);
-        vm.expectRevert(NovaDemoPool.UnknownOption.selector);
+        vm.expectRevert(NovaPool.UnknownOption.selector);
         pool.castVote(3, 1, 0);
-        vm.expectRevert(NovaDemoPool.ZeroAmount.selector);
+        vm.expectRevert(NovaPool.ZeroAmount.selector);
         pool.castVote(A, 0, 0);
-        vm.expectRevert(NovaDemoPool.FreeExceeded.selector);
+        vm.expectRevert(NovaPool.FreeExceeded.selector);
         pool.castVote(A, 11, 0);
-        vm.expectRevert(NovaDemoPool.ExtraExceeded.selector);
+        vm.expectRevert(NovaPool.ExtraExceeded.selector);
         pool.castVote(A, 10, 1);
         pool.castVote(A, 10, 0);
-        vm.expectRevert(NovaDemoPool.AlreadyVoted.selector);
+        vm.expectRevert(NovaPool.AlreadyVoted.selector);
         pool.castVote(B, 1, 0);
         vm.stopPrank();
 
         _settle();
         address late = _player("late");
-        vm.expectRevert(NovaDemoPool.DayNotOpen.selector);
+        vm.expectRevert(NovaPool.DayNotOpen.selector);
         vm.prank(late);
         pool.castVote(A, 1, 0);
     }
 
-    function test_buyAfterVotePlacesExtraOnPickWithCap() public {
+    function test_buyAfterVoteReverts() public {
         address p = _player("p");
         _vote(p, C, 10, 0);
-        _buy(p, 2);
+        vm.expectRevert(NovaPool.PurchaseClosed.selector);
         _buy(p, 2);
         (uint64 bought, uint64 placed,,,,) = _entry(p);
-        assertEq(bought, 110);
-        assertEq(placed, 110);
+        assertEq(bought, 0);
+        assertEq(placed, 0);
+    }
+
+    function test_effectiveExtraCapsOnVote() public {
+        address p = _player("p");
+        _buy(p, 2);
+        _buy(p, 2);
+        _vote(p, C, 0, 110);
         (, uint256[3] memory extraT) = pool.optionTallies(1);
         assertEq(extraT[C], 100, "effective Extra caps at 100");
     }
@@ -618,10 +644,10 @@ contract NovaGameTest is Test {
         assertEq(_claimableTotal(w40), 0);
         assertTrue(pool.conserved());
 
-        vm.expectRevert(NovaDemoPool.AlreadyClaimed.selector);
+        vm.expectRevert(NovaPool.AlreadyClaimed.selector);
         vm.prank(w40);
         pool.claim(1);
-        vm.expectRevert(NovaDemoPool.NothingToClaim.selector);
+        vm.expectRevert(NovaPool.NothingToClaim.selector);
         vm.prank(loser);
         pool.claim(1);
 
@@ -637,7 +663,7 @@ contract NovaGameTest is Test {
     function test_claimBeforeSettleOrForMissReverts() public {
         address p = _player("p");
         _vote(p, A, 10, 0);
-        vm.expectRevert(NovaDemoPool.NothingToClaim.selector);
+        vm.expectRevert(NovaPool.NothingToClaim.selector);
         vm.prank(p);
         pool.claim(1);
     }
@@ -675,30 +701,30 @@ contract NovaGameTest is Test {
 
     function test_closeTimeGatesVotingAndSettle() public {
         uint64 closesAt = uint64(block.timestamp + 1 hours);
-        vm.expectRevert(NovaDemoPool.NotOwner.selector);
+        vm.expectRevert(NovaPool.NotOperator.selector);
         pool.setDayClose(closesAt);
-        vm.prank(owner);
+        vm.prank(operator);
         pool.setDayClose(closesAt);
 
         address p = _player("p");
         _vote(p, A, 10, 0);
-        vm.expectRevert(NovaDemoPool.VotingStillOpen.selector);
-        vm.prank(owner);
+        vm.expectRevert(NovaPool.VotingStillOpen.selector);
+        vm.prank(operator);
         pool.settleDay();
 
         vm.warp(closesAt);
         address late = _player("late");
-        vm.expectRevert(NovaDemoPool.VotingClosed.selector);
+        vm.expectRevert(NovaPool.VotingClosed.selector);
         vm.prank(late);
         pool.castVote(B, 1, 0);
-        vm.expectRevert(NovaDemoPool.VotingClosed.selector);
+        vm.expectRevert(NovaPool.VotingClosed.selector);
         _buy(p, 1);
 
         _settle();
-        vm.expectRevert(NovaDemoPool.BadCloseTime.selector);
-        vm.prank(owner);
+        vm.expectRevert(NovaPool.BadCloseTime.selector);
+        vm.prank(operator);
         pool.openNextDay(uint64(block.timestamp));
-        vm.prank(owner);
+        vm.prank(operator);
         pool.openNextDay(uint64(block.timestamp + 1 days));
         assertEq(pool.dayId(), 2);
     }
@@ -741,5 +767,139 @@ contract NovaGameTest is Test {
         assertLe(paidOut + rolledOut, pot);
         assertEq(pool.prizePool(), pot - paidOut);
         assertTrue(pool.conserved());
+    }
+
+    function test_operatorRunsDayLoopOwnerHoldsAdmin() public {
+        vm.expectRevert(NovaPool.NotOperator.selector);
+        vm.prank(stranger);
+        pool.settleDay();
+        vm.expectRevert(NovaPool.NotOwner.selector);
+        vm.prank(operator);
+        pool.setOperator(stranger);
+        vm.expectRevert(NovaPool.NotOwner.selector);
+        vm.prank(operator);
+        pool.unpause();
+
+        address next = makeAddr("next operator");
+        vm.prank(owner);
+        pool.setOperator(next);
+        assertEq(pool.operator(), next);
+        vm.expectRevert(NovaPool.NotOperator.selector);
+        vm.prank(operator);
+        pool.settleDay();
+
+        // The owner can always stand in for the operator.
+        vm.prank(owner);
+        pool.settleDay();
+        vm.prank(next);
+        pool.openNextDay(0);
+        assertEq(pool.dayId(), 2);
+    }
+
+    function test_pauseStopsBuysAndVotesButNotPayouts() public {
+        address p = _player("p");
+        _buy(p, 2);
+        _vote(p, A, 10, 55);
+        _settle();
+        vm.prank(operator);
+        pool.openNextDay(0);
+
+        vm.expectRevert(NovaPool.NotOperator.selector);
+        vm.prank(stranger);
+        pool.pause();
+        vm.prank(operator);
+        pool.pause();
+        assertTrue(pool.paused());
+
+        vm.expectRevert(NovaPool.GamePaused.selector);
+        _buy(p, 1);
+        vm.expectRevert(NovaPool.GamePaused.selector);
+        _vote(p, A, 1, 0);
+
+        vm.prank(p);
+        assertGt(pool.claim(1), 0);
+        vm.prank(studio);
+        pool.withdrawStudioNet(1);
+        vm.prank(agent);
+        signalContract.signal(1);
+        _settle();
+        assertTrue(pool.conserved());
+
+        vm.prank(owner);
+        pool.openNextDay(0);
+        vm.prank(owner);
+        pool.unpause();
+        _buy(p, 1);
+        assertEq(pool.spentOnDay(3, p), 1_000_000);
+    }
+
+    function test_ownershipMovesInTwoSteps() public {
+        address safe = makeAddr("safe");
+        vm.prank(owner);
+        pool.transferOwnership(safe);
+        assertEq(pool.owner(), owner, "still the old owner until accepted");
+        assertEq(pool.pendingOwner(), safe);
+
+        vm.expectRevert(NovaPool.NotPendingOwner.selector);
+        vm.prank(stranger);
+        pool.acceptOwnership();
+
+        vm.prank(safe);
+        pool.acceptOwnership();
+        assertEq(pool.owner(), safe);
+        assertEq(pool.pendingOwner(), address(0));
+        vm.expectRevert(NovaPool.NotOwner.selector);
+        vm.prank(owner);
+        pool.setOperator(stranger);
+
+        // address(0) cancels a pending hand-over.
+        vm.prank(safe);
+        pool.transferOwnership(stranger);
+        vm.prank(safe);
+        pool.transferOwnership(address(0));
+        vm.expectRevert(NovaPool.NotPendingOwner.selector);
+        vm.prank(stranger);
+        pool.acceptOwnership();
+
+        vm.prank(owner);
+        signalContract.transferOwnership(safe);
+        vm.expectRevert(NovaSignal.NotPendingOwner.selector);
+        vm.prank(stranger);
+        signalContract.acceptOwnership();
+        vm.prank(safe);
+        signalContract.acceptOwnership();
+        assertEq(signalContract.owner(), safe);
+    }
+
+    /// Arc's USDC blocklist reverts a payout to a blocked winner. That claim fails and stays
+    /// unclaimed; every other winner still claims.
+    function test_blockedWinnerDoesNotBlockOthers() public {
+        BlocklistUSDC token = new BlocklistUSDC();
+        NovaPool local = new NovaPool(address(token), studio, owner, operator);
+        address blockedWinner = makeAddr("blocked");
+        address cleanWinner = makeAddr("clean");
+        address[2] memory players = [blockedWinner, cleanWinner];
+        for (uint256 i = 0; i < 2; i++) {
+            token.mint(players[i], 10_000_000);
+            vm.startPrank(players[i]);
+            token.approve(address(local), type(uint256).max);
+            local.buyExtraInfluence(1);
+            local.castVote(A, 10, 10);
+            vm.stopPrank();
+        }
+        vm.prank(operator);
+        local.settleDay();
+        token.setBlocked(blockedWinner, true);
+
+        vm.expectRevert(NovaPool.TransferFailed.selector);
+        vm.prank(blockedWinner);
+        local.claim(1);
+        (,,,,, bool claimed) = local.entries(1, blockedWinner);
+        assertFalse(claimed);
+
+        vm.prank(cleanWinner);
+        assertEq(local.claim(1), 900_000);
+        assertEq(local.prizePool(), 900_000, "blocked share stays in the pool");
+        assertTrue(local.conserved());
     }
 }

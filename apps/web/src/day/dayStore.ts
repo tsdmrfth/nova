@@ -23,6 +23,9 @@ export type LastBuy = {
   ok: boolean;
   packId: PackId;
   extraInfluence: number;
+  onPick: ChoiceId | null;
+  /** Explorer link for this purchase, not for whatever ran after it. */
+  txUrl: string | null;
 };
 
 export type ClaimSnapshot = {
@@ -42,7 +45,10 @@ export type DayState = {
   dayHint: string;
   choices: [DayChoiceCopy, DayChoiceCopy, DayChoiceCopy];
   freeInfluence: number;
+  /** Extra bought today that is not on a pick yet: the spendable balance. */
   extraInfluence: number;
+  /** All Extra bought today, placed or not (the weight cap reads this). */
+  extraBought: number;
   spentTodayMicro: MicroUsdc;
   lastBuy: LastBuy | null;
   selected: ChoiceId | null;
@@ -103,6 +109,7 @@ export function createDayState(day = 1): DayState {
     choices: copy.choices,
     freeInfluence: FREE_DAILY_GRANT,
     extraInfluence: 0,
+    extraBought: 0,
     spentTodayMicro: 0n,
     lastBuy: null,
     selected: null,
@@ -142,7 +149,10 @@ export function dayStateFromChain(
   const votingOpen = chain.open && (chain.closesAt === null || now < chain.closesAt);
   const shared = {
     ...base,
-    extraInfluence: entry.extraBought,
+    // Spendable Extra is what this wallet bought and has not placed yet.
+    // A vote closes further purchases, so this balance cannot grow afterward.
+    extraInfluence: Math.max(0, entry.extraBought - entry.extraPlaced),
+    extraBought: entry.extraBought,
     spentTodayMicro: chain.spentMicro,
     lastBuy: ui.lastBuy,
     votingOpen,

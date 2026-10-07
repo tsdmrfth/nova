@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { CheckIcon, CloseIcon, InfoIcon, TrophyIcon } from "./icons";
+import { AlertIcon, CheckIcon, CloseIcon, ExternalIcon, InfoIcon, TrophyIcon } from "./icons";
 
 function cx(...names: Array<string | false | null | undefined>): string {
   return names.filter(Boolean).join(" ");
@@ -213,6 +213,61 @@ export function Note({
     <p className="nv-note" data-testid={testId} id={id}>
       {children}
     </p>
+  );
+}
+
+export type NoticeTone = "pending" | "success" | "error" | "info";
+
+/**
+ * Tinted status row for transaction outcomes and blocked actions, so they never
+ * read like a footnote. Errors are announced assertively, the rest politely.
+ */
+export function StatusNotice({
+  tone,
+  title,
+  detail,
+  link,
+  announce = true,
+  testId,
+}: {
+  tone: NoticeTone;
+  title: ReactNode;
+  detail?: ReactNode;
+  link?: { href: string; label: string; testId?: string } | null;
+  /** False for standing copy that never changes, so it isn't a live region. */
+  announce?: boolean;
+  testId?: string;
+}) {
+  return (
+    <div
+      className={`nv-notice nv-notice--${tone}`}
+      role={announce ? (tone === "error" ? "alert" : "status") : undefined}
+      data-testid={testId}
+      data-tone={tone}
+    >
+      <span className="nv-notice__icon" aria-hidden="true">
+        {tone === "pending" ? <span className="nv-notice__spinner" /> : null}
+        {tone === "success" ? <CheckIcon size={14} /> : null}
+        {tone === "error" ? <AlertIcon size={18} /> : null}
+        {tone === "info" ? <InfoIcon size={18} /> : null}
+      </span>
+      <div className="nv-notice__body">
+        <p className="nv-notice__title">{title}</p>
+        {detail ? <p className="nv-notice__detail">{detail}</p> : null}
+        {link ? (
+          <a
+            className="nv-notice__link"
+            href={link.href}
+            target="_blank"
+            rel="noreferrer"
+            data-testid={link.testId}
+          >
+            {link.label}
+            <ExternalIcon size={12} />
+          </a>
+        ) : null}
+      </div>
+    </div>
   );
 }
 

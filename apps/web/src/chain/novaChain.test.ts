@@ -12,7 +12,7 @@ const BUCKETS = {
   extraTotals: { A: 0, B: 150, C: 0 },
 };
 
-describe("pool share math (mirrors NovaDemoPool.claimable)", () => {
+describe("pool share math (mirrors NovaPool.claimable)", () => {
   it("pays both lanes pro rata with Extra capped at 100", () => {
     const share = shareFor({
       ...BUCKETS,

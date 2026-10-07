@@ -1,18 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {NovaDemoPool} from "./NovaDemoPool.sol";
+import {NovaPool} from "./NovaPool.sol";
 
 /// @title NovaSignal
 /// @notice Post-settle public USDC signal. Spends only the Nova operating budget
 ///         and only to the configured Nova public wallet.
 ///         Caller allowlist + hard cap. There is no prize top-up function.
 contract NovaSignal {
-    NovaDemoPool public immutable pool;
+    NovaPool public immutable pool;
     address public novaWallet;
     uint256 public immutable hardCap;
     uint256 public totalSignaled;
     address public owner;
+    address public pendingOwner;
     mapping(address => bool) public allowlist;
 
     uint256 private locked;
@@ -22,9 +23,11 @@ contract NovaSignal {
     );
     event AllowlistSet(address indexed account, bool allowed);
     event NovaWalletSet(address indexed novaWallet);
-    event OwnershipTransferred(address indexed owner);
+    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     error NotOwner();
+    error NotPendingOwner();
     error NotAllowlisted();
     error CapExceeded();
     error ZeroAmount();
@@ -50,10 +53,11 @@ contract NovaSignal {
             revert ZeroAddress();
         }
         if (hardCap_ == 0) revert ZeroAmount();
-        pool = NovaDemoPool(pool_);
+        pool = NovaPool(pool_);
         novaWallet = novaWallet_;
         hardCap = hardCap_;
         owner = owner_;
+        emit OwnershipTransferred(address(0), owner_);
         uint256 count = agents.length;
         for (uint256 i = 0; i < count; i++) {
             address agent = agents[i];
@@ -93,11 +97,18 @@ contract NovaSignal {
         emit NovaWalletSet(next);
     }
 
+    /// @notice Step one of two: `next` must call `acceptOwnership`. Pass address(0) to cancel.
     function transferOwnership(address next) external {
         if (msg.sender != owner) revert NotOwner();
-        if (next == address(0)) revert ZeroAddress();
-        owner = next;
-        emit OwnershipTransferred(next);
+        pendingOwner = next;
+        emit OwnershipTransferStarted(owner, next);
+    }
+
+    function acceptOwnership() external {
+        if (msg.sender != pendingOwner) revert NotPendingOwner();
+        emit OwnershipTransferred(owner, msg.sender);
+        owner = msg.sender;
+        pendingOwner = address(0);
     }
 
     function snapshot()

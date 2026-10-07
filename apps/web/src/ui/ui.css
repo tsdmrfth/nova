@@ -350,6 +350,125 @@
   line-height: 1.55;
 }
 
+/* ---------- Status notice ---------- */
+
+.nv-notice {
+  --notice-ink: var(--nova-blue-light);
+  --notice-fill: rgba(39, 133, 255, 0.12);
+  --notice-edge: rgba(113, 185, 255, 0.4);
+  display: flex;
+  align-items: flex-start;
+  gap: calc(10 * var(--u));
+  padding: calc(10 * var(--u)) calc(12 * var(--u));
+  border-radius: var(--nova-r-chip);
+  border: 1px solid var(--notice-edge);
+  background: var(--notice-fill);
+  text-align: left;
+  animation: nv-notice-in 220ms ease-out;
+}
+
+.nv-notice--success {
+  --notice-ink: #6fe3b0;
+  --notice-fill: rgba(46, 196, 132, 0.12);
+  --notice-edge: rgba(111, 227, 176, 0.42);
+}
+
+.nv-notice--error {
+  --notice-ink: #ff9b9b;
+  --notice-fill: rgba(232, 72, 85, 0.14);
+  --notice-edge: rgba(255, 155, 155, 0.45);
+}
+
+.nv-notice--info {
+  --notice-ink: var(--nova-muted);
+  --notice-fill: rgba(4, 24, 51, 0.6);
+  --notice-edge: var(--nova-border-soft);
+}
+
+.nv-notice__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+  color: var(--notice-ink);
+}
+
+.nv-notice--success .nv-notice__icon {
+  border-radius: 50%;
+  background: var(--notice-ink);
+  color: var(--nova-navy);
+}
+
+.nv-notice__spinner {
+  width: calc(16 * var(--u));
+  height: calc(16 * var(--u));
+  border-radius: 50%;
+  border: 2px solid rgba(113, 185, 255, 0.25);
+  border-top-color: var(--notice-ink);
+  animation: nova-spin 0.9s linear infinite;
+}
+
+.nv-notice__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nv-notice__title {
+  margin: 0;
+  font-size: calc(14 * var(--u));
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--nova-text);
+}
+
+/* A blocked action explains itself; it isn't an event, so it stays quiet. */
+.nv-notice--info .nv-notice__title {
+  font-size: calc(13 * var(--u));
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--nova-muted);
+}
+
+.nv-notice__detail {
+  margin: 0;
+  font-size: calc(12 * var(--u));
+  line-height: 1.45;
+  color: var(--nova-muted);
+  text-wrap: pretty;
+}
+
+.nv-notice__link {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 2px;
+  margin-top: 2px;
+  font-size: calc(12 * var(--u));
+  color: var(--notice-ink);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nv-notice__link:hover,
+.nv-notice__link:focus-visible {
+  text-decoration: underline;
+}
+
+@keyframes nv-notice-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* ---------- Buttons ---------- */
 
 .nv-btn {

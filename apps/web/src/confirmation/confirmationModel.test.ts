@@ -18,6 +18,7 @@ describe("confirmation model", () => {
     expect(model.closesAt).toBe("At settle");
     expect(model.publishAt).toBe("After settle");
     expect(model.resultsCta).toBe("Results after the day settles");
+    expect(model.canBuy).toBe(true);
 
     const closesAt = FIXTURE_NOW + 3_600_000;
     expect(buildConfirmationModel(dayState({ closesAt })).closesAt).toBe(formatLocalTime(closesAt));
@@ -34,6 +35,7 @@ describe("confirmation model", () => {
     expect(model.freeRemaining).toBe(0);
     expect(model.extraSpent).toBe(4);
     expect(model.extraRemaining).toBe(6);
+    expect(model.canBuy).toBe(false);
 
     const settled = buildConfirmationModel(
       dayState({ open: false, settled: true, entry: { voted: true, option: "B", free: 10 } }),

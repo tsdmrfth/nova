@@ -155,21 +155,28 @@ export function DayStoreProvider({ children }: { children: ReactNode }) {
 
   const buy = useCallback(
     async (packId: PackId) => {
-      await run(
+      if (state.status === "cast") return false;
+      return run(
         (from) => (chain ? chain.buy(from, packId) : Promise.reject(new Error("No pool configured."))),
-        () =>
+        (hash) =>
           setUi({
             account,
             value: {
               ...dayUi,
               // New Extra defaults onto the stepper, as before the vote.
               extraSpendAmount: null,
-              lastBuy: { ok: true, packId, extraInfluence: quotePack(packId).extraInfluence },
+              lastBuy: {
+                ok: true,
+                packId,
+                extraInfluence: quotePack(packId).extraInfluence,
+                onPick: null,
+                txUrl: chain ? explorerTxUrl(chain.explorerUrl, hash) : null,
+              },
             },
           }),
       );
     },
-    [chain, run, account, dayUi],
+    [chain, run, account, dayUi, state.status],
   );
 
   const claim = useCallback(async () => {

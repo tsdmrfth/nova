@@ -140,7 +140,7 @@ export function buildVoteModel(state: DayState): VoteModel {
   const free = lastCast ? lastCast.free : state.spendAmount;
   const extra = lastCast ? lastCast.extra : state.extraSpendAmount;
   const freePool = lastCast ? lastCast.free + state.freeInfluence : state.freeInfluence;
-  const extraPool = state.extraInfluence;
+  const extraPool = lastCast ? lastCast.extra + state.extraInfluence : state.extraInfluence;
   const { buyEntry, buyEntryToBuy } = voteBuyEntry(state);
   const selected = state.selected;
 

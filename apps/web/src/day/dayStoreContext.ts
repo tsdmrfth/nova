@@ -22,7 +22,7 @@ export type DayStoreValue = {
   setSpend(amount: number): void;
   setExtraSpend(amount: number): void;
   cast(): Promise<boolean>;
-  buy(packId: PackId): Promise<void>;
+  buy(packId: PackId): Promise<boolean>;
   claim(): Promise<void>;
 };
 

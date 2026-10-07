@@ -18,6 +18,9 @@ export type ConfirmationModel = {
   closesAt: string;
   publishAt: string;
   resultsCta: string;
+  /** Extra can still be bought only before the vote is locked. */
+  canBuy: boolean;
+  buyCta: string;
 };
 
 export function buildConfirmationModel(state: DayState): ConfirmationModel {
@@ -40,9 +43,11 @@ export function buildConfirmationModel(state: DayState): ConfirmationModel {
     freeSpent: cast?.free ?? 0,
     freeRemaining: state.freeInfluence,
     extraSpent: cast?.extra ?? 0,
-    extraRemaining: Math.max(0, state.extraInfluence - (cast?.extra ?? 0)),
+    extraRemaining: state.extraInfluence,
     closesAt: close === null ? CONFIRMATION_COPY.closesAtSettle : formatLocalTime(close),
     publishAt,
+    canBuy: !locked && state.votingOpen,
+    buyCta: CONFIRMATION_COPY.buy,
     resultsCta: resultsReady
       ? CONFIRMATION_COPY.resultsCta
       : CONFIRMATION_COPY.resultsPending,

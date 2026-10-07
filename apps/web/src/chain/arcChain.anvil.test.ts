@@ -5,7 +5,7 @@ import { demoConfigFromEnv } from "../demo/demoConfig";
 import { createArcChain } from "./arcChain";
 
 /**
- * Drives the real viem pool client against a local anvil node running NovaDemoPool v2.
+ * Drives the real viem pool client against a local anvil node running NovaPool.
  * Opt-in: set NOVA_ANVIL_RPC, NOVA_ANVIL_POOL and NOVA_ANVIL_USDC (see contracts/README.md).
  * Anvil's default accounts are unlocked, so eth_sendTransaction stands in for the wallet.
  */

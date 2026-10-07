@@ -1,6 +1,6 @@
 # Nova
 
-pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. **P1-09** added first-run onboarding. **P1-07** added Confirmation for the in-memory day. This branch is **P1.5**: an Arc money-path demo (contracts + `/demo`). The game loop runs onchain against `NovaDemoPool` v2 through a browser wallet: buy, vote, settle, claim. Mainnet is not live in this repo — deploy keys, a public host, and a public GitHub repo are human steps.
+pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared prize-pool math in `@nova/shared`. **P1-02** bound Home to a lazy PixiJS v8 scene plus the floating navy-glass HUD. **P1-03** wired Cast Influence. **P1-04** added Extra Influence buy packs. **P1-05** added Results + offline day settle. **P1-09** added first-run onboarding. **P1-07** added Confirmation for the in-memory day. This branch is **P1.5**: an Arc money-path demo (contracts + `/demo`). The game loop runs onchain against `NovaPool` through a browser wallet: buy, vote, settle, claim. Mainnet is not live in this repo — deploy keys, a public host, and a public GitHub repo are human steps.
 
 ## Status
 
@@ -14,7 +14,7 @@ pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared pri
 | **P1-05** | `/results` offline settle via `pickWinningOption` / `buildDayPrizePool` / `settleDay` / `sparkForDay`. Claim CTA on Results; Profile is history-only. |
 | **P1-09** | `/connect` first-run: disclaimer, mock Connect / Continue, +10 Free grant toast, skippable tutorial, geo-block + Switch to Arc. Persists in localStorage. |
 | **P1-07** | `/confirmation` reads the in-memory day (pick, Free vs Extra, close / publish stamps) and opens Results after a cast. Connect → Home → Vote → Buy → Confirmation → Results stays on one `DayState`. |
-| **P1.5 (current)** | Public Arc mainnet slice: `@nova/shared` buy split 90/8/2, Foundry `NovaDemoPool` + `NovaSignal`, deploy script, thin `/demo` page. Addresses are placeholders until a human broadcasts. |
+| **P1.5 (current)** | Public Arc mainnet slice: `@nova/shared` buy split 90/8/2, Foundry `NovaPool` + `NovaSignal`, deploy script, thin `/demo` page. Addresses are placeholders until a human broadcasts. |
 
 ## Workspace
 
@@ -24,7 +24,7 @@ pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared pri
 | `packages/shared` | `@nova/shared` | Pool math, packs, Influence caps, day-goal / W* scoring, SPARK constants, tests |
 | `packages/config` | `@nova/config` | Shared TypeScript config, app constants, color tokens |
 | `packages/assets` | `@nova/assets` | Canon manifest and the live city plate (`drafts/` is unpublished) |
-| `contracts` | Foundry | `NovaDemoPool`, `NovaSignal`, Arc mainnet deploy script |
+| `contracts` | Foundry | `NovaPool`, `NovaSignal`, Arc deploy script |
 
 ## Cast / Vote shell
 
@@ -42,7 +42,7 @@ Vote links in with `Need more Extra Influence?` (and the USDC chip). Selected A/
 
 ## Results + settle
 
-`/results` reads the pool's latest settled day (today once settled, otherwise yesterday). `NovaDemoPool.settleDay` picks W* onchain from **Free** tallies + the day goal (Extra never picks the winner) and snapshots the 90/10 buckets; each winner pulls their share with `claim`. The HUD shows the same floor pro-rata the contract pays (`shareFor` in `apps/web/src/chain/novaChain.ts`). `@nova/shared` (`pickWinningOption`, `settleDay`, …) stays the reference math and drives the test fake. `sparkForDay` awards in-game SPARK points (not money) on the client.
+`/results` reads the pool's latest settled day (today once settled, otherwise yesterday). `NovaPool.settleDay` picks W* onchain from **Free** tallies + the day goal (Extra never picks the winner) and snapshots the 90/10 buckets; each winner pulls their share with `claim`. The HUD shows the same floor pro-rata the contract pays (`shareFor` in `apps/web/src/chain/novaChain.ts`). `@nova/shared` (`pickWinningOption`, `settleDay`, …) stays the reference math and drives the test fake. `sparkForDay` awards in-game SPARK points (not money) on the client.
 
 COPY-S1 B6: **Canon today**, day goal, paid/free share rows (hide 0), miss / roll-over, **Claim {n} USDC** as the primary CTA. Profile (`/profile`) shows cast + claim history only — no claim button.
 
@@ -98,17 +98,17 @@ What it is: a story, programmable USDC, and one real agent transaction after set
 
 What is in git:
 
-- `contracts/src/NovaDemoPool.sol` — `buyExtraInfluence` for Spark (`1`) and Pulse (`2`), `settleDay` (90/10 snapshot only), budget ledger. Invariant: prize + studio net + Nova budget, including amounts already paid out of studio net and the operating budget, equals gross.
+- `contracts/src/NovaPool.sol` — `buyExtraInfluence` for Spark (`1`) and Pulse (`2`), `castVote`, `settleDay` (picks W* onchain and snapshots the 90/10 buckets), pull-based `claim`, budget ledger. Owner (a Safe on mainnet) and operator roles, a pause that never blocks claims, two-step ownership; not upgradeable. Invariant: prize + studio net + Nova budget, including amounts already paid out of studio net and the operating budget, equals gross.
 - `contracts/src/NovaSignal.sol` — post-settle `signal` to the configured wallet only.
-- `contracts/script/DeployArcMainnet.s.sol` — refuses every chain except 5042 unless `ALLOW_NON_MAINNET=true` (local rehearsal only).
-- `contracts/README.md` — broadcast commands. **Testnet-only is not a Microgrant submit.**
+- `contracts/script/DeployNova.s.sol` — refuses every chain except 5042 unless `ALLOW_NON_MAINNET=true` (testnet or anvil rehearsal), then hands ownership to `OWNER_ADDRESS` in two steps.
+- `contracts/README.md` — roles, upgrade policy, Arc specifics, release checklist, broadcast commands. **Testnet-only is not a Microgrant submit.**
 
 What is still a placeholder (human):
 
 | Item | Status |
 | --- | --- |
 | GitHub repo visibility | Private until a human makes it public |
-| `NovaDemoPool` | `PENDING_HUMAN_DEPLOY` |
+| `NovaPool` | `PENDING_HUMAN_DEPLOY` |
 | `NovaSignal` | `PENDING_HUMAN_DEPLOY` |
 | Nova public wallet | Set `NOVA_WALLET` at deploy. Not in git. |
 | Deployer USDC (gas + a tiny buy) | Human-funded. No key in git. |
@@ -138,7 +138,7 @@ After a human deploy, set `VITE_NOVA_POOL_ADDRESS` and `VITE_NOVA_SIGNAL_ADDRESS
 
 Home and Vote are the Cast Influence shell. Buy is Extra Influence checkout (USDC approve + `buyExtraInfluence`, shared 90/8/2 quote). Confirmation is the onchain vote lock: cast summary, Free vs Extra lanes, and the pool's close time. **See results** opens once the pool settles the day. Results is the day-settle + claim HUD. Profile is history-only. Connect is the first-run Welcome / disclaimer / browser wallet gate. Neighborhood remains a placeholder. `/demo` is the Arc mainnet money path and stays reachable when the geo gate or Connect gate is on.
 
-After a cast, Vote offers **Review confirmation**. Buy offers the same once the day is locked, so Extra bought after the cast shows up on that pick. Back links and the product menu only change the route — they do not reset the day store. PlayGate still sends anyone who has not finished Connect to `/connect`.
+After a cast, Vote offers **Review confirmation**. Purchases close for that wallet once the vote is locked. Back links and the product menu only change the route — they do not reset the day store. PlayGate still sends anyone who has not finished Connect to `/connect`.
 
 ## Setup
 
@@ -205,7 +205,7 @@ VITE_ARC_EXPLORER_URL=https://explorer.testnet.arc.io
 ```
 
 Mainnet remains the default when no network is configured. There is no offline
-mode: every game screen reads `NovaDemoPool` (v2) and every action is a wallet
+mode: every game screen reads `NovaPool` and every action is a wallet
 transaction. Buy approves at most the rest of today's 10 USDC limit, then calls
 `buyExtraInfluence`; Cast calls `castVote`; Results read the latest settled day and
 Claim calls `claim`. The pool is re-read every 20 seconds and when the tab regains

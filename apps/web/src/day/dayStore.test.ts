@@ -42,7 +42,9 @@ describe("day store from the pool", () => {
     expect(state.selected).toBe("A");
     expect(state.freeInfluence).toBe(3);
     expect(state.spendAmount).toBe(3);
-    expect(state.extraInfluence).toBe(10);
+    // Free and Extra both read what is left after the vote.
+    expect(state.extraInfluence).toBe(6);
+    expect(state.extraBought).toBe(10);
     expect(state.extraSpendAmount).toBe(4);
     expect(state.casts).toEqual([{ walletId: FIXTURE_ACCOUNT, optionId: "A", extra: 4, free: 7 }]);
     expect(selectChoice(state, "B").selected).toBe("A");

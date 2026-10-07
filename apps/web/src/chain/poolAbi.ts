@@ -1,4 +1,4 @@
-/** Hand-kept subset of `contracts/src/NovaDemoPool.sol` (v2) that the game reads and writes. */
+/** Hand-kept subset of `contracts/src/NovaPool.sol` that the game reads and writes. */
 export const NOVA_POOL_ABI = [
   { type: "function", name: "dayId", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
   { type: "function", name: "dayOpen", stateMutability: "view", inputs: [], outputs: [{ type: "bool" }] },
@@ -85,6 +85,8 @@ export const NOVA_POOL_ABI = [
   },
   ...[
     "NotOwner",
+    "NotOperator",
+    "GamePaused",
     "UnknownPack",
     "UnknownOption",
     "DailyCapExceeded",
@@ -95,6 +97,7 @@ export const NOVA_POOL_ABI = [
     "VotingClosed",
     "VotingStillOpen",
     "AlreadyVoted",
+    "PurchaseClosed",
     "FreeExceeded",
     "ExtraExceeded",
     "AlreadyClaimed",

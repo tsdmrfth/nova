@@ -119,7 +119,6 @@ export function ConfirmationHud({
               </dl>
             </div>
           </Receipt>
-
           <Button testId="confirmation-home" onClick={onHome}>
             {CONFIRMATION_COPY.homeCta}
           </Button>
@@ -137,9 +136,11 @@ export function ConfirmationHud({
           <Button variant="tertiary" compact testId="confirmation-back" onClick={onVote}>
             {model.locked ? CONFIRMATION_COPY.back : CONFIRMATION_COPY.castCta}
           </Button>
-          <Button variant="secondary" compact testId="confirmation-buy" onClick={onBuy}>
-            {CONFIRMATION_COPY.buy}
-          </Button>
+          {model.canBuy ? (
+            <Button variant="secondary" compact testId="confirmation-buy" onClick={onBuy}>
+              {model.buyCta}
+            </Button>
+          ) : null}
         </GlassSheet>
       </div>
     </>

@@ -32,11 +32,13 @@ describe("Buy Extra Influence", () => {
     expect(screen.getByTestId("buy-breakdown").textContent).toMatch(/Platform service fee · 8%/);
 
     await user.click(screen.getByTestId("buy-cta"));
-    expect((await screen.findByTestId("buy-status")).textContent).toMatch(
-      /You received 55 Extra Influence/,
-    );
+    const status = await screen.findByTestId("buy-status");
+    expect(status.getAttribute("data-tone")).toBe("success");
+    expect(status.getAttribute("role")).toBe("status");
+    expect(status.textContent).toMatch(/\+55 Extra Influence added/);
+    expect(status.textContent).toMatch(/Purchase confirmed on Arc/);
     expect(screen.getByTestId("buy-extra-value").textContent).toBe("55");
-    expect(screen.getByText("View confirmed purchase").getAttribute("href")).toMatch(
+    expect(screen.getByTestId("buy-tx-link").getAttribute("href")).toMatch(
       /^https:\/\/explorer\.test\/tx\/0x/,
     );
     expect(await chain.readDay(PLAYER)).toMatchObject({ spentMicro: 5_000_000n, entry: { extraBought: 55 } });
@@ -101,9 +103,17 @@ describe("Buy Extra Influence", () => {
     await renderApp("/buy", chain);
     await user.click(screen.getByTestId("buy-cta"));
     expect(screen.getByTestId("buy-cta")).toHaveProperty("disabled", true);
-    expect(screen.getByText(/Confirm in your wallet/)).toBeTruthy();
+    expect(screen.getByTestId("buy-cta").getAttribute("aria-busy")).toBe("true");
+    expect(screen.getByTestId("buy-cta").textContent).toBe("Waiting for confirmation…");
+    expect(screen.getByTestId("buy-status").getAttribute("data-tone")).toBe("pending");
+    expect(screen.getByTestId("buy-status").textContent).toMatch(/Confirm in your wallet/);
+    expect(screen.getByTestId("buy-status").textContent).toMatch(/Approve 5\.00 USDC/);
     chain.release();
-    expect((await screen.findByText(/faucet\.circle\.com/)).textContent).toMatch(/Not enough USDC/);
+    const failure = await screen.findByRole("alert");
+    expect(failure.getAttribute("data-tone")).toBe("error");
+    expect(failure.textContent).toMatch(/Purchase didn't go through/);
+    expect(failure.textContent).toMatch(/Not enough USDC.*faucet\.circle\.com/);
+    expect(screen.getByTestId("buy-cta").textContent).toBe("Confirm buy · 5.00 USDC");
     expect(screen.getByTestId("buy-extra-value").textContent).toBe("0");
   });
 
@@ -123,5 +133,25 @@ describe("Buy Extra Influence", () => {
     await renderApp("/buy", chain);
     expect(screen.getByTestId("buy-cta")).toHaveProperty("disabled", true);
     expect(screen.getByTestId("buy-cap").textContent).toMatch(/round is closed/);
+  });
+
+  it("closes purchases once the wallet has voted", async () => {
+    const user = userEvent.setup();
+    const chain = new FakeNovaChain();
+    await chain.buy(PLAYER, "spark");
+    await chain.castVote(PLAYER, "A", 10, 10);
+    await renderApp("/buy", chain);
+
+    expect(screen.getByTestId("buy-extra-value").textContent).toBe("0");
+    expect(screen.getByTestId("buy-cta")).toHaveProperty("disabled", true);
+    expect(screen.getByTestId("buy-cap").textContent).toBe("Purchases close once you vote.");
+    expect(await chain.readDay(PLAYER)).toMatchObject({
+      spentMicro: 1_000_000n,
+      entry: { extraBought: 10, extraPlaced: 10 },
+    });
+
+    await user.click(screen.getByTestId("buy-back"));
+    expect(screen.getByTestId("confirmation-extra").textContent).toBe("Extra spent10Remaining0");
+    expect(screen.queryByTestId("confirmation-buy")).toBeNull();
   });
 });

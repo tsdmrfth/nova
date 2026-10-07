@@ -8,17 +8,23 @@ interface IERC20 {
     function transferFrom(address from, address to, uint256 amount) external returns (bool);
 }
 
-/// @title NovaDemoPool
+/// @title NovaPool
 /// @notice Arc game pool: Spark/Pulse Extra Influence buys, one vote per wallet per day,
 ///         an onchain day settle that picks W* from Free tallies only, and pull-based
 ///         prize claims. The ledger keeps prize, studio net, and the Nova operating budget apart.
 ///         Buys are nonpayable ERC-20 pulls, so a native USDC send cannot skip the split.
 ///
+///         Not upgradeable: a rule change ships as a new pool, and the old one stays claimable.
+///         Roles: `owner` (meant to be a multisig) sets the operator and signal, unpauses, and
+///         hands over ownership in two steps. `operator` (a hot key) runs the day loop; the owner
+///         can too. Either can pause, which stops buys and votes only. Claims and the studio and
+///         budget withdrawals never pause.
+///
 ///         Payout per winner: lane bucket × weight / Σ weights on W* (floor).
 ///         Paid weight = min(Extra on W*, 100). Free weight = Free on W* (≤ 10).
 ///         An empty winner lane rolls its whole bucket into the next day's prize.
 ///         Floor dust stays in `prizePool`, unassigned.
-contract NovaDemoPool {
+contract NovaPool {
     uint8 public constant PACK_SPARK = 1;
     uint8 public constant PACK_PULSE = 2;
     uint256 public constant SPARK_PRICE = 1_000_000;
@@ -38,8 +44,11 @@ contract NovaDemoPool {
     IERC20 public immutable usdc;
     address public immutable studio;
     address public owner;
+    address public pendingOwner;
+    address public operator;
     address public signal;
     bool public signalLocked;
+    bool public paused;
 
     uint256 public gross;
     /// @notice Prize USDC held by this contract and not yet claimed (includes rollover and dust).
@@ -99,7 +108,6 @@ contract NovaDemoPool {
         uint256 extraInfluence
     );
     event VoteCast(address indexed voter, uint256 indexed dayId, uint8 option, uint256 free, uint256 extra);
-    event ExtraPlaced(address indexed voter, uint256 indexed dayId, uint8 option, uint256 extra);
     event DaySettled(
         uint256 indexed dayId,
         uint256 prize,
@@ -115,9 +123,15 @@ contract NovaDemoPool {
     event NovaBudgetReleased(address indexed to, uint256 amount, uint256 novaBudgetRemaining);
     event StudioNetWithdrawn(address indexed studio, uint256 amount, uint256 studioNetRemaining);
     event SignalSet(address indexed signal);
-    event OwnershipTransferred(address indexed owner);
+    event OperatorSet(address indexed operator);
+    event PausedSet(bool paused);
+    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     error NotOwner();
+    error NotOperator();
+    error NotPendingOwner();
+    error GamePaused();
     error NotStudio();
     error NotSignal();
     error UnknownPack();
@@ -130,6 +144,7 @@ contract NovaDemoPool {
     error VotingClosed();
     error VotingStillOpen();
     error AlreadyVoted();
+    error PurchaseClosed();
     error FreeExceeded();
     error ExtraExceeded();
     error AlreadyClaimed();
@@ -155,19 +170,34 @@ contract NovaDemoPool {
         _;
     }
 
-    constructor(address usdc_, address studio_, address owner_) {
-        if (usdc_ == address(0) || studio_ == address(0) || owner_ == address(0)) {
+    /// @dev The owner can stand in for the operator, so a lost hot key never strands a day.
+    modifier onlyOperator() {
+        if (msg.sender != operator && msg.sender != owner) revert NotOperator();
+        _;
+    }
+
+    constructor(address usdc_, address studio_, address owner_, address operator_) {
+        if (
+            usdc_ == address(0) || studio_ == address(0) || owner_ == address(0)
+                || operator_ == address(0)
+        ) {
             revert ZeroAddress();
         }
         usdc = IERC20(usdc_);
         studio = studio_;
         owner = owner_;
+        operator = operator_;
         dayId = 1;
         dayOpen = true;
+        emit OwnershipTransferred(address(0), owner_);
+        emit OperatorSet(operator_);
     }
 
     function buyExtraInfluence(uint8 packId) external nonReentrant returns (uint256 extraInfluence) {
         _requireVotingOpen();
+        Entry storage entry = entries[dayId][msg.sender];
+        // Extra is spent on the vote. A later buy cannot land on a locked pick.
+        if (entry.voted) revert PurchaseClosed();
 
         uint256 price;
         if (packId == PACK_SPARK) {
@@ -182,8 +212,6 @@ contract NovaDemoPool {
 
         uint256 spent = spentOnDay[dayId][msg.sender];
         if (spent + price > MAX_DAILY_BUY) revert DailyCapExceeded();
-
-        _pull(msg.sender, price);
 
         (uint256 prize, uint256 studioPart, uint256 budgetPart) = BuySplit.splitGross(price);
         if (prize + studioPart + budgetPart != price) revert InvariantBroken();
@@ -201,15 +229,12 @@ contract NovaDemoPool {
         studioNet += studioPart;
         novaBudget += budgetPart;
 
-        Entry storage entry = entries[dayId][msg.sender];
         entry.extraBought += uint64(extraInfluence);
-        // After a vote, new Extra sits on that pick (same lane, same option).
-        if (entry.voted) {
-            _placeExtra(entry, extraInfluence);
-            emit ExtraPlaced(msg.sender, dayId, entry.option, extraInfluence);
-        }
 
         if (!_conserved()) revert InvariantBroken();
+
+        // Effects first, then the one external call.
+        _pull(msg.sender, price);
 
         emit ExtraInfluenceBought(
             msg.sender, dayId, packId, price, prize, studioPart, budgetPart, extraInfluence
@@ -240,7 +265,7 @@ contract NovaDemoPool {
     /// @notice Picks W* from Free tallies, snapshots the 90/10 buckets of today's prize
     ///         plus rollover, and unlocks the day's Nova budget for NovaSignal.
     ///         Does not move prize USDC; winners pull with `claim`.
-    function settleDay() external onlyOwner {
+    function settleDay() external onlyOperator {
         if (!dayOpen) revert AlreadySettled();
         DayLedger storage day = days_[dayId];
         if (day.closesAt != 0 && block.timestamp < day.closesAt) revert VotingStillOpen();
@@ -267,7 +292,7 @@ contract NovaDemoPool {
     }
 
     /// @param closesAt Unix seconds for the new day's vote close; 0 leaves it to `settleDay`.
-    function openNextDay(uint64 closesAt) external onlyOwner {
+    function openNextDay(uint64 closesAt) external onlyOperator {
         if (dayOpen) revert DayStillOpen();
         if (!days_[dayId].settled) revert DayNotSettled();
         if (closesAt != 0 && closesAt <= block.timestamp) revert BadCloseTime();
@@ -280,7 +305,7 @@ contract NovaDemoPool {
         emit DayCloseSet(dayId, closesAt);
     }
 
-    function setDayClose(uint64 closesAt) external onlyOwner {
+    function setDayClose(uint64 closesAt) external onlyOperator {
         if (!dayOpen) revert DayNotOpen();
         if (closesAt != 0 && closesAt <= block.timestamp) revert BadCloseTime();
         days_[dayId].closesAt = closesAt;
@@ -350,10 +375,35 @@ contract NovaDemoPool {
         emit SignalSet(next);
     }
 
-    function transferOwnership(address next) external onlyOwner {
+    function setOperator(address next) external onlyOwner {
         if (next == address(0)) revert ZeroAddress();
-        owner = next;
-        emit OwnershipTransferred(next);
+        operator = next;
+        emit OperatorSet(next);
+    }
+
+    /// @notice Stops buys and votes. Claims and withdrawals keep working.
+    function pause() external onlyOperator {
+        paused = true;
+        emit PausedSet(true);
+    }
+
+    /// @notice Only the owner resumes play, so a leaked operator key cannot undo a pause.
+    function unpause() external onlyOwner {
+        paused = false;
+        emit PausedSet(false);
+    }
+
+    /// @notice Step one of two: `next` must call `acceptOwnership`. Pass address(0) to cancel.
+    function transferOwnership(address next) external onlyOwner {
+        pendingOwner = next;
+        emit OwnershipTransferStarted(owner, next);
+    }
+
+    function acceptOwnership() external {
+        if (msg.sender != pendingOwner) revert NotPendingOwner();
+        emit OwnershipTransferred(owner, msg.sender);
+        owner = msg.sender;
+        pendingOwner = address(0);
     }
 
     function goalFor(uint256 id) public pure returns (uint8) {
@@ -454,6 +504,7 @@ contract NovaDemoPool {
     }
 
     function _requireVotingOpen() internal view {
+        if (paused) revert GamePaused();
         if (!dayOpen) revert DayNotOpen();
         uint64 closesAt = days_[dayId].closesAt;
         if (closesAt != 0 && block.timestamp >= closesAt) revert VotingClosed();

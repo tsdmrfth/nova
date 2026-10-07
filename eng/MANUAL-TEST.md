@@ -1,6 +1,6 @@
 # Manual test — local walkthrough
 
-For a human on a laptop. The game loop runs on `NovaDemoPool` v2 through a browser wallet (MetaMask or Rabby); there is no offline mode. `/demo` does not need a wallet when contract addresses are empty.
+For a human on a laptop. The game loop runs on `NovaPool` through a browser wallet (MetaMask or Rabby); there is no offline mode. `/demo` does not need a wallet when contract addresses are empty.
 
 **Do not** flip `tsdmrfth/nova` public. **Do not** broadcast Arc mainnet (chain id 5042). **Do not** commit private keys, funded addresses, or a filled `.env`.
 
@@ -21,7 +21,7 @@ pnpm dev
 
 Open http://127.0.0.1:43123
 
-Vite reads env from `apps/web` (the directory with `vite.config.ts`). For the game loop, put the Arc **testnet** v2 addresses in the gitignored `apps/web/.env.local`:
+Vite reads env from the **repo root** (`envDir: "../.."` in `apps/web/vite.config.ts`); `apps/web/.env.local` is ignored. For the game loop, put the Arc **testnet** `NovaPool` / `NovaSignal` addresses in the gitignored root `.env.local`, then restart `pnpm dev`:
 
 ```dotenv
 VITE_ARC_NETWORK=testnet
@@ -38,13 +38,14 @@ A first visit to Home, Vote, Buy, Confirmation, or Results sends you to `/connec
 1. http://127.0.0.1:43123/connect — **Connect Arc wallet**. The wallet asks for access and to add/switch to Arc Testnet. The soft-launch notice opens: check **I understand this is a soft launch**, then **Enter Nova**. A wallet on another chain shows **Switch to Arc**.
 2. Home `/` — the Free Influence +10 toast holds ~2.4s (tap to dismiss). **Skip** or **Got it** on How today works.
 3. Tap a choice card (or **Choose and vote**) to open Vote `/vote`. Set the Free and Extra steppers, then **Cast Influence on {pick}** and confirm `castVote` in the wallet. Reject once to see the error stay on Vote.
-4. Vote locked (`/confirmation`) — spent/remaining per lane, read back from the pool. **See results** stays disabled until the owner settles.
-5. Owner settles: `cast send "$NOVA_POOL" "settleDay()" …` (see `contracts/README.md`). Refocus the tab; Results open.
+4. Vote locked (`/confirmation`) — spent/remaining per lane, read back from the pool. **See results** stays disabled until the operator settles.
+5. Operator settles: `cast send "$NOVA_POOL" "settleDay()" …` (see `contracts/README.md`). Refocus the tab; Results open.
 6. Results `/results` — Matched or Not this round from the pool's W*. **Claim** → wallet → Claim pending → USDC claimed with an explorer link. Reject in the wallet to see **Claim didn't go through** + **Retry**.
-7. Buy `/buy` — tap the **EXTRA** chip on Home/Vote. Spark and Pulse show the 90/8/2 quote. **Confirm buy** asks for one USDC approval (rest of today's 10 USDC limit) the first time, then `buyExtraInfluence`. Reload: Extra and spent-today come back from the pool. Buys after a vote land on that pick.
+7. Buy `/buy` — tap the **EXTRA** chip on Home/Vote, before you cast. Spark and Pulse show the 90/8/2 quote. **Confirm buy** asks for one USDC approval (rest of today's 10 USDC limit) the first time, then `buyExtraInfluence`. Reload: Extra and spent-today come back from the pool. After the vote, Confirm buy stays off: purchases close once you vote.
 8. Second wallet: vote a different option, settle, and check both Results screens against `cast call "$NOVA_POOL" "claimable(uint256,address)(uint256,uint256)" 1 <wallet>`.
-9. **MENU** chip on Home — day history, Daily reminder / Calm motion toggles, Help (tutorial, pools, soft-launch notice), Disconnect.
-10. `/demo` — next section. Open the URL directly (dev builds also show a **Routes** jumper bottom-left). It works if you skip Connect.
+9. Pause: operator `cast send "$NOVA_POOL" "pause()" …`. Buy and Vote fail with **Nova is paused for a moment…**; Claim on a settled day still pays. The owner (`unpause()`) brings play back; the operator gets `NotOwner` if it tries.
+10. **MENU** chip on Home — day history, Daily reminder / Calm motion toggles, Help (tutorial, pools, soft-launch notice), Disconnect.
+11. `/demo` — next section. Open the URL directly (dev builds also show a **Routes** jumper bottom-left). It works if you skip Connect.
 
 Back links and the dev route jumper only change the route. They do not reset the day.
 

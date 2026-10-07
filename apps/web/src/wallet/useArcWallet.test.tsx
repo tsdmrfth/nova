@@ -60,6 +60,26 @@ describe("real browser wallet", () => {
     expect(result.current.account).toBeNull();
   });
 
+  it("stays disconnected after a reload until the player connects again", async () => {
+    const mock = wallet();
+    const first = renderHook(() => useArcWallet(true));
+    await act(async () => { await first.result.current.connect(); });
+    act(() => first.result.current.disconnect());
+    expect(mock.request).toHaveBeenCalledWith({ method: "wallet_revokePermissions", params: [{ eth_accounts: {} }] });
+    first.unmount();
+
+    // The wallet still reports the account, as MetaMask does when revoke isn't supported.
+    const reloaded = renderHook(() => useArcWallet(true));
+    await waitFor(() => expect(reloaded.result.current.checked).toBe(true));
+    expect(reloaded.result.current.account).toBeNull();
+
+    await act(async () => { await reloaded.result.current.connect(); });
+    expect(reloaded.result.current.account).toBe(ADDRESS);
+    reloaded.unmount();
+    const again = renderHook(() => useArcWallet(true));
+    await waitFor(() => expect(again.result.current.account).toBe(ADDRESS));
+  });
+
   it("shows a missing-wallet error without pretending to connect", async () => {
     vi.stubGlobal("ethereum", undefined);
     const { result } = renderHook(() => useArcWallet(true));

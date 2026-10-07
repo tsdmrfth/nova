@@ -38,6 +38,14 @@ export const BUY_COPY = {
   capExceeded: "Daily Extra buy cap applies.",
   needMore: "Need more Extra Influence?",
   comeBack: "Come back for today's free Influence",
+  pendingTitle: "Confirm in your wallet",
+  pendingDetail: (youPay: string) => `Approve ${youPay}, then wait for Arc to confirm.`,
+  pendingCta: "Waiting for confirmation…",
+  successTitle: (extra: number) => `+${extra} Extra Influence added`,
+  closedAfterVote: "Purchases close once you vote.",
+  successDetail: "Purchase confirmed on Arc.",
+  failedTitle: "Purchase didn't go through",
+  viewTransaction: "View transaction",
 } as const;
 
 export const DEFAULT_PACK_ID = "pulse" as const;

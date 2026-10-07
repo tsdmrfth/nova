@@ -2,9 +2,11 @@ import { BaseError, ContractFunctionRevertedError, UserRejectedRequestError } fr
 
 const REVERT_COPY: Record<string, string> = {
   DailyCapExceeded: "That pack would pass today's 10 USDC limit.",
+  GamePaused: "Nova is paused for a moment. Your claims are safe; try again soon.",
   DayNotOpen: "Today's round is closed. Results come after the day settles.",
   VotingClosed: "Voting has closed for today.",
   AlreadyVoted: "This wallet has already voted today.",
+  PurchaseClosed: "Purchases close once you vote.",
   FreeExceeded: "You only have 10 Free Influence today.",
   ExtraExceeded: "You can't place more Extra than you bought today.",
   UnknownOption: "Pick A, B or C.",

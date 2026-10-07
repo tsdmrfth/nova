@@ -13,7 +13,7 @@ export function optionToChoice(option: number): ChoiceId {
   return id;
 }
 
-/** One wallet's row for one day, as `NovaDemoPool.entries` stores it. */
+/** One wallet's row for one day, as `NovaPool.entries` stores it. */
 export type ChainEntry = {
   extraBought: number;
   extraPlaced: number;
@@ -37,7 +37,7 @@ export type ChainDay = {
   dayId: number;
   open: boolean;
   settled: boolean;
-  /** Epoch ms, or null when the owner closes the day by settling. */
+  /** Epoch ms, or null when the operator closes the day by settling. */
   closesAt: number | null;
   prize: MicroUsdc;
   rollover: MicroUsdc;
@@ -79,7 +79,7 @@ export function resultsDayFor(day: Pick<ChainDay, "dayId" | "open">): number {
 }
 
 /**
- * Same floor math as `NovaDemoPool.claimable`, but independent of the claimed flag
+ * Same floor math as `NovaPool.claimable`, but independent of the claimed flag
  * so a claimed share still shows its amount.
  */
 export function shareFor(input: {

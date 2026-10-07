@@ -38,7 +38,7 @@ type FakeDay = {
 const zeroTotals = (): OptionTotals => ({ A: 0, B: 0, C: 0 });
 
 /**
- * In-memory stand-in for `NovaDemoPool` v2, for UI tests only. Same rules:
+ * In-memory stand-in for `NovaPool`, for UI tests only. Same rules:
  * daily cap, one vote per wallet per day, W* from Free tallies, floor pro-rata claims.
  */
 export class FakeNovaChain implements NovaChain {
@@ -167,12 +167,12 @@ export class FakeNovaChain implements NovaChain {
       const key = this.key(this.dayId, account);
       const attempt = attemptBuy(pack, this.spent.get(key) ?? 0n);
       if (!attempt.ok) throw new Error("That pack would pass today's 10 USDC limit.");
+      const entry = { ...this.entry(this.dayId, account) };
+      if (entry.voted) throw new Error("Purchases close once you vote.");
       this.spent.set(key, attempt.spentAfter);
       this.day().prize += quotePack(pack).prizePool;
-      const entry = { ...this.entry(this.dayId, account) };
       entry.extraBought += attempt.extraInfluence;
       this.entries.set(key, entry);
-      if (entry.voted) this.placeExtra(account, entry, attempt.extraInfluence);
     });
   }
 
@@ -211,7 +211,7 @@ export class FakeNovaChain implements NovaChain {
     });
   }
 
-  /** Owner `settleDay`. */
+  /** Operator `settleDay`. */
   settle() {
     const day = this.day();
     const pot = day.prize + day.rollover;
@@ -230,7 +230,7 @@ export class FakeNovaChain implements NovaChain {
     this.open = false;
   }
 
-  /** Owner `openNextDay`. */
+  /** Operator `openNextDay`. */
   openNextDay(closesAt: number | null = null) {
     const carry = this.day().rolledOut;
     this.dayId += 1;

@@ -2,6 +2,26 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { connectAccount, ensureArcNetwork, readChainId, readInjectedProvider, walletErrorMessage } from "../demo/arcWallet";
 import { readDemoConfig } from "../demo/demoConfig";
 
+/** Set by Disconnect so a reload doesn't silently pick the wallet's account back up. */
+export const WALLET_DISCONNECTED_KEY = "nova.wallet.disconnected";
+
+function readDisconnected(): boolean {
+  try {
+    return localStorage.getItem(WALLET_DISCONNECTED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeDisconnected(value: boolean) {
+  try {
+    if (value) localStorage.setItem(WALLET_DISCONNECTED_KEY, "1");
+    else localStorage.removeItem(WALLET_DISCONNECTED_KEY);
+  } catch {
+    // Blocked storage only costs the reload guard.
+  }
+}
+
 export function useArcWallet(enabled: boolean) {
   const [account, setAccount] = useState<string | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
@@ -9,7 +29,7 @@ export function useArcWallet(enabled: boolean) {
   const [error, setError] = useState<string | null>(null);
   // False until the first silent account read lands, so a reload doesn't bounce to Connect.
   const [checked, setChecked] = useState(() => !enabled || !readInjectedProvider());
-  const active = useRef(true);
+  const active = useRef(!readDisconnected());
   const generation = useRef(0);
   const pending = useRef(false);
   const config = useMemo(() => readDemoConfig(), []);
@@ -25,7 +45,11 @@ export function useArcWallet(enabled: boolean) {
         const [accounts, chain] = await Promise.all([
           provider.request({ method: "eth_accounts" }), readChainId(provider),
         ]);
-        if (!mounted || !active.current || version !== generation.current) return;
+        if (!mounted || version !== generation.current) return;
+        if (!active.current) {
+          setChecked(true);
+          return;
+        }
         setAccount(Array.isArray(accounts) && typeof accounts[0] === "string" && /^0x[a-fA-F0-9]{40}$/.test(accounts[0]) ? accounts[0] : null);
         setChainId(chain);
         setChecked(true);
@@ -63,6 +87,7 @@ export function useArcWallet(enabled: boolean) {
       return false;
     }
     active.current = true;
+    writeDisconnected(false);
     pending.current = true;
     setBusy(true);
     setError(null);
@@ -90,10 +115,15 @@ export function useArcWallet(enabled: boolean) {
 
   const disconnect = useCallback(() => {
     active.current = false;
+    writeDisconnected(true);
     ++generation.current;
     setAccount(null);
     setChainId(null);
     setError(null);
+    // MetaMask also drops the site's permission; wallets without EIP-2255 revoke just ignore it.
+    readInjectedProvider()
+      ?.request({ method: "wallet_revokePermissions", params: [{ eth_accounts: {} }] })
+      .catch(() => undefined);
   }, []);
 
   return { account, chainId, busy, error, checked, connect, disconnect, onArc: chainId === config.chainId, chainName: config.chainName };
