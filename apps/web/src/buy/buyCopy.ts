@@ -40,9 +40,4 @@ export const BUY_COPY = {
   comeBack: "Come back for today's free Influence",
 } as const;
 
-export const PACK_ART_IDS = {
-  spark: "pack_spark",
-  pulse: "pack_pulse",
-} as const;
-
 export const DEFAULT_PACK_ID = "pulse" as const;

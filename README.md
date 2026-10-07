@@ -23,20 +23,20 @@ pnpm monorepo for Nova. Phase 0 scaffold is in place. **P1-01** added shared pri
 | `apps/web` | `@nova/web` | Vite + React + TypeScript, React Router, Connect/Home/Vote/Buy/Results cinema HUD, `/demo` |
 | `packages/shared` | `@nova/shared` | Pool math, packs, Influence caps, day-goal / W* scoring, SPARK constants, tests |
 | `packages/config` | `@nova/config` | Shared TypeScript config, app constants, color tokens |
-| `packages/assets` | `@nova/assets` | Canon manifest, day packs, placeholder plates (`drafts/` is unpublished) |
+| `packages/assets` | `@nova/assets` | Canon manifest and the live city plate (`drafts/` is unpublished) |
 | `contracts` | Foundry | `NovaDemoPool`, `NovaSignal`, Arc mainnet deploy script |
 
 ## Cast / Vote shell
 
-Home (`/`) and Vote (`/vote`) share one cinema Cast screen. React owns HUD copy, chips, A/B/C tiles, Free spend, and the **Cast Influence** button. Pixi owns the full-bleed world. Both address art only through `@nova/assets` helpers (`getAsset`, `getAssetUrl`, `getDayPack`, `assertCanon`). Production code never imports `drafts/`.
+Home (`/`) and Vote (`/vote`) share one cinema Cast screen. React owns HUD copy, chips, A/B/C tiles, Free spend, and the **Cast Influence** button. The full-bleed plate comes from `@nova/assets` (`getAssetUrl("scene_nova_city")`). Production code never imports `drafts/`.
 
-Default content is **Day 1 · First light** (HIKAYE / COPY-S1): scene, self titles/captions, world labels Stabilize / Expand / Route, day goal **MOST**. Tile art uses canon ids `tile_stabilize` / `tile_expand` / `tile_route`.
+Default content is **Day 1 · First light** (HIKAYE / COPY-S1): scene, self titles/captions, world labels Stabilize / Expand / Route, day goal **MOST**.
 
 Casting spends Free Influence through `@nova/shared` `grantDailyFree` / `spendInfluence` into an in-memory day store (local player id, no wallet). Partial spend is allowed before the CTA; the first successful cast locks the day. Extra bought today is placed on that same option as a separate lane.
 
 ## Extra Influence buy
 
-`/buy` is a cinema HUD over the same sunset plate. Free and Extra balances stay on separate cards. Pack math is not duplicated in the UI: `quotePack` supplies Extra granted and the 90/8/2 USDC split; `attemptBuy` mirrors the 10 USDC / day cap the pool enforces. **Confirm buy** is a wallet transaction: one bounded USDC approval when needed, then `buyExtraInfluence`; Extra and spent-today are read back from the pool. Pulse is the default / Most chosen pack. Canon art ids: `pack_spark`, `pack_pulse`.
+`/buy` is a cinema HUD over the same city plate. Free and Extra balances stay on separate cards. Pack math is not duplicated in the UI: `quotePack` supplies Extra granted and the 90/8/2 USDC split; `attemptBuy` mirrors the 10 USDC / day cap the pool enforces. **Confirm buy** is a wallet transaction: one bounded USDC approval when needed, then `buyExtraInfluence`; Extra and spent-today are read back from the pool. Pulse is the default / Most chosen pack.
 
 Vote links in with `Need more Extra Influence?` (and the USDC chip). Selected A/B/C tiles stay selected when you return.
 
@@ -44,7 +44,7 @@ Vote links in with `Need more Extra Influence?` (and the USDC chip). Selected A/
 
 `/results` reads the pool's latest settled day (today once settled, otherwise yesterday). `NovaDemoPool.settleDay` picks W* onchain from **Free** tallies + the day goal (Extra never picks the winner) and snapshots the 90/10 buckets; each winner pulls their share with `claim`. The HUD shows the same floor pro-rata the contract pays (`shareFor` in `apps/web/src/chain/novaChain.ts`). `@nova/shared` (`pickWinningOption`, `settleDay`, …) stays the reference math and drives the test fake. `sparkForDay` awards in-game SPARK points (not money) on the client.
 
-COPY-S1 B6: **Canon today**, day goal, paid/free share rows (hide 0), miss / roll-over, **Claim {n} USDC** as the primary CTA. Profile (`/profile`) shows cast + claim history only — no claim button. Optional winner badge art: canon id `badge_winner`.
+COPY-S1 B6: **Canon today**, day goal, paid/free share rows (hide 0), miss / roll-over, **Claim {n} USDC** as the primary CTA. Profile (`/profile`) shows cast + claim history only — no claim button.
 
 ## First-run onboarding
 
@@ -173,12 +173,6 @@ Same four gates as CI:
 
 ```sh
 pnpm quality
-```
-
-Regenerate canon placeholder plates (optional):
-
-```sh
-node packages/assets/scripts/generate-placeholders.mjs
 ```
 
 ## CI

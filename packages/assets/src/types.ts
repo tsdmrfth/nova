@@ -45,33 +45,3 @@ export type CanonManifest = {
   assets: AssetRecord[];
   bundles: CanonBundle[];
 };
-
-export type DayScenePack = {
-  day: number;
-  screen: "home" | "vote" | "results" | "buy";
-  layers: {
-    sky: string;
-    far: string;
-    mid: string;
-    near: string;
-    fx?: string[];
-  };
-  masterPlate?: string;
-  nova: {
-    mode: "spine" | "sprite";
-    spineSkeletonId?: string;
-    animation?: string;
-    spriteId?: string;
-  };
-  tiles: {
-    A: { artId: string; labelKey: string };
-    B: { artId: string; labelKey: string };
-    C: { artId: string; labelKey: string };
-  };
-  worldFamily?: "stabilize_expand_route" | "story_self" | string;
-};
-
-export type PackResolution = {
-  pack: DayScenePack;
-  missing: string[];
-};

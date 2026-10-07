@@ -10,9 +10,9 @@ import {
   type PackId,
 } from "@nova/shared";
 import type { DayState } from "../day/dayStore";
-import { BUY_COPY, DEFAULT_PACK_ID, PACK_ART_IDS } from "./buyCopy";
+import { BUY_COPY, DEFAULT_PACK_ID } from "./buyCopy";
 
-export { BUY_COPY, DEFAULT_PACK_ID, PACK_ART_IDS };
+export { BUY_COPY, DEFAULT_PACK_ID };
 
 /** Checkout amounts always show two decimal places (1.00 / 0.90). */
 export function formatCheckoutUsdc(micro: MicroUsdc): string {
