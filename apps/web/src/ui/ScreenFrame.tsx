@@ -4,14 +4,25 @@ import { useScreenSlide } from "./screenMotion";
 import { useFrameFit } from "./useFrameFit";
 
 export const PLATE_ID = "scene_nova_city";
+export const PLATE_WIDE_ID = "scene_nova_city_wide";
+
+/**
+ * Wide-screen plate starts here. Keep this in sync with the matching
+ * `@media (min-width: 960px)` block in ui.css.
+ */
+export const WIDE_PLATE_MEDIA = "(min-width: 960px)";
 
 /** City + Nova plate with the kit's two readability gradients and a feathered bottom blur. It stays put while screens slide. */
 export function NovaScene() {
   const plate = getAssetUrl(PLATE_ID);
+  const wide = getAssetUrl(PLATE_WIDE_ID);
   return (
     <div className="nv-scene" aria-hidden="true" data-testid="nova-scene">
       {plate ? (
-        <img className="nv-scene__plate" src={plate} alt="" draggable={false} />
+        <picture>
+          {wide ? <source media={WIDE_PLATE_MEDIA} srcSet={wide} /> : null}
+          <img className="nv-scene__plate" src={plate} alt="" draggable={false} />
+        </picture>
       ) : null}
       <div className="nv-scene__shade" />
       <div className="nv-scene__blur" />
@@ -31,9 +42,9 @@ type ScreenFrameProps = {
 };
 
 /**
- * Portrait phone frame. Full screen on phones; on desktop a centred 430px
- * column with a blurred copy of the plate behind it, so Nova stays on the
- * column's right edge. The HUD scales with the frame (`--u`, styles/scale.css).
+ * Phone frame on narrow viewports. From 960px the wide city plate is full-bleed
+ * and the HUD sits in a left column, so Nova stays on the right of the scene.
+ * The HUD scales with the frame (`--u`, styles/scale.css).
  *
  * Everything that belongs to one screen (dim, HUD, overlay) sits in the stage,
  * which slides on route changes over the fixed plate (screenMotion.tsx).
@@ -67,8 +78,8 @@ export function ScreenFrame({
           draggable={false}
         />
       ) : null}
+      <NovaScene />
       <div className="nv-screen__frame" ref={frameRef}>
-        <NovaScene />
         <div
           className={className ? `nv-screen__stage ${className}` : "nv-screen__stage"}
           ref={stageRef}

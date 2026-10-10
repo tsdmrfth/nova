@@ -52,14 +52,22 @@ describe("canon manifest", () => {
 });
 
 describe("live plate", () => {
-  it("publishes only the city plate the screens render", () => {
-    expect(listCanonAssets().map((asset) => asset.id)).toEqual(["scene_nova_city"]);
+  it("publishes the portrait plate and the wide plate the screens render", () => {
+    expect(listCanonAssets().map((asset) => asset.id)).toEqual([
+      "scene_nova_city",
+      "scene_nova_city_wide",
+    ]);
     expect(getAsset("scene_nova_city")?.path).toBe("scene/nova-city.webp");
+    expect(getAsset("scene_nova_city_wide")?.path).toBe("scene/nova-city-wide.webp");
     expect(getAssetUrl("scene_nova_city")).toBeTruthy();
+    expect(getAssetUrl("scene_nova_city_wide")).toBeTruthy();
     expect(canonManifest.bundles).toEqual([
       {
         name: "home",
-        assets: [{ alias: "scene_nova_city", src: "scene/nova-city.webp" }],
+        assets: [
+          { alias: "scene_nova_city", src: "scene/nova-city.webp" },
+          { alias: "scene_nova_city_wide", src: "scene/nova-city-wide.webp" },
+        ],
       },
     ]);
   });

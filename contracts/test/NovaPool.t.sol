@@ -5,36 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {BuySplit} from "../src/BuySplit.sol";
 import {NovaPool} from "../src/NovaPool.sol";
 import {NovaSignal} from "../src/NovaSignal.sol";
-
-contract MockUSDC {
-    mapping(address => uint256) public balanceOf;
-    mapping(address => mapping(address => uint256)) public allowance;
-
-    function mint(address to, uint256 amount) external {
-        balanceOf[to] += amount;
-    }
-
-    function approve(address spender, uint256 amount) external returns (bool) {
-        allowance[msg.sender][spender] = amount;
-        return true;
-    }
-
-    function transfer(address to, uint256 amount) external virtual returns (bool) {
-        balanceOf[msg.sender] -= amount;
-        balanceOf[to] += amount;
-        return true;
-    }
-
-    function transferFrom(address from, address to, uint256 amount) external virtual returns (bool) {
-        uint256 allowed = allowance[from][msg.sender];
-        if (allowed != type(uint256).max) {
-            allowance[from][msg.sender] = allowed - amount;
-        }
-        balanceOf[from] -= amount;
-        balanceOf[to] += amount;
-        return true;
-    }
-}
+import {MockUSDC} from "./helpers/MockUSDC.sol";
 
 contract ReenterOnPull is MockUSDC {
     NovaPool public pool;
@@ -487,7 +458,11 @@ contract NovaGameTest is Test {
         pool.settleDay();
     }
 
-    function _entry(address who) internal view returns (uint64 bought, uint64 placed, uint8 free, uint8 option, bool voted, bool claimed) {
+    function _entry(address who)
+        internal
+        view
+        returns (uint64 bought, uint64 placed, uint8 free, uint8 option, bool voted, bool claimed)
+    {
         return pool.entries(pool.dayId(), who);
     }
 
@@ -592,7 +567,9 @@ contract NovaGameTest is Test {
         freeB1 = _player("freeB1");
         freeB2 = _player("freeB2");
         // 40 Extra: 4 Spark. 30 Extra: 3 Spark each. Loser: 2 Pulse on A.
-        for (uint256 i = 0; i < 4; i++) _buy(w40, 1);
+        for (uint256 i = 0; i < 4; i++) {
+            _buy(w40, 1);
+        }
         for (uint256 i = 0; i < 3; i++) {
             _buy(w30a, 1);
             _buy(w30b, 1);

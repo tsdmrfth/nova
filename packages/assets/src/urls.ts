@@ -4,6 +4,7 @@
  */
 export const canonAssetUrls = {
   scene_nova_city: new URL("../canon/scene/nova-city.webp", import.meta.url).href,
+  scene_nova_city_wide: new URL("../canon/scene/nova-city-wide.webp", import.meta.url).href,
 } as const;
 
 export type CanonAssetId = keyof typeof canonAssetUrls;

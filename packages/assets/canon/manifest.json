@@ -20,6 +20,24 @@
       "createdAt": "2026-10-02T00:00:00.000Z",
       "approvedBy": "ui-kit-v2",
       "pixelRatio": 1
+    },
+    {
+      "id": "scene_nova_city_wide",
+      "path": "scene/nova-city-wide.webp",
+      "kind": "scene",
+      "screens": [
+        "home",
+        "vote",
+        "results",
+        "buy",
+        "connect"
+      ],
+      "sha256": "4e03450658b24952fbdfd55c22965d434b1889bbe917171a23c4b3b66901e421",
+      "license": "internal-working-set",
+      "artLockVersion": "2026-09-17",
+      "createdAt": "2026-10-08T00:00:00.000Z",
+      "approvedBy": "wide-screen",
+      "pixelRatio": 1
     }
   ],
   "bundles": [
@@ -29,6 +47,10 @@
         {
           "alias": "scene_nova_city",
           "src": "scene/nova-city.webp"
+        },
+        {
+          "alias": "scene_nova_city_wide",
+          "src": "scene/nova-city-wide.webp"
         }
       ]
     }
