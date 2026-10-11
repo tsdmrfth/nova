@@ -1,6 +1,6 @@
 import { quotePack, sparkForDay, type PackId } from "@nova/shared";
 import type { ChoiceId } from "@nova/assets";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { chainErrorMessage } from "../chain/chainErrors";
 import { useNovaChain } from "../chain/chainContext";
 import { resultsDayFor, type ChainDay, type ChainDayResult, type DayWinner } from "../chain/novaChain";
@@ -22,6 +22,64 @@ import {
 
 /** How often the pool is re-read while the app is open. */
 export const CHAIN_POLL_MS = 20_000;
+
+/** setTimeout delays are 32-bit; re-arm until the vote actually closes. */
+const CLOCK_ARM_MS = 60_000;
+
+/**
+ * Local clock for the vote-close check. The snapshot is cached so render stays
+ * pure; subscribers hear about a new time when the tab refocuses or the close arrives.
+ */
+const voteClock = {
+  now: Date.now(),
+  listeners: new Set<() => void>(),
+};
+
+function publishVoteClock() {
+  voteClock.now = Date.now();
+  for (const listener of voteClock.listeners) listener();
+}
+
+function subscribeVoteClock(listener: () => void) {
+  voteClock.listeners.add(listener);
+  const onFocus = () => publishVoteClock();
+  window.addEventListener("focus", onFocus);
+  return () => {
+    voteClock.listeners.delete(listener);
+    window.removeEventListener("focus", onFocus);
+  };
+}
+
+function getVoteClock() {
+  return voteClock.now;
+}
+
+/** Clock that moves at the vote-close boundary, not on every render. */
+function useVoteClock(closesAt: number | null): number {
+  const now = useSyncExternalStore(subscribeVoteClock, getVoteClock, getVoteClock);
+
+  useEffect(() => {
+    if (closesAt === null) return;
+    let timer = 0;
+    let cancelled = false;
+    const arm = () => {
+      if (cancelled) return;
+      const remaining = closesAt - Date.now();
+      timer = window.setTimeout(() => {
+        if (cancelled) return;
+        publishVoteClock();
+        if (closesAt - Date.now() > 0) arm();
+      }, remaining <= 0 ? 0 : Math.min(remaining, CLOCK_ARM_MS));
+    };
+    arm();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [closesAt]);
+
+  return now;
+}
 
 const NO_WINNERS: DayWinner[] = [];
 
@@ -95,9 +153,10 @@ export function DayStoreProvider({ children }: { children: ReactNode }) {
   );
   const result = current?.result ?? null;
   const winners = current?.winners ?? NO_WINNERS;
+  const now = useVoteClock(current?.day.closesAt ?? null);
 
   const state = useMemo<DayState>(() => {
-    const next = dayStateFromChain(current?.day ?? null, dayUi, account, Date.now(), winners);
+    const next = dayStateFromChain(current?.day ?? null, dayUi, account, now, winners);
     if (result && result.dayId === next.day && result.entry.claimed) {
       const correct = result.entry.option === result.winnerId;
       return {
@@ -110,7 +169,7 @@ export function DayStoreProvider({ children }: { children: ReactNode }) {
       };
     }
     return next;
-  }, [current, dayUi, account, result, winners]);
+  }, [current, dayUi, account, result, winners, now]);
 
   const updateUi = useCallback(
     (change: (state: DayState) => DayState) => {
