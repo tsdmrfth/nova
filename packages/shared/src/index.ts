@@ -1,5 +1,3 @@
-export { hello } from "./hello";
-
 export {
   BPS_DENOMINATOR,
   BUY_SPLIT_BPS,

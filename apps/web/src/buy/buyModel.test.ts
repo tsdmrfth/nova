@@ -4,16 +4,16 @@ import {
   parseUsdc,
   quotePack,
 } from "@nova/shared";
-import { buyPack, createDayState } from "../day/dayStore";
+import { dayState } from "../test/dayFixtures";
 import {
   BUY_COPY,
   DEFAULT_PACK_ID,
   buildBuyModel,
+  buyStatus,
   formatCheckoutUsdc,
   packCards,
 } from "./buyModel";
 
-const now = new Date("2026-09-18T12:00:00");
 
 describe("checkout formatting", () => {
   it("pads quotePack amounts to two decimal places", () => {
@@ -33,7 +33,7 @@ describe("checkout formatting", () => {
 
 describe("buy HUD model", () => {
   it("defaults to Pulse with a 90/8/2 Details breakdown from quotePack", () => {
-    const model = buildBuyModel(createDayState(1, now));
+    const model = buildBuyModel(dayState());
     expect(DEFAULT_PACK_ID).toBe("pulse");
     expect(model.selectedPackId).toBe("pulse");
     expect(model.headline).toBe("Add Extra Influence");
@@ -57,7 +57,10 @@ describe("buy HUD model", () => {
   });
 
   it("quotes Spark from shared math without mixing Free and Extra", () => {
-    const bought = buyPack(createDayState(1, now), "spark");
+    const bought = dayState(
+      { spentMicro: 1_000_000n, entry: { extraBought: 10 } },
+      { lastBuy: { ok: true, packId: "spark", extraInfluence: 10, onPick: null, txUrl: "https://explorer.test/tx/0x1" } },
+    );
     const model = buildBuyModel(bought, "spark");
     expect(model.freeInfluence).toBe(10);
     expect(model.extraInfluence).toBe(10);
@@ -66,13 +69,22 @@ describe("buy HUD model", () => {
     expect(model.breakdown.studioNet).toBe("0.08 USDC");
     expect(model.breakdown.novaBudget).toBe("0.02 USDC");
     expect(model.breakdown.youReceive).toBe("10 Extra Influence");
-    expect(model.status).toMatch(/You received 10 Extra Influence/);
+    expect(model.status).toEqual({
+      tone: "success",
+      title: "+10 Extra Influence added",
+      detail: "Purchase confirmed on Arc.",
+      txUrl: "https://explorer.test/tx/0x1",
+    });
+  });
+
+  it("closes the CTA once the vote is locked", () => {
+    const model = buildBuyModel(dayState({ entry: { voted: true, option: "A", free: 10 } }));
+    expect(model.ctaEnabled).toBe(false);
+    expect(model.ctaDisabledReason).toBe(BUY_COPY.closedAfterVote);
   });
 
   it("disables the CTA after the 10 USDC daily buy cap", () => {
-    let state = createDayState(1, now);
-    state = buyPack(state, "pulse");
-    state = buyPack(state, "pulse");
+    const state = dayState({ spentMicro: 10_000_000n, entry: { extraBought: 110 } });
     const model = buildBuyModel(state, "pulse");
     expect(model.extraInfluence).toBe(110);
     expect(model.ctaEnabled).toBe(false);
@@ -80,7 +92,7 @@ describe("buy HUD model", () => {
   });
 
   it("renders the real pack catalog (not the kit's 1:1 placeholder) with hukuk-safe copy", () => {
-    const model = buildBuyModel(createDayState(1, now), "spark");
+    const model = buildBuyModel(dayState(), "spark");
     expect(packCards().map((pack) => pack.extraLabel)).toEqual(["10 Extra", "55 Extra"]);
     expect(model.cta).toBe("Confirm buy · 1.00 USDC");
     const blob = JSON.stringify({ model, copy: BUY_COPY });
@@ -88,5 +100,42 @@ describe("buy HUD model", () => {
     expect(blob.toLowerCase()).not.toMatch(/partnered with circle/);
     expect(blob.toLowerCase()).not.toMatch(/\bapr\b|\bodds\b|\brtp\b/);
     expect(blob).not.toMatch(/Circle logo/i);
+  });
+});
+
+describe("buy status", () => {
+  const confirmed = {
+    tone: "success" as const,
+    title: "+10 Extra Influence added",
+    detail: "Purchase confirmed on Arc.",
+    txUrl: "https://explorer.test/tx/0x1",
+  };
+  const base = { busy: false, failed: false, error: null, youPay: "1.00 USDC", confirmed };
+
+  it("shows wallet progress over everything else", () => {
+    expect(buyStatus({ ...base, busy: true, error: "stale" })).toMatchObject({
+      tone: "pending",
+      detail: "Approve 1.00 USDC, then wait for Arc to confirm.",
+    });
+  });
+
+  it("heads a failed purchase but not an unrelated read error", () => {
+    expect(buyStatus({ ...base, failed: true, error: "Not enough USDC." })).toEqual({
+      tone: "error",
+      title: "Purchase didn't go through",
+      detail: "Not enough USDC.",
+      txUrl: null,
+    });
+    expect(buyStatus({ ...base, error: "Couldn't reach Arc. Retrying…" })).toEqual({
+      tone: "error",
+      title: "Couldn't reach Arc. Retrying…",
+      detail: null,
+      txUrl: null,
+    });
+  });
+
+  it("falls back to the confirmed purchase", () => {
+    expect(buyStatus(base)).toBe(confirmed);
+    expect(buyStatus({ ...base, confirmed: null })).toBeNull();
   });
 });

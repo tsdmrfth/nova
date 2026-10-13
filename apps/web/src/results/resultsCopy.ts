@@ -40,6 +40,9 @@ export const RESULTS_COPY = {
   to: "To",
   toValue: "Connected wallet",
   explorer: "View on explorer",
+  notSettled: "No results yet. They publish once the day settles on Arc.",
+  loading: "Reading results from Arc…",
+  backHome: "Back home",
   disclaimer:
     "Extra Influence does not make a pick more likely to win. Payouts come only from each day's pool and can be zero.",
 } as const;

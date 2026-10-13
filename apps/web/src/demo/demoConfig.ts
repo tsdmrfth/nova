@@ -22,6 +22,7 @@ export type DemoConfig = {
 };
 
 export type DemoEnv = {
+  VITE_ARC_NETWORK?: string;
   VITE_ARC_RPC_URL?: string;
   VITE_ARC_EXPLORER_URL?: string;
   VITE_ARC_USDC_ADDRESS?: string;
@@ -47,12 +48,16 @@ function readTx(value: string | undefined): string | null {
 }
 
 export function demoConfigFromEnv(env: DemoEnv): DemoConfig {
+  const testnet = env.VITE_ARC_NETWORK === "testnet";
+  if (env.VITE_ARC_NETWORK && !["mainnet", "testnet"].includes(env.VITE_ARC_NETWORK)) {
+    throw new Error("VITE_ARC_NETWORK must be mainnet or testnet.");
+  }
   return {
-    chainId: ARC_MAINNET_CHAIN_ID,
-    chainHex: ARC_MAINNET_CHAIN_HEX,
-    chainName: "Arc",
-    rpcUrl: env.VITE_ARC_RPC_URL?.trim() || ARC_DEFAULT_RPC,
-    explorerUrl: (env.VITE_ARC_EXPLORER_URL?.trim() || ARC_DEFAULT_EXPLORER).replace(
+    chainId: testnet ? 5042002 : ARC_MAINNET_CHAIN_ID,
+    chainHex: testnet ? "0x4cef52" : ARC_MAINNET_CHAIN_HEX,
+    chainName: testnet ? "Arc Testnet" : "Arc",
+    rpcUrl: env.VITE_ARC_RPC_URL?.trim() || (testnet ? "https://rpc.testnet.arc.io" : ARC_DEFAULT_RPC),
+    explorerUrl: (env.VITE_ARC_EXPLORER_URL?.trim() || (testnet ? "https://explorer.testnet.arc.io" : ARC_DEFAULT_EXPLORER)).replace(
       /\/$/,
       "",
     ),

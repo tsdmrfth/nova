@@ -10,9 +10,9 @@ import {
   type PackId,
 } from "@nova/shared";
 import type { DayState } from "../day/dayStore";
-import { BUY_COPY, DEFAULT_PACK_ID, PACK_ART_IDS } from "./buyCopy";
+import { BUY_COPY, DEFAULT_PACK_ID } from "./buyCopy";
 
-export { BUY_COPY, DEFAULT_PACK_ID, PACK_ART_IDS };
+export { BUY_COPY, DEFAULT_PACK_ID };
 
 /** Checkout amounts always show two decimal places (1.00 / 0.90). */
 export function formatCheckoutUsdc(micro: MicroUsdc): string {
@@ -49,6 +49,14 @@ export type BuyBreakdown = {
   youReceive: string;
 };
 
+export type BuyStatus = {
+  tone: "pending" | "success" | "error";
+  title: string;
+  detail: string | null;
+  /** Explorer link, only on a confirmed purchase. */
+  txUrl: string | null;
+};
+
 export type BuyHudModel = {
   headline: string;
   valueProp: string;
@@ -63,6 +71,8 @@ export type BuyHudModel = {
   splitTitle: string;
   split: { prizePool: number; studioNet: number; novaBudget: number };
   cta: string;
+  /** The wallet request is in flight; the CTA shows progress. */
+  ctaPending: boolean;
   ctaEnabled: boolean;
   ctaDisabledReason: string | null;
   back: string;
@@ -72,9 +82,34 @@ export type BuyHudModel = {
   contest: string;
   affiliation: string;
   dailyBuyCap: string;
-  status: string | null;
+  status: BuyStatus | null;
   capHint: string | null;
 };
+
+/** What the player sees after pressing Confirm buy, most urgent first. */
+export function buyStatus(input: {
+  busy: boolean;
+  /** This screen's last purchase failed with `error`. */
+  failed: boolean;
+  error: string | null;
+  youPay: string;
+  confirmed: BuyStatus | null;
+}): BuyStatus | null {
+  if (input.busy) {
+    return {
+      tone: "pending",
+      title: BUY_COPY.pendingTitle,
+      detail: BUY_COPY.pendingDetail(input.youPay),
+      txUrl: null,
+    };
+  }
+  if (input.error) {
+    return input.failed
+      ? { tone: "error", title: BUY_COPY.failedTitle, detail: input.error, txUrl: null }
+      : { tone: "error", title: input.error, detail: null, txUrl: null };
+  }
+  return input.confirmed;
+}
 
 export function packCards(): BuyPackCard[] {
   return PACK_CATALOG.map((pack) => ({
@@ -96,8 +131,15 @@ export function buildBuyModel(
   const attempt = attemptBuy(selectedPackId, state.spentTodayMicro);
   const remaining = remainingDailyBuyMicro(state.spentTodayMicro);
   const last = state.lastBuy;
-  const status =
-    last?.ok ? `You received ${last.extraInfluence} Extra Influence.` : null;
+  const voted = state.status === "cast";
+  const status: BuyStatus | null = last?.ok
+    ? {
+        tone: "success",
+        title: BUY_COPY.successTitle(last.extraInfluence),
+        detail: BUY_COPY.successDetail,
+        txUrl: last.txUrl,
+      }
+    : null;
 
   return {
     headline: BUY_COPY.headline,
@@ -125,8 +167,9 @@ export function buildBuyModel(
       novaBudget: percents.novaBudget,
     },
     cta: BUY_COPY.confirmCta(formatCheckoutUsdc(quote.youPay)),
-    ctaEnabled: attempt.ok,
-    ctaDisabledReason: attempt.ok ? null : BUY_COPY.capExceeded,
+    ctaPending: false,
+    ctaEnabled: !voted && attempt.ok,
+    ctaDisabledReason: voted ? BUY_COPY.closedAfterVote : attempt.ok ? null : BUY_COPY.capExceeded,
     back: BUY_COPY.back,
     feeOneLiner: BUY_COPY.feeOneLiner,
     feeExpand: BUY_COPY.feeExpand,
@@ -136,7 +179,7 @@ export function buildBuyModel(
     dailyBuyCap: BUY_COPY.dailyBuyCap,
     status,
     capHint:
-      remaining === 0n || state.extraInfluence >= EFFECTIVE_EXTRA_CAP
+      remaining === 0n || state.extraBought >= EFFECTIVE_EXTRA_CAP
         ? BUY_COPY.capHint
         : null,
   };

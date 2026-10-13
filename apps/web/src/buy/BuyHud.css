@@ -141,3 +141,13 @@
   height: calc(8 * var(--u));
   border-radius: 2px;
 }
+
+.buy-cta__spinner {
+  flex: none;
+  width: calc(16 * var(--u));
+  height: calc(16 * var(--u));
+  border-radius: 50%;
+  border: 2px solid rgba(164, 185, 215, 0.35);
+  border-top-color: var(--nova-cta-disabled-text);
+  animation: nova-spin 0.9s linear infinite;
+}

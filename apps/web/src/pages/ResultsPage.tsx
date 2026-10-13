@@ -4,42 +4,51 @@ import { useDayStore } from "../day/useDayStore";
 import { useCalmMotion } from "../hud/usePrefersReducedMotion";
 import { ClaimDoneSheet, ClaimPendingSheet, ResultsHud } from "../results/ResultsHud";
 import { buildResultsModel } from "../results/resultsModel";
-import { settleOffline, snapshotFromSettle } from "../results/settleMock";
+import { RESULTS_COPY } from "../results/resultsCopy";
 import { ScreenFrame } from "../ui";
 
-/** Screens 08–11. Claim Done shows once, right after confirmation. */
+/** Screens 08–11 from the pool's latest settled day. Claim Done shows once, right after confirmation. */
 export function ResultsPage() {
-  const { state, claim } = useDayStore();
+  const { result, ready, claim, claimStatus, claimUrl, error } = useDayStore();
   const navigate = useNavigate();
   const calm = useCalmMotion();
-  const settled = useMemo(() => settleOffline(state), [state]);
-  const model = useMemo(() => buildResultsModel(state, settled), [state, settled]);
-  const previous = useRef(state.claimStatus);
+  const model = useMemo(() => (result ? buildResultsModel(result, claimStatus) : null), [result, claimStatus]);
+  const previous = useRef(claimStatus);
   const [justClaimed, setJustClaimed] = useState(false);
 
   useEffect(() => {
-    if (previous.current === "pending" && state.claimStatus === "claimed") {
+    if (previous.current === "pending" && claimStatus === "claimed") {
       setJustClaimed(true);
     }
-    previous.current = state.claimStatus;
-  }, [state.claimStatus]);
+    previous.current = claimStatus;
+  }, [claimStatus]);
 
-  const submitClaim = () => claim(snapshotFromSettle(settled));
+  const submitClaim = () => void claim();
   const home = () => navigate("/");
 
+  if (!model) {
+    return (
+      <ScreenFrame className="home-screen home-screen--results" testId="results-screen">
+        <p data-testid="results-waiting">{ready ? RESULTS_COPY.notSettled : RESULTS_COPY.loading}</p>
+        {error ? <p role="alert">{error}</p> : null}
+        <button onClick={home}>{RESULTS_COPY.backHome}</button>
+      </ScreenFrame>
+    );
+  }
+
   let body;
-  if (state.claimStatus === "pending" || state.claimStatus === "failed") {
+  if (claimStatus === "pending" || claimStatus === "failed") {
     body = (
       <ClaimPendingSheet
         model={model}
         calm={calm}
-        explorerUrl={null}
+        explorerUrl={claimUrl}
         onRetry={submitClaim}
         onBack={home}
       />
     );
   } else if (justClaimed) {
-    body = <ClaimDoneSheet model={model} explorerUrl={null} onBack={home} />;
+    body = <ClaimDoneSheet model={model} explorerUrl={claimUrl} onBack={home} />;
   } else {
     body = (
       <ResultsHud
@@ -54,6 +63,7 @@ export function ResultsPage() {
 
   return (
     <ScreenFrame className="home-screen home-screen--results" testId="results-screen">
+      {claimStatus === "failed" && error ? <p role="alert">{error}</p> : null}
       {body}
     </ScreenFrame>
   );

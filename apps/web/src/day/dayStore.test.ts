@@ -1,29 +1,27 @@
 import { describe, expect, it } from "vitest";
 import { grantDailyFree } from "@nova/shared";
 import {
+  EMPTY_DAY_UI,
   canCast,
-  castSelected,
   createDayState,
+  dayStateFromChain,
   formatLocalStamp,
-  LOCAL_PLAYER_ID,
-  buyPack,
   selectChoice,
   setExtraSpendAmount,
   setSpendAmount,
-  stubVoteSchedule,
 } from "./dayStore";
+import { FIXTURE_ACCOUNT, FIXTURE_NOW, chainDay, dayState, votedState } from "../test/dayFixtures";
 
-describe("in-memory day store", () => {
-  const now = new Date("2026-09-18T12:00:00");
-
+describe("day store from the pool", () => {
   it("opens Day 1 with a Free grant and MOST goal", () => {
-    const state = createDayState(1, now);
+    const state = dayState();
     expect(state.day).toBe(1);
     expect(state.goal).toBe("MOST");
     expect(state.roundTitle).toBe("First light");
     expect(state.freeInfluence).toBe(grantDailyFree());
     expect(state.extraInfluence).toBe(0);
     expect(state.status).toBe("open");
+    expect(state.votingOpen).toBe(true);
     expect(state.choices.map((choice) => choice.world)).toEqual([
       "Stabilize",
       "Expand",
@@ -32,97 +30,58 @@ describe("in-memory day store", () => {
     expect(canCast(state)).toBe(false);
   });
 
-  it("spends Free Influence onto the selected tile", () => {
-    let state = createDayState(1, now);
-    state = selectChoice(state, "A");
-    state = setSpendAmount(state, 7);
-    expect(canCast(state)).toBe(true);
-    state = castSelected(state);
+  it("keeps voting shut until the pool has been read", () => {
+    const state = selectChoice(createDayState(1), "A");
+    expect(state.votingOpen).toBe(false);
+    expect(canCast(state)).toBe(false);
+  });
+
+  it("reads the vote, the remaining Free and the placed Extra from the pool", () => {
+    const state = votedState("A", 7, 4, 10);
     expect(state.status).toBe("cast");
+    expect(state.selected).toBe("A");
     expect(state.freeInfluence).toBe(3);
     expect(state.spendAmount).toBe(3);
-    expect(state.casts).toEqual([
-      {
-        walletId: LOCAL_PLAYER_ID,
-        optionId: "A",
-        extra: 0,
-        free: 7,
-      },
-    ]);
+    // Free and Extra both read what is left after the vote.
+    expect(state.extraInfluence).toBe(6);
+    expect(state.extraBought).toBe(10);
+    expect(state.extraSpendAmount).toBe(4);
+    expect(state.casts).toEqual([{ walletId: FIXTURE_ACCOUNT, optionId: "A", extra: 4, free: 7 }]);
+    expect(selectChoice(state, "B").selected).toBe("A");
   });
 
-  it("places bought Extra on the cast option without mixing Free", () => {
-    let state = createDayState(1, now);
-    state = buyPack(state, "spark");
-    state = selectChoice(state, "B");
-    state = castSelected(state);
-    expect(state.casts[0]).toEqual({
-      walletId: LOCAL_PLAYER_ID,
-      optionId: "B",
-      extra: 10,
-      free: 10,
-    });
-    expect(state.packsBought).toEqual(["spark"]);
-    expect(state.freeInfluence).toBe(0);
-
-    state = buyPack(state, "pulse");
-    expect(state.casts[0]?.extra).toBe(65);
-    expect(state.extraInfluence).toBe(65);
-    expect(state.freeInfluence).toBe(0);
-    expect(state.packsBought).toEqual(["spark", "pulse"]);
-  });
-
-  it("places only the Extra stepper amount and leaves the Free lane separate", () => {
-    let state = createDayState(1, now);
-    state = buyPack(state, "spark");
+  it("defaults the Extra stepper to everything bought and keeps Free separate", () => {
+    let state = dayState({ spentMicro: 1_000_000n, entry: { extraBought: 10 } });
     expect(state.extraSpendAmount).toBe(10);
     expect(state.spendAmount).toBe(10);
+    expect(state.spentTodayMicro).toBe(1_000_000n);
     state = setExtraSpendAmount(state, 4);
     state = setSpendAmount(state, 2);
     state = selectChoice(state, "C");
-    state = castSelected(state);
-    expect(state.casts[0]).toMatchObject({ free: 2, extra: 4, optionId: "C" });
-    expect(state.freeInfluence).toBe(8);
-    expect(state.extraInfluence).toBe(10);
+    expect(canCast(state)).toBe(true);
+    expect(state).toMatchObject({ spendAmount: 2, extraSpendAmount: 4, freeInfluence: 10, extraInfluence: 10 });
   });
 
-  it("clamps overspend, ignores casts without a tile, and locks after one cast", () => {
-    let state = createDayState(1, now);
-    expect(castSelected(state)).toEqual(state);
-    state = setSpendAmount(state, 99);
+  it("clamps local picks to what the pool allows", () => {
+    const state = dayState({ entry: { extraBought: 10 } }, { spendAmount: 99, extraSpendAmount: 50 });
     expect(state.spendAmount).toBe(10);
-    state = selectChoice(state, "B");
-    state = castSelected(state);
-    const locked = selectChoice(state, "C");
-    expect(locked.selected).toBe("B");
-    expect(castSelected(state).casts).toHaveLength(1);
+    expect(state.extraSpendAmount).toBe(10);
+    expect(setSpendAmount(state, -1).spendAmount).toBe(0);
   });
 
-  it("formats the stub close/publish times in device local", () => {
-    const schedule = stubVoteSchedule(now);
-    expect(schedule.publishAt - schedule.voteCloseAt).toBe(2 * 60 * 60 * 1000);
-    expect(formatLocalStamp(schedule.voteCloseAt).length).toBeGreaterThan(4);
+  it("closes voting once the pool day closes or settles", () => {
+    const closed = dayState({ closesAt: FIXTURE_NOW - 1 }, { selected: "B" });
+    expect(closed.votingOpen).toBe(false);
+    expect(canCast(closed)).toBe(false);
+
+    const settled = dayStateFromChain(chainDay({ open: false, settled: true }), EMPTY_DAY_UI, null);
+    expect(settled.votingOpen).toBe(false);
+    expect(settled.settled).toBe(true);
   });
 
-  it("credits Extra via attemptBuy without mixing Free", () => {
-    let state = createDayState(1, now);
-    state = buyPack(state, "spark");
-    expect(state.freeInfluence).toBe(grantDailyFree());
-    expect(state.extraInfluence).toBe(10);
-    expect(state.spentTodayMicro).toBe(1_000_000n);
-    expect(state.lastBuy).toEqual({
-      ok: true,
-      packId: "spark",
-      extraInfluence: 10,
-    });
-
-    state = buyPack(state, "pulse");
-    expect(state.extraInfluence).toBe(65);
-    expect(state.freeInfluence).toBe(10);
-
-    state = buyPack(state, "pulse");
-    expect(state.extraInfluence).toBe(65);
-    expect(state.lastBuy?.ok).toBe(false);
-    expect(state.lastBuy?.code).toBe("DAILY_BUY_CAP_EXCEEDED");
+  it("formats the pool close time in device local", () => {
+    const state = dayState({ closesAt: FIXTURE_NOW + 3_600_000 });
+    expect(state.schedule.voteCloseAt).toBe(FIXTURE_NOW + 3_600_000);
+    expect(formatLocalStamp(FIXTURE_NOW).length).toBeGreaterThan(4);
   });
 });

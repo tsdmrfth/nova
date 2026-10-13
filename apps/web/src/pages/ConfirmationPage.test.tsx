@@ -1,27 +1,22 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it } from "vitest";
 import { grantDailyFree } from "@nova/shared";
-import { App } from "../App";
 import { seedOnboarded } from "../onboarding/onboardingStorage";
+import { FakeNovaChain } from "../test/fakeChain";
+import { flushChain, renderApp } from "../test/renderApp";
 
-function renderAt(path: string) {
-  return render(
-    <MemoryRouter initialEntries={[path]}>
-      <App />
-    </MemoryRouter>,
-  );
-}
+const renderAt = (path: string, chain = new FakeNovaChain(), wallet: "authorized" | "fresh" = "authorized") =>
+  renderApp(path, chain, { wallet });
 
-describe("Vote locked + offline day loop (UI-KIT-V2 07)", () => {
+describe("Vote locked + onchain day loop (UI-KIT-V2 07)", () => {
   beforeEach(() => {
     seedOnboarded();
   });
 
   it("keeps a cold /confirmation deep link from inventing a cast", async () => {
     const user = userEvent.setup();
-    renderAt("/confirmation");
+    await renderAt("/confirmation");
 
     expect(screen.getByRole("heading", { name: "Nothing locked yet" })).toBeTruthy();
     expect(screen.getByTestId("confirmation-empty").textContent).toMatch(/Cast Influence/);
@@ -29,7 +24,7 @@ describe("Vote locked + offline day loop (UI-KIT-V2 07)", () => {
     expect(screen.getByTestId("confirmation-free").textContent).toMatch(
       new RegExp(`Free spent0Remaining${grantDailyFree()}`),
     );
-    expect(screen.getByTestId("confirmation-close").textContent).toMatch(/\d{2}:\d{2}/);
+    expect(screen.getByTestId("confirmation-close").textContent).toBe("At settle");
     expect(screen.queryByTestId("confirmation-results")).toBeNull();
 
     await user.click(screen.getByTestId("confirmation-home"));
@@ -38,12 +33,17 @@ describe("Vote locked + offline day loop (UI-KIT-V2 07)", () => {
     expect(screen.getByTestId("home-cta").textContent).toMatch(/^Choose and vote/);
   });
 
-  it("plays Connect → Home → Vote → Buy → Vote locked → Results on one day", async () => {
+  it("plays Connect → Home → Vote → Buy → Vote locked → settle → Results on one day", async () => {
     const user = userEvent.setup();
     window.localStorage.clear();
-    renderAt("/connect");
+    const chain = new FakeNovaChain();
+    // Other players: B leads the Free tally, so MOST picks B.
+    await chain.seed("0x00000000000000000000000000000000000000a1", { option: "A", free: 4 });
+    await chain.seed("0x00000000000000000000000000000000000000b1", { option: "B", free: 10, packs: ["spark"], extra: 10 });
+    await renderAt("/connect", chain, "fresh");
 
     await user.click(screen.getByTestId("connect-cta"));
+    await screen.findByTestId("connect-checkbox");
     await user.click(screen.getByTestId("connect-checkbox"));
     await user.click(screen.getByTestId("notice-enter"));
     await user.click(screen.getByTestId("grant-toast"));
@@ -53,6 +53,7 @@ describe("Vote locked + offline day loop (UI-KIT-V2 07)", () => {
     await user.click(screen.getByTestId("buy-entry"));
     await user.click(screen.getByTestId("buy-pack-spark"));
     await user.click(screen.getByTestId("buy-cta"));
+    await screen.findByTestId("buy-status");
     await user.click(screen.getByTestId("buy-back"));
 
     expect(screen.getByTestId("choice-B").getAttribute("aria-pressed")).toBe("true");
@@ -60,7 +61,7 @@ describe("Vote locked + offline day loop (UI-KIT-V2 07)", () => {
     await user.click(screen.getByTestId("spend-extra-decrease"));
     await user.click(screen.getByTestId("cast-influence"));
 
-    expect(screen.getByTestId("confirmation-title").textContent).toBe("Vote locked");
+    expect((await screen.findByTestId("confirmation-title")).textContent).toBe("Vote locked");
     expect(within(screen.getByTestId("confirmation-choice")).getByText("Say hello")).toBeTruthy();
     expect(screen.getByTestId("confirmation-free").textContent).toBe(
       "Free spent10Remaining0",
@@ -77,14 +78,20 @@ describe("Vote locked + offline day loop (UI-KIT-V2 07)", () => {
     expect(screen.getByTestId("choice-A")).toHaveProperty("disabled", true);
     await user.click(screen.getByTestId("cast-influence"));
 
+    // Results stay shut until the owner settles the day onchain.
+    expect(screen.getByTestId("confirmation-results")).toHaveProperty("disabled", true);
+    chain.settle();
+    window.dispatchEvent(new Event("focus"));
+    await flushChain();
+    expect(screen.getByTestId("confirmation-results")).toHaveProperty("disabled", false);
     await user.click(screen.getByTestId("confirmation-results"));
-    expect(screen.getByTestId("results-title").textContent).toBe("You matched!");
+    expect((await screen.findByTestId("results-title")).textContent).toBe("You matched!");
     expect(screen.getByTestId("results-pick").textContent).toMatch(/Your pick · B/);
   });
 
-  it("sends an unseen visitor to Connect", () => {
+  it("sends an unseen visitor to Connect", async () => {
     window.localStorage.clear();
-    renderAt("/confirmation");
+    await renderAt("/confirmation", new FakeNovaChain(), "fresh");
     expect(screen.getByTestId("connect-cta")).toBeTruthy();
   });
 });

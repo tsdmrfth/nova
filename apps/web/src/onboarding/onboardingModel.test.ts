@@ -3,20 +3,16 @@ import {
   applyEdgeQuery,
   canProceed,
   completeTutorial,
-  continueOnboarding,
   createOnboardingSnapshot,
   disconnect,
   dismissGrant,
   enterNova,
   isOnboarded,
-  mockConnect,
-  openWallet,
   parseOnboardingSearch,
-  retryConnect,
   restoreFace,
   retryWallet,
   setRulesChecked,
-  switchToArc,
+  succeedConnect,
 } from "./onboardingModel";
 
 describe("onboarding model", () => {
@@ -37,7 +33,7 @@ describe("onboarding model", () => {
 
   it("connects first, then gates Enter Nova on the soft-launch notice", () => {
     const fresh = createOnboardingSnapshot();
-    const connected = mockConnect(fresh);
+    const connected = succeedConnect(fresh);
     expect(connected.connected).toBe(true);
     expect(connected.face).toBe("notice");
     expect(connected.grantPending).toBe(false);
@@ -53,18 +49,15 @@ describe("onboarding model", () => {
   });
 
   it("grants the first-run toast on Enter Nova, not on connect", () => {
-    const entered = enterNova(setRulesChecked(mockConnect(createOnboardingSnapshot()), true));
+    const entered = enterNova(setRulesChecked(succeedConnect(createOnboardingSnapshot()), true));
     expect(entered.grantPending).toBe(true);
     expect(dismissGrant(entered).grantPending).toBe(false);
     expect(completeTutorial(entered).tutorialSeen).toBe(true);
-
-    const continued = continueOnboarding(createOnboardingSnapshot());
-    expect(continued.face).toBe("notice");
   });
 
   it("skips the notice for a returning player who already accepted", () => {
     const returning = createOnboardingSnapshot({ disclaimerAccepted: true, rulesChecked: true });
-    const connected = mockConnect(returning);
+    const connected = succeedConnect(returning);
     expect(connected.face).toBe("welcome");
     expect(isOnboarded(connected)).toBe(true);
   });
@@ -76,43 +69,20 @@ describe("onboarding model", () => {
   });
 
   it("disconnects back to Connect", () => {
-    const entered = enterNova(setRulesChecked(mockConnect(createOnboardingSnapshot()), true));
+    const entered = enterNova(setRulesChecked(succeedConnect(createOnboardingSnapshot()), true));
     const out = disconnect(entered);
     expect(out.connected).toBe(false);
     expect(isOnboarded(out)).toBe(false);
     expect(out.disclaimerAccepted).toBe(true);
   });
 
-  it("holds Home behind wrong-network until Switch to Arc + retry", () => {
-    const ready = applyEdgeQuery(createOnboardingSnapshot({ disclaimerAccepted: true }), {
-      geoBlocked: false,
-      network: "wrong",
-      fault: null,
-    });
-    const attempted = mockConnect(ready);
-    expect(attempted.face).toBe("network");
-    expect(isOnboarded(attempted)).toBe(false);
-    const switched = switchToArc(attempted);
-    expect(switched.network).toBe("arc");
-    expect(isOnboarded(retryConnect(switched))).toBe(true);
-  });
-
-  it("surfaces wallet reject / locked faces from the connect stub", () => {
+  it("returns a faulted face to Connect on retry", () => {
     const rejected = applyEdgeQuery(createOnboardingSnapshot(), {
       geoBlocked: false,
       network: "arc",
       fault: "rejected",
     });
-    expect(mockConnect(rejected).face).toBe("rejected");
-    expect(retryWallet(rejected).face).toBe("welcome");
-
-    const locked = applyEdgeQuery(createOnboardingSnapshot(), {
-      geoBlocked: false,
-      network: "arc",
-      fault: "locked",
-    });
-    expect(mockConnect(locked).face).toBe("locked");
-    expect(openWallet(locked).face).toBe("notice");
+    expect(retryWallet({ ...rejected, face: "rejected" })).toMatchObject({ face: "welcome", fault: null });
   });
 
   it("never onboards a geo-blocked snapshot", () => {
@@ -121,8 +91,7 @@ describe("onboarding model", () => {
       { geoBlocked: true, network: "arc", fault: null },
     );
     expect(blocked.geoBlocked).toBe(true);
-    expect(isOnboarded(mockConnect(blocked))).toBe(false);
-    expect(isOnboarded(continueOnboarding(blocked))).toBe(false);
+    expect(isOnboarded(succeedConnect(blocked))).toBe(false);
     expect(isOnboarded(enterNova(blocked))).toBe(false);
   });
 });

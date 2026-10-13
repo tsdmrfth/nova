@@ -1,5 +1,5 @@
 import { cleanup } from "@testing-library/react";
-import { afterEach } from "vitest";
+import { afterEach, vi } from "vitest";
 import { clearOnboardingStorage } from "../onboarding/onboardingStorage";
 
 // Node ≥ 25 ships its own global `localStorage` / `sessionStorage` (undefined
@@ -16,6 +16,7 @@ if (dom) {
 
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
   clearOnboardingStorage();
   try {
     globalThis.localStorage?.clear();

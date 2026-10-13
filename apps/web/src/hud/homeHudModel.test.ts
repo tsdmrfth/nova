@@ -1,18 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { containsForbiddenFinanceTerm } from "@nova/shared";
 import {
-  buyPack,
-  castSelected,
-  createDayState,
   formatLocalTime,
   selectChoice,
   setExtraSpendAmount,
   setSpendAmount,
 } from "../day/dayStore";
+import { FIXTURE_NOW, dayState, votedState } from "../test/dayFixtures";
 import { buildHomeModel, buildVoteModel } from "./homeHudModel";
 
-const now = new Date("2026-09-18T12:00:00");
-const DAY_1 = createDayState(1, now);
+const DAY_1 = dayState();
 
 describe("home model (screen 05)", () => {
   it("uses Day 1 First light copy on A / B / C", () => {
@@ -29,16 +26,44 @@ describe("home model (screen 05)", () => {
       ["B", "Say hello"],
       ["C", "Find your place"],
     ]);
+    expect(model.traits.map((trait) => trait.value)).toEqual([0, 0, 0]);
   });
 
-  it("leads to Vote with the close time, then to the locked vote after a cast", () => {
-    const open = buildHomeModel(DAY_1);
+  it("opens day 2 from yesterday's winner and marks day 7 as the turning point", () => {
+    const day2 = buildHomeModel(dayState({ dayId: 2 }, {}, [{ day: 1, winner: "B" }]));
+    expect(day2.title).toBe("First task");
+    expect(day2.goal).toBe("LEAST");
+    expect(day2.scene).toMatch(/said hello/i);
+    expect(day2.scene).toMatch(/today's plan/i);
+    expect(day2.traits.map((trait) => [trait.id, trait.value])).toEqual([
+      ["Stabilize", 0],
+      ["Expand", 1],
+      ["Route", 0],
+    ]);
+
+    const day7 = buildHomeModel(
+      dayState(
+        { dayId: 7 },
+        {},
+        [1, 2, 3, 4, 5, 6, 7].map((day) => ({ day, winner: "A" as const })),
+      ),
+    );
+    expect(day7.chapterLabel).toBe("Turning point");
+    expect(day7.title).toBe("Week's close");
+    expect(day7.traits.find((trait) => trait.id === "Stabilize")?.value).toBe(8);
+  });
+
+  it("leads to Vote with the pool close time, then to the locked vote after a cast", () => {
+    expect(buildHomeModel(DAY_1).ctaLabel).toBe("Choose and vote");
+    const closesAt = FIXTURE_NOW + 3_600_000;
+    const open = buildHomeModel(dayState({ closesAt }));
     expect(open.locked).toBe(false);
-    expect(open.ctaLabel).toBe(
-      `Choose and vote · closes ${formatLocalTime(DAY_1.schedule.voteCloseAt)}`,
+    expect(open.ctaLabel).toBe(`Choose and vote · closes ${formatLocalTime(closesAt)}`);
+    expect(buildHomeModel(dayState({ open: false, settled: true })).ctaLabel).toBe(
+      "Voting closed · see results",
     );
 
-    const cast = buildHomeModel(castSelected(selectChoice(DAY_1, "B")));
+    const cast = buildHomeModel(votedState("B", 10));
     expect(cast.locked).toBe(true);
     expect(cast.ctaLabel).toBe("View your vote");
     expect(cast.choices.find((choice) => choice.selected)?.id).toBe("B");
@@ -67,7 +92,7 @@ describe("vote model (screen 06)", () => {
   });
 
   it("runs Free and Extra as two independent steppers", () => {
-    let state = buyPack(selectChoice(DAY_1, "A"), "spark");
+    let state = selectChoice(dayState({ entry: { extraBought: 10 } }), "A");
     state = setSpendAmount(state, 4);
     state = setExtraSpendAmount(state, 3);
     const model = buildVoteModel(state);
@@ -86,7 +111,7 @@ describe("vote model (screen 06)", () => {
   });
 
   it("goes read-only after the cast", () => {
-    const model = buildVoteModel(castSelected(selectChoice(DAY_1, "B")));
+    const model = buildVoteModel(votedState("B", 10));
     expect(model.locked).toBe(true);
     expect(model.castLabel).toBe("Vote locked · view");
     expect(model.spendAmount).toBe(10);

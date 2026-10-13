@@ -30,8 +30,10 @@
       ) * var(--nv-fit, 1)
   );
 
-  /* Desktop column; phones are always full-bleed (see ui.css). */
+  /* Tablet phone-column. Wide screens use the left HUD column in ui.css. */
   --nova-column: 430px;
+  --nova-wide-column: min(440px, 36vw);
+  --nova-wide-inset: max(32px, 4vw);
   --nova-gutter: calc(24 * var(--u));
 
   /* Scaled copies of the geometry tokens in tokens.css (same artboard values). */

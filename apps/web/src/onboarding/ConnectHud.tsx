@@ -51,14 +51,15 @@ export function EdgeSheet({
 }
 
 function SignInSheet({ onEnter }: { onEnter: () => void }) {
-  const { connect } = useOnboarding();
+  const { connect, walletBusy, walletError, chainName } = useOnboarding();
   return (
     <GlassSheet testId="connect-welcome" className="oboard-signin">
       <Kicker tone="muted">{ONBOARDING_COPY.signInKicker}</Kicker>
       <Button
         testId="connect-cta"
-        onClick={() => {
-          if (connect()) {
+        disabled={walletBusy}
+        onClick={async () => {
+          if (await connect()) {
             onEnter();
           }
         }}
@@ -66,6 +67,8 @@ function SignInSheet({ onEnter }: { onEnter: () => void }) {
         <WalletIcon />
         {ONBOARDING_COPY.connectCta}
       </Button>
+      <p className="nv-note">{walletBusy ? "Confirm in your wallet…" : chainName}</p>
+      {walletError ? <p role="alert" className="nv-note">{walletError}</p> : null}
       <p className="nv-note" data-testid="connect-footer">
         {ONBOARDING_COPY.footerMicro}
       </p>
@@ -85,13 +88,17 @@ function EdgeFace({ onEnter }: { onEnter: () => void }) {
         primary={{
           testId: "network-switch",
           label: ONBOARDING_COPY.networkSwitch,
-          onClick: switchToArc,
+          onClick: async () => {
+            if (await switchToArc()) {
+              onEnter();
+            }
+          },
         }}
         secondary={{
           testId: "network-retry",
           label: ONBOARDING_COPY.networkRetry,
-          onClick: () => {
-            if (retryConnect()) {
+          onClick: async () => {
+            if (await retryConnect()) {
               onEnter();
             }
           },
@@ -124,8 +131,8 @@ function EdgeFace({ onEnter }: { onEnter: () => void }) {
         primary={{
           testId: "wallet-open",
           label: ONBOARDING_COPY.lockedCta,
-          onClick: () => {
-            if (openWallet()) {
+          onClick: async () => {
+            if (await openWallet()) {
               onEnter();
             }
           },
@@ -139,7 +146,7 @@ function EdgeFace({ onEnter }: { onEnter: () => void }) {
 
 /** Screens 01 (Connect) + 02 (Soft-launch notice) on `/connect`. */
 export function ConnectHud({ onEnter }: { onEnter: () => void }) {
-  const { state, enterNova } = useOnboarding();
+  const { state, enterNova, walletError, account } = useOnboarding();
   const notice = state.face === "notice";
 
   return (
@@ -160,6 +167,8 @@ export function ConnectHud({ onEnter }: { onEnter: () => void }) {
         ) : null
       }
     >
+      {account ? <p className="nv-note" data-testid="connected-wallet">{account}</p> : null}
+      {state.face === "network" && walletError ? <p role="alert" className="nv-note">{walletError}</p> : null}
       {notice ? null : (
         <>
           <ConnectHero />

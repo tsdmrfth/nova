@@ -14,6 +14,7 @@
 .nv-screen__backdrop {
   position: fixed;
   inset: -40px;
+  z-index: 0;
   width: calc(100% + 80px);
   height: calc(100% + 80px);
   object-fit: cover;
@@ -24,6 +25,7 @@
 /* Size container: `--u` (styles/scale.css) resolves against this box. */
 .nv-screen__frame {
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 100dvh;
   margin: 0 auto;
@@ -32,8 +34,11 @@
   container-type: size;
 }
 
-/* Phones (up to the widest Pro Max and small foldables) are full-bleed; only real desktops get the column. */
-@media (min-width: 600px) {
+/*
+ * Between a phone and a desktop, keep the centred phone column. The portrait
+ * plate is clipped to that column; the blurred backdrop fills the gutters.
+ */
+@media (min-width: 600px) and (max-width: 959px) {
   .nv-screen__frame {
     width: var(--nova-column);
     box-shadow: 0 0 0 1px rgba(113, 185, 255, 0.22), 0 30px 80px rgba(0, 0, 0, 0.55);
@@ -43,9 +48,24 @@
 .nv-scene {
   position: absolute;
   inset: 0;
+  z-index: 0;
   overflow: hidden;
   background: var(--nova-navy);
   pointer-events: none;
+}
+
+@media (min-width: 600px) and (max-width: 959px) {
+  .nv-scene {
+    width: var(--nova-column);
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
+
+.nv-scene picture {
+  position: absolute;
+  inset: 0;
 }
 
 .nv-scene__plate {
@@ -55,6 +75,53 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+/*
+ * Wide screens: the landscape plate is full-bleed (picture source in
+ * ScreenFrame, same 960px breakpoint) and the HUD is a left column so Nova,
+ * who stands on the right of that plate, stays clear. `--u` follows the
+ * column, not the viewport, so the phone layout does not stretch.
+ */
+@media (min-width: 960px) {
+  .nv-screen__backdrop {
+    display: none;
+  }
+
+  .nv-scene__plate {
+    object-position: right center;
+  }
+
+  .nv-screen__frame {
+    width: 100%;
+    transform: none;
+  }
+
+  .nv-screen__stage {
+    --u: calc(
+      clamp(
+          var(--nv-u-min),
+          min(min(440px, 36vw) / var(--nv-ref-w), 100dvh / var(--nv-ref-h)),
+          var(--nv-u-max)
+        ) * var(--nv-fit, 1)
+    );
+  }
+
+  .nv-screen .hud-chapter,
+  .nv-screen .hud-vote-head {
+    width: 100%;
+    max-width: none;
+  }
+
+  .nv-screen .oboard-hero {
+    width: min(100%, calc(280 * var(--u)));
+    max-width: none;
+  }
+
+  .menu-drawer {
+    width: var(--nova-wide-column);
+    margin-left: var(--nova-wide-inset);
+  }
 }
 
 .nv-scene__shade {
@@ -240,6 +307,48 @@
   width: 100%;
 }
 
+/* After the base HUD, shade, blur and overlay rules so these win the cascade. */
+@media (min-width: 960px) {
+  .nv-screen__hud {
+    right: auto;
+    left: var(--nova-wide-inset);
+    width: var(--nova-wide-column);
+  }
+
+  .nv-scene__shade {
+    background:
+      linear-gradient(180deg, rgba(4, 17, 40, 0) 36%, rgba(4, 17, 40, 0.22)),
+      linear-gradient(90deg, rgba(4, 17, 40, 0.5), rgba(4, 17, 40, 0.14) 24%, rgba(4, 17, 40, 0) 46%);
+  }
+
+  .nv-scene__blur {
+    display: none;
+  }
+
+  .nv-overlay--top,
+  .nv-overlay--fill {
+    justify-content: flex-start;
+    padding-left: var(--nova-wide-inset);
+    padding-right: var(--nova-wide-inset);
+  }
+
+  .nv-overlay--top > *,
+  .nv-overlay--fill > * {
+    width: var(--nova-wide-column);
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .nv-overlay--center {
+    justify-content: center;
+  }
+
+  .nv-overlay--center > * {
+    width: min(440px, calc(100% - 48px));
+    max-width: 440px;
+  }
+}
+
 /* ---------- Type ---------- */
 
 .nv-wordmark {
@@ -348,6 +457,125 @@
   background: var(--nova-cta2-fill);
   border: 1px solid var(--nova-border-soft);
   line-height: 1.55;
+}
+
+/* ---------- Status notice ---------- */
+
+.nv-notice {
+  --notice-ink: var(--nova-blue-light);
+  --notice-fill: rgba(39, 133, 255, 0.12);
+  --notice-edge: rgba(113, 185, 255, 0.4);
+  display: flex;
+  align-items: flex-start;
+  gap: calc(10 * var(--u));
+  padding: calc(10 * var(--u)) calc(12 * var(--u));
+  border-radius: var(--nova-r-chip);
+  border: 1px solid var(--notice-edge);
+  background: var(--notice-fill);
+  text-align: left;
+  animation: nv-notice-in 220ms ease-out;
+}
+
+.nv-notice--success {
+  --notice-ink: #6fe3b0;
+  --notice-fill: rgba(46, 196, 132, 0.12);
+  --notice-edge: rgba(111, 227, 176, 0.42);
+}
+
+.nv-notice--error {
+  --notice-ink: #ff9b9b;
+  --notice-fill: rgba(232, 72, 85, 0.14);
+  --notice-edge: rgba(255, 155, 155, 0.45);
+}
+
+.nv-notice--info {
+  --notice-ink: var(--nova-muted);
+  --notice-fill: rgba(4, 24, 51, 0.6);
+  --notice-edge: var(--nova-border-soft);
+}
+
+.nv-notice__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+  color: var(--notice-ink);
+}
+
+.nv-notice--success .nv-notice__icon {
+  border-radius: 50%;
+  background: var(--notice-ink);
+  color: var(--nova-navy);
+}
+
+.nv-notice__spinner {
+  width: calc(16 * var(--u));
+  height: calc(16 * var(--u));
+  border-radius: 50%;
+  border: 2px solid rgba(113, 185, 255, 0.25);
+  border-top-color: var(--notice-ink);
+  animation: nova-spin 0.9s linear infinite;
+}
+
+.nv-notice__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nv-notice__title {
+  margin: 0;
+  font-size: calc(14 * var(--u));
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--nova-text);
+}
+
+/* A blocked action explains itself; it isn't an event, so it stays quiet. */
+.nv-notice--info .nv-notice__title {
+  font-size: calc(13 * var(--u));
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--nova-muted);
+}
+
+.nv-notice__detail {
+  margin: 0;
+  font-size: calc(12 * var(--u));
+  line-height: 1.45;
+  color: var(--nova-muted);
+  text-wrap: pretty;
+}
+
+.nv-notice__link {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 2px;
+  margin-top: 2px;
+  font-size: calc(12 * var(--u));
+  color: var(--notice-ink);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nv-notice__link:hover,
+.nv-notice__link:focus-visible {
+  text-decoration: underline;
+}
+
+@keyframes nv-notice-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ---------- Buttons ---------- */
@@ -947,6 +1175,35 @@ button.nv-choice:disabled {
 }
 
 .nv-rank__fill {
+  display: block;
+  height: 100%;
+  border-radius: calc(999 * var(--u));
+  background: linear-gradient(90deg, var(--nova-blue), var(--nova-blue-light));
+}
+
+.nv-traits {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--u));
+}
+
+.nv-trait {
+  display: grid;
+  grid-template-columns: calc(78 * var(--u)) 1fr auto;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  font-size: calc(11 * var(--u));
+}
+
+.nv-trait__track {
+  display: block;
+  height: calc(5 * var(--u));
+  border-radius: calc(999 * var(--u));
+  background: rgba(151, 185, 228, 0.22);
+  overflow: hidden;
+}
+
+.nv-trait__fill {
   display: block;
   height: 100%;
   border-radius: calc(999 * var(--u));

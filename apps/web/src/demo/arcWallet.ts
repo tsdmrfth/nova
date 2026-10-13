@@ -12,6 +12,8 @@ import type { DemoConfig } from "./demoConfig";
 
 export type Eip1193Provider = {
   request(args: { method: string; params?: unknown[] }): Promise<unknown>;
+  on?(event: string, listener: (...args: unknown[]) => void): void;
+  removeListener?(event: string, listener: (...args: unknown[]) => void): void;
 };
 
 export type BuyReceipt = {
@@ -61,7 +63,7 @@ export async function readChainId(provider: Eip1193Provider): Promise<number> {
   return chainId;
 }
 
-export async function ensureArcMainnet(
+export async function ensureArcNetwork(
   provider: Eip1193Provider,
   config: DemoConfig,
 ): Promise<void> {
@@ -84,8 +86,14 @@ export async function ensureArcMainnet(
         },
       ],
     });
+    await provider.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: config.chainHex }],
+    });
   }
 }
+
+export const ensureArcMainnet = ensureArcNetwork;
 
 async function sendTransaction(
   provider: Eip1193Provider,
@@ -101,6 +109,25 @@ async function sendTransaction(
     throw new Error("Wallet did not return a transaction hash.");
   }
   return hash;
+}
+
+export async function waitForTransaction(
+  provider: Eip1193Provider,
+  hash: string,
+  timeoutMs = 120_000,
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const receipt = await provider.request({ method: "eth_getTransactionReceipt", params: [hash] });
+    if (receipt && typeof receipt === "object" && "status" in receipt) {
+      const status = (receipt as { status: unknown }).status;
+      if (status === "0x1") return;
+      if (status === "0x0") throw new Error("Transaction reverted. No purchase was credited.");
+      throw new Error("Wallet returned an invalid transaction receipt.");
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  throw new Error(`Confirmation is still pending. Check transaction ${hash} before submitting again.`);
 }
 
 async function ethCall(
@@ -122,6 +149,13 @@ export async function sendExtraInfluenceBuy(input: {
   pack: "spark" | "pulse";
   price: bigint;
 }): Promise<BuyReceipt> {
+  if (await readChainId(input.provider) !== input.config.chainId) {
+    throw new Error(`Switch to ${input.config.chainName} before buying.`);
+  }
+  const accounts = await input.provider.request({ method: "eth_accounts" });
+  if (!Array.isArray(accounts) || typeof accounts[0] !== "string" || accounts[0].toLowerCase() !== input.from.toLowerCase()) {
+    throw new Error("Wallet account changed. Reconnect before buying.");
+  }
   const pool = input.config.poolAddress;
   if (!pool) throw new Error("Pool address is not set.");
   const approveHash = await sendTransaction(
@@ -130,12 +164,19 @@ export async function sendExtraInfluenceBuy(input: {
     input.config.usdcAddress,
     encodeApprove(pool, input.price),
   );
+  await waitForTransaction(input.provider, approveHash);
+  if (await readChainId(input.provider) !== input.config.chainId) throw new Error("Wallet network changed before buying.");
+  const currentAccounts = await input.provider.request({ method: "eth_accounts" });
+  if (!Array.isArray(currentAccounts) || currentAccounts[0]?.toLowerCase() !== input.from.toLowerCase()) {
+    throw new Error("Wallet account changed before buying.");
+  }
   const buyHash = await sendTransaction(
     input.provider,
     input.from,
     pool,
     encodeBuy(PACK_ON_CHAIN[input.pack]),
   );
+  await waitForTransaction(input.provider, buyHash);
   return { approveHash, buyHash };
 }
 

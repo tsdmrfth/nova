@@ -54,6 +54,15 @@ export function InfoIcon(props: IconProps) {
   );
 }
 
+export function AlertIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 7v6M12 16.5h.01" />
+    </Icon>
+  );
+}
+
 export function CheckIcon(props: IconProps) {
   return (
     <Icon strokeWidth={3} {...props}>

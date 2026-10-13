@@ -1,10 +1,11 @@
 import type { ChoiceId } from "@nova/assets";
 import { BPS_DENOMINATOR, DAY_SPLIT_BPS, type DayGoal, type MicroUsdc } from "@nova/shared";
 import { formatCheckoutUsdc } from "../buy/buyModel";
-import type { ClaimStatus, DayState } from "../day/dayStore";
+import type { ChainDayResult } from "../chain/novaChain";
+import { getSeasonDay, nextOpening } from "../content/season1";
+import type { ClaimStatus } from "../day/dayStore";
 import { padDay } from "../hud/homeHudModel";
 import { RESULTS_COPY } from "./resultsCopy";
-import { settleOffline, type OfflineDaySettle } from "./settleMock";
 
 export { RESULTS_COPY };
 
@@ -53,14 +54,31 @@ function pct(bps: number): number {
   return Math.round((bps / BPS_DENOMINATOR) * 100);
 }
 
-function variantFor(settled: OfflineDaySettle): ResultsVariant {
-  if (!settled.lockedVote) {
+/** Facts about one settled day for the connected wallet. */
+export type ResultsFacts = {
+  lockedVote: boolean;
+  correct: boolean;
+  /** The whole pot rolled into the next day (no winner in either lane). */
+  rolledOver: boolean;
+};
+
+export function resultsFacts(result: ChainDayResult): ResultsFacts {
+  const lockedVote = result.entry.voted;
+  return {
+    lockedVote,
+    correct: lockedVote && result.entry.option === result.winnerId,
+    rolledOver: result.pot > 0n && result.rolledOut === result.pot,
+  };
+}
+
+function variantFor(facts: ResultsFacts): ResultsVariant {
+  if (!facts.lockedVote) {
     return "needCast";
   }
-  if (settled.correct) {
+  if (facts.correct) {
     return "matched";
   }
-  return settled.rolledOver ? "rollover" : "miss";
+  return facts.rolledOver ? "rollover" : "miss";
 }
 
 const HEADINGS: Record<ResultsVariant, { title: string; sub: string }> = {
@@ -71,35 +89,31 @@ const HEADINGS: Record<ResultsVariant, { title: string; sub: string }> = {
 };
 
 export function buildResultsModel(
-  state: DayState,
-  settled: OfflineDaySettle = settleOffline(state),
+  result: ChainDayResult,
+  claimStatus: ClaimStatus,
 ): ResultsHudModel {
-  const claimed = state.claim;
-  const paid = claimed?.paid ?? settled.player.paid;
-  const free = claimed?.free ?? settled.player.free;
-  const total = claimed?.total ?? settled.player.total;
-  const winnerId = (claimed?.winningOptionId ?? settled.winningOptionId) as ChoiceId;
+  const copy = getSeasonDay(result.dayId);
+  const facts = resultsFacts(result);
+  const { paid, free, total } = result.share;
   const winner =
-    state.choices.find((choice) => choice.id === winnerId) ?? state.choices[0];
-  const variant = variantFor(settled);
-  const pick = state.casts.at(-1)?.optionId ?? null;
-  const next = padDay(state.day + 1);
-  const claimStatus = state.claimStatus;
+    copy.choices.find((choice) => choice.id === result.winnerId) ?? copy.choices[0];
+  const variant = variantFor(facts);
+  const next = padDay(result.dayId + 1);
 
   return {
-    day: state.day,
-    dayLabel: `DAY ${padDay(state.day)}`,
-    goal: state.goal,
+    day: result.dayId,
+    dayLabel: `DAY ${padDay(result.dayId)}`,
+    goal: copy.goal,
     variant,
     ...HEADINGS[variant],
     winnerId: winner.id,
     winnerTitle: winner.title,
-    pickId: pick,
-    dayPool: usdc(settled.pool.prizePool),
+    pickId: result.entry.option,
+    dayPool: usdc(result.pot),
     paidLaneLabel: RESULTS_COPY.paidLane(pct(DAY_SPLIT_BPS.paidWinners)),
-    paidLane: usdc(settled.pool.paidWinnerBucket),
+    paidLane: usdc(result.paidBucket),
     freeLaneLabel: RESULTS_COPY.freeLane(pct(DAY_SPLIT_BPS.freeWinners)),
-    freeLane: usdc(settled.pool.freeWinnerBucket),
+    freeLane: usdc(result.freeBucket),
     paidShare: paid,
     freeShare: free,
     totalShare: total,
@@ -107,14 +121,14 @@ export function buildResultsModel(
     yourFree: usdc(free),
     claimable: usdc(total),
     teaseKicker: RESULTS_COPY.teaseKicker(next),
-    teaseTitle: RESULTS_COPY.tease(next),
+    teaseTitle: nextOpening(copy, winner.id) ?? RESULTS_COPY.tease(next),
     claimStatus,
     claimCta:
       claimStatus === "claimed"
         ? RESULTS_COPY.claimed
         : RESULTS_COPY.claim(formatShareUsdc(total)),
     claimEnabled: total > 0n && claimStatus !== "claimed" && claimStatus !== "pending",
-    lockedVote: settled.lockedVote,
-    correct: settled.correct,
+    lockedVote: facts.lockedVote,
+    correct: facts.correct,
   };
 }

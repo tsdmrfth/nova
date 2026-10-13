@@ -5,9 +5,9 @@ import {
   Chip,
   ExtraIcon,
   GlassSheet,
-  InfoLine,
   Note,
   ReceiptDivider,
+  StatusNotice,
   StoryTitle,
 } from "../ui";
 import { BUY_COPY } from "./buyCopy";
@@ -116,23 +116,37 @@ export function BuyHud({ model, selectedPackId, onSelectPack, onBuy, onBack }: B
             </dl>
           </section>
 
-          <InfoLine testId="buy-value">{model.valueProp}</InfoLine>
+          <StatusNotice testId="buy-value" tone="info" title={model.valueProp} announce={false} />
+
+          {model.status ? (
+            <StatusNotice
+              testId="buy-status"
+              tone={model.status.tone}
+              title={model.status.title}
+              detail={model.status.detail}
+              link={
+                model.status.txUrl
+                  ? { href: model.status.txUrl, label: BUY_COPY.viewTransaction, testId: "buy-tx-link" }
+                  : null
+              }
+            />
+          ) : null}
+          {model.ctaDisabledReason ? (
+            <StatusNotice testId="buy-cap" tone="info" title={model.ctaDisabledReason} />
+          ) : model.capHint ? (
+            <StatusNotice testId="buy-cap-hint" tone="info" title={model.capHint} />
+          ) : null}
 
           <Button
             testId="buy-cta"
             disabled={!model.ctaEnabled}
+            pending={model.ctaPending}
             title={model.ctaDisabledReason ?? undefined}
             onClick={onBuy}
           >
+            {model.ctaPending ? <span className="buy-cta__spinner" aria-hidden="true" /> : null}
             {model.cta}
           </Button>
-
-          {model.status ? <Note testId="buy-status">{model.status}</Note> : null}
-          {model.ctaDisabledReason ? (
-            <Note testId="buy-cap">{model.ctaDisabledReason}</Note>
-          ) : model.capHint ? (
-            <Note testId="buy-cap-hint">{model.capHint}</Note>
-          ) : null}
 
           <Note testId="buy-footnotes">
             {`${model.noGuarantee} ${model.dailyBuyCap} ${model.contest} ${model.affiliation}`}

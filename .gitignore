@@ -12,3 +12,4 @@ agent-tools
 contracts/out/
 contracts/cache/
 contracts/broadcast/
+.pnpm-store/

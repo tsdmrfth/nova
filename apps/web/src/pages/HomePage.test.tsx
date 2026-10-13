@@ -1,32 +1,66 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it } from "vitest";
-import { App } from "../App";
 import { PREF_KEYS } from "../menu/prefs";
 import { seedOnboarded } from "../onboarding/onboardingStorage";
+import { FakeNovaChain } from "../test/fakeChain";
+import { PLAYER, flushChain, renderApp } from "../test/renderApp";
 
-function renderAt(path: string) {
-  return render(
-    <MemoryRouter initialEntries={[path]}>
-      <App />
-    </MemoryRouter>,
-  );
-}
+const renderAt = (path: string, chain = new FakeNovaChain()) => renderApp(path, chain);
 
 describe("Home / Vote (UI-KIT-V2 05–06)", () => {
   beforeEach(() => {
     seedOnboarded();
   });
 
+  it("opens day 2 with the line day 1's winner wrote", async () => {
+    const chain = new FakeNovaChain();
+    await chain.seed("0x00000000000000000000000000000000000000a1", { option: "A", free: 10 });
+    chain.settle();
+    chain.openNextDay();
+    await renderAt("/", chain);
+
+    expect(screen.getByTestId("hud-day").textContent).toBe("DAY 02");
+    expect(screen.getByTestId("day-goal").textContent).toBe("GOAL · LEAST");
+    expect(screen.getByRole("heading", { name: "First task" })).toBeTruthy();
+    expect(screen.getByTestId("hud-scene").textContent).toMatch(/stayed quiet/i);
+    expect(screen.getByTestId("hud-scene").textContent).toMatch(/today's plan/i);
+    expect(screen.getByTestId("choice-A").textContent).toMatch(/Ask the deadline/);
+    expect(
+      screen.getByTestId("hud-bar-Stabilize").querySelector("[role='progressbar']")?.getAttribute("aria-valuenow"),
+    ).toBe("1");
+    expect(
+      screen.getByTestId("hud-bar-Expand").querySelector("[role='progressbar']")?.getAttribute("aria-valuenow"),
+    ).toBe("0");
+  });
+
+  it("ignores Home choices until the pool read lands", async () => {
+    const chain = new FakeNovaChain();
+    chain.holdReads = true;
+    const user = userEvent.setup();
+    await renderAt("/", chain);
+
+    expect(screen.getByTestId("home-cta").textContent).toBe("Reading today from Arc…");
+    expect(screen.getByTestId("choice-A")).toHaveProperty("disabled", true);
+    expect(screen.getByTestId("home-cta")).toHaveProperty("disabled", true);
+    await user.click(screen.getByTestId("choice-C"));
+    await user.click(screen.getByTestId("home-cta"));
+    expect(screen.queryByTestId("vote-screen")).toBeNull();
+
+    chain.release();
+    await flushChain();
+    expect(screen.getByTestId("home-cta").textContent).toBe("Choose and vote");
+    expect(screen.getByTestId("choice-C")).toHaveProperty("disabled", false);
+  });
+
   it("renders the story on Home and opens Vote with the tapped card preselected", async () => {
     const user = userEvent.setup();
-    renderAt("/");
+    await renderAt("/");
 
     expect(screen.getByTestId("hud-day").textContent).toBe("DAY 01");
     expect(screen.getByTestId("day-goal").textContent).toBe("GOAL · MOST");
     expect(screen.getByRole("heading", { name: "First light" })).toBeTruthy();
-    expect(screen.getByTestId("home-cta").textContent).toMatch(/^Choose and vote · closes /);
+    expect(screen.getByTestId("home-cta").textContent).toBe("Choose and vote");
     expect(screen.queryByTestId("spend-split")).toBeNull();
     expect(screen.queryByTestId("hud-usdc")).toBeNull();
 
@@ -38,7 +72,7 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
 
   it("casts on Vote with two separate steppers, then locks the day", async () => {
     const user = userEvent.setup();
-    renderAt("/vote");
+    await renderAt("/vote");
 
     expect(screen.getByTestId("cast-influence")).toHaveProperty("disabled", true);
     await user.click(screen.getByTestId("choice-B"));
@@ -49,23 +83,60 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
     expect(screen.getByTestId("spend-extra-increase")).toHaveProperty("disabled", true);
 
     await user.click(screen.getByTestId("cast-influence"));
-    expect(screen.getByTestId("confirmation-title").textContent).toBe("Vote locked");
+    expect((await screen.findByTestId("confirmation-title")).textContent).toBe("Vote locked");
 
     await user.click(screen.getByTestId("confirmation-home"));
     expect(screen.getByTestId("home-cta").textContent).toBe("View your vote");
     expect(screen.getByTestId("hud-free-value").textContent).toBe("1");
   });
 
+  it("writes the vote to the pool and reads it back after a reload", async () => {
+    const chain = new FakeNovaChain();
+    const user = userEvent.setup();
+    const first = await renderAt("/vote", chain);
+    await user.click(screen.getByTestId("choice-A"));
+    await user.click(screen.getByTestId("cast-influence"));
+    await screen.findByTestId("confirmation-title");
+    expect((await chain.readDay(PLAYER)).entry).toMatchObject({ voted: true, option: "A", free: 10 });
+
+    first.unmount();
+    await renderAt("/", chain);
+    expect(screen.getByTestId("home-cta").textContent).toBe("View your vote");
+    expect(screen.getByTestId("hud-free-value").textContent).toBe("0");
+  });
+
+  it("shows the pool's rejection and stays on Vote", async () => {
+    const chain = new FakeNovaChain();
+    chain.failNext = "Request rejected in your wallet.";
+    const user = userEvent.setup();
+    await renderAt("/vote", chain);
+    await user.click(screen.getByTestId("choice-B"));
+    await user.click(screen.getByTestId("cast-influence"));
+    expect((await screen.findByRole("alert")).textContent).toBe("Request rejected in your wallet.");
+    expect(screen.getByTestId("vote-screen")).toBeTruthy();
+    expect((await chain.readDay(PLAYER)).entry.voted).toBe(false);
+  });
+
+  it("sends a closed day to Results instead of Vote", async () => {
+    const chain = new FakeNovaChain();
+    chain.settle();
+    const user = userEvent.setup();
+    await renderAt("/", chain);
+    expect(screen.getByTestId("home-cta").textContent).toBe("Voting closed · see results");
+    await user.click(screen.getByTestId("home-cta"));
+    expect(screen.getByTestId("results-screen")).toBeTruthy();
+  });
+
   it("opens Buy from the EXTRA balance chip", async () => {
     const user = userEvent.setup();
-    renderAt("/");
+    await renderAt("/");
     await user.click(screen.getByTestId("hud-extra"));
     expect(screen.getByRole("heading", { name: "Add Extra Influence" })).toBeTruthy();
   });
 
   it("opens the Menu from the MENU chip and closes it again", async () => {
     const user = userEvent.setup();
-    renderAt("/");
+    await renderAt("/");
 
     await user.click(screen.getByTestId("hud-menu"));
     const menu = screen.getByTestId("menu-sheet");
@@ -83,7 +154,7 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
 
   it("persists Calm motion and applies it app-wide", async () => {
     const user = userEvent.setup();
-    renderAt("/");
+    await renderAt("/");
     await user.click(screen.getByTestId("hud-menu"));
 
     const calm = screen.getByTestId("menu-calm");
@@ -99,7 +170,7 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
 
   it("reopens the tutorial and the read-only notice from Help", async () => {
     const user = userEvent.setup();
-    renderAt("/");
+    await renderAt("/");
 
     await user.click(screen.getByTestId("hud-menu"));
     await user.click(screen.getByTestId("menu-help-notice"));
@@ -125,7 +196,7 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
     } as HTMLElement["animate"];
     try {
       const user = userEvent.setup();
-      renderAt("/");
+      await renderAt("/");
       await user.click(screen.getByTestId("hud-menu"));
       calls.length = 0;
       await user.click(screen.getByTestId("menu-help-tutorial"));
@@ -149,7 +220,7 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
   it("shows the tutorial without the rise under Calm motion", async () => {
     localStorage.setItem(PREF_KEYS.calmMotion, "1");
     const user = userEvent.setup();
-    renderAt("/");
+    await renderAt("/");
 
     await user.click(screen.getByTestId("hud-menu"));
     await user.click(screen.getByTestId("menu-help-tutorial"));
@@ -161,7 +232,7 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
 
   it("opens the full guide from Help and comes back Home", async () => {
     const user = userEvent.setup();
-    renderAt("/");
+    await renderAt("/");
 
     await user.click(screen.getByTestId("hud-menu"));
     await user.click(screen.getByTestId("menu-help-guide"));
@@ -187,14 +258,14 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
 
   it("disconnects back to Connect", async () => {
     const user = userEvent.setup();
-    renderAt("/");
+    await renderAt("/");
     await user.click(screen.getByTestId("hud-menu"));
     await user.click(screen.getByTestId("menu-disconnect"));
     expect(screen.getByTestId("connect-cta")).toBeTruthy();
   });
 
-  it("redirects the retired /profile route Home", () => {
-    renderAt("/profile");
+  it("redirects the retired /profile route Home", async () => {
+    await renderAt("/profile");
     expect(screen.getByTestId("home-screen")).toBeTruthy();
   });
 });
