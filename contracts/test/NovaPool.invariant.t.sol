@@ -4,7 +4,7 @@ pragma solidity 0.8.28;
 import {Test} from "forge-std/Test.sol";
 import {NovaPool} from "../src/NovaPool.sol";
 import {NovaSignal} from "../src/NovaSignal.sol";
-import {MockUSDC} from "./NovaPool.t.sol";
+import {MockUSDC} from "./helpers/MockUSDC.sol";
 
 /// @notice Drives the pool through random days: buys, votes, settles, claims, studio and
 ///         budget withdrawals, and pauses. Each action skips itself when the pool would

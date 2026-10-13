@@ -50,7 +50,10 @@ export class FakeNovaChain implements NovaChain {
   failNext: string | null = null;
   /** Holds every write until `release()` when true. */
   hold = false;
+  /** Holds `readDay` until `release()` when true. */
+  holdReads = false;
   private waiting: Array<() => void> = [];
+  private readWaiting: Array<() => void> = [];
   private txCount = 0;
   private days = new Map<number, FakeDay>();
   private entries = new Map<string, ChainEntry>();
@@ -103,9 +106,13 @@ export class FakeNovaChain implements NovaChain {
 
   release() {
     this.hold = false;
+    this.holdReads = false;
     const waiting = this.waiting;
     this.waiting = [];
     waiting.forEach((resolve) => resolve());
+    const reads = this.readWaiting;
+    this.readWaiting = [];
+    reads.forEach((resolve) => resolve());
   }
 
   private placeExtra(account: string, entry: ChainEntry, extra: number): ChainEntry {
@@ -127,6 +134,7 @@ export class FakeNovaChain implements NovaChain {
   }
 
   async readDay(account: string | null): Promise<ChainDay> {
+    if (this.holdReads) await new Promise<void>((resolve) => this.readWaiting.push(resolve));
     const day = this.day();
     return {
       dayId: this.dayId,

@@ -29,6 +29,7 @@ contract DeployNova is Script {
         address novaWallet = vm.envAddress("NOVA_WALLET");
         uint256 cap = vm.envUint("SIGNAL_CAP_MICRO");
         address owner = vm.envAddress("OWNER_ADDRESS");
+        if (owner == address(0)) revert("OWNER_ADDRESS is the zero address");
         address operator = vm.envAddress("OPERATOR_ADDRESS");
         address agent = vm.envAddress("SIGNAL_AGENT");
         uint64 firstClose = uint64(vm.envOr("FIRST_DAY_CLOSES_AT", uint256(0)));

@@ -29,6 +29,7 @@ export function HomePage() {
   const tutorial = !grant && onboarding.onboarded && !onboarding.state.tutorialSeen;
 
   const pick = (id: ChoiceId) => {
+    if (!ready) return;
     if (!model.locked) {
       select(id);
     }
@@ -89,10 +90,12 @@ export function HomePage() {
       {error ? <p role="alert">{error}</p> : null}
       <HomeView
         model={model}
+        actionsEnabled={ready}
         onPick={pick}
-        onPrimary={() =>
-          navigate(model.locked ? "/confirmation" : ready && !state.votingOpen ? "/results" : "/vote")
-        }
+        onPrimary={() => {
+          if (!ready) return;
+          navigate(model.locked ? "/confirmation" : state.votingOpen ? "/vote" : "/results");
+        }}
         onBuyExtra={() => navigate("/buy")}
         onMenu={() => setMenuOpen(true)}
       />

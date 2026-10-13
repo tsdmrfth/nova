@@ -32,6 +32,8 @@ export function useArcWallet(enabled: boolean) {
   const active = useRef(!readDisconnected());
   const generation = useRef(0);
   const pending = useRef(false);
+  // Bumped by Disconnect so an in-flight connect can't clear the reload guard.
+  const session = useRef(0);
   const config = useMemo(() => readDemoConfig(), []);
 
   useEffect(() => {
@@ -86,8 +88,7 @@ export function useArcWallet(enabled: boolean) {
       setError("Install MetaMask or Rabby, then open Nova in that browser.");
       return false;
     }
-    active.current = true;
-    writeDisconnected(false);
+    const sessionId = session.current;
     pending.current = true;
     setBusy(true);
     setError(null);
@@ -97,9 +98,11 @@ export function useArcWallet(enabled: boolean) {
       const [accounts, chain] = await Promise.all([
         provider.request({ method: "eth_accounts" }), readChainId(provider),
       ]);
-      if (!active.current) return false;
+      if (sessionId !== session.current) return false;
       const address = Array.isArray(accounts) && typeof accounts[0] === "string" && /^0x[a-fA-F0-9]{40}$/.test(accounts[0]) ? accounts[0] : null;
       if (!address) throw new Error("Wallet did not return an account.");
+      active.current = true;
+      writeDisconnected(false);
       setAccount(address);
       setChainId(chain);
       if (chain !== config.chainId) throw new Error(`Switch your wallet to ${config.chainName}.`);
@@ -114,6 +117,7 @@ export function useArcWallet(enabled: boolean) {
   }, [config]);
 
   const disconnect = useCallback(() => {
+    session.current += 1;
     active.current = false;
     writeDisconnected(true);
     ++generation.current;

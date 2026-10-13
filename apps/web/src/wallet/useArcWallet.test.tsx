@@ -88,6 +88,28 @@ describe("real browser wallet", () => {
     expect(result.current.error).toMatch(/Install MetaMask or Rabby/);
   });
 
+  it("keeps the disconnect guard when a reconnect is rejected", async () => {
+    const mock = wallet();
+    const first = renderHook(() => useArcWallet(true));
+    await act(async () => { await first.result.current.connect(); });
+    act(() => first.result.current.disconnect());
+    first.unmount();
+
+    const reloaded = renderHook(() => useArcWallet(true));
+    await waitFor(() => expect(reloaded.result.current.checked).toBe(true));
+    mock.request.mockImplementation(async ({ method }) => {
+      if (method === "eth_requestAccounts") throw { code: 4001 };
+      if (method === "eth_accounts") return [ADDRESS];
+      return "0x4cef52";
+    });
+    await act(async () => { expect(await reloaded.result.current.connect()).toBe(false); });
+    reloaded.unmount();
+
+    const again = renderHook(() => useArcWallet(true));
+    await waitFor(() => expect(again.result.current.checked).toBe(true));
+    expect(again.result.current.account).toBeNull();
+  });
+
   it("handles rejected permission requests", async () => {
     const mock = wallet();
     mock.request.mockImplementation(async ({ method }) => {

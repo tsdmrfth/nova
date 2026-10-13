@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { PREF_KEYS } from "../menu/prefs";
 import { seedOnboarded } from "../onboarding/onboardingStorage";
 import { FakeNovaChain } from "../test/fakeChain";
-import { PLAYER, renderApp } from "../test/renderApp";
+import { PLAYER, flushChain, renderApp } from "../test/renderApp";
 
 const renderAt = (path: string, chain = new FakeNovaChain()) => renderApp(path, chain);
 
@@ -32,6 +32,25 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
     expect(
       screen.getByTestId("hud-bar-Expand").querySelector("[role='progressbar']")?.getAttribute("aria-valuenow"),
     ).toBe("0");
+  });
+
+  it("ignores Home choices until the pool read lands", async () => {
+    const chain = new FakeNovaChain();
+    chain.holdReads = true;
+    const user = userEvent.setup();
+    await renderAt("/", chain);
+
+    expect(screen.getByTestId("home-cta").textContent).toBe("Reading today from Arc…");
+    expect(screen.getByTestId("choice-A")).toHaveProperty("disabled", true);
+    expect(screen.getByTestId("home-cta")).toHaveProperty("disabled", true);
+    await user.click(screen.getByTestId("choice-C"));
+    await user.click(screen.getByTestId("home-cta"));
+    expect(screen.queryByTestId("vote-screen")).toBeNull();
+
+    chain.release();
+    await flushChain();
+    expect(screen.getByTestId("home-cta").textContent).toBe("Choose and vote");
+    expect(screen.getByTestId("choice-C")).toHaveProperty("disabled", false);
   });
 
   it("renders the story on Home and opens Vote with the tapped card preselected", async () => {

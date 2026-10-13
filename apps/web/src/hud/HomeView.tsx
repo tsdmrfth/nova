@@ -69,6 +69,8 @@ export function BackBar({
 
 type HomeViewProps = {
   model: HomeModel;
+  /** False while the pool read is still the fallback day, so a tap can't lock the wrong slot. */
+  actionsEnabled?: boolean;
   onPick(id: ChoiceId): void;
   onPrimary(): void;
   onBuyExtra(): void;
@@ -76,7 +78,14 @@ type HomeViewProps = {
 };
 
 /** Screen 05. Story copy sits on the plate at ~60% width so Nova stays clear. */
-export function HomeView({ model, onPick, onPrimary, onBuyExtra, onMenu }: HomeViewProps) {
+export function HomeView({
+  model,
+  actionsEnabled = true,
+  onPick,
+  onPrimary,
+  onBuyExtra,
+  onMenu,
+}: HomeViewProps) {
   return (
     <>
       <div className="nv-top">
@@ -113,11 +122,12 @@ export function HomeView({ model, onPick, onPrimary, onBuyExtra, onMenu }: HomeV
             selected={model.locked && choice.selected}
             trailing={model.locked ? "check" : "chevron"}
             testId={`choice-${choice.id}`}
+            disabled={!actionsEnabled}
             onClick={() => onPick(choice.id)}
           />
         ))}
         <TraitBars traits={model.traits} testId="hud-rank" />
-        <Button testId="home-cta" onClick={onPrimary}>
+        <Button testId="home-cta" onClick={onPrimary} disabled={!actionsEnabled}>
           {model.ctaLabel}
         </Button>
       </div>
