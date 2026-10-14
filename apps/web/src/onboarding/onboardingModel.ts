@@ -89,7 +89,7 @@ export function setRulesChecked(
 }
 
 export function isOnboarded(state: OnboardingSnapshot): boolean {
-  return state.disclaimerAccepted && state.connected && !state.geoBlocked;
+  return state.disclaimerAccepted && !state.geoBlocked;
 }
 
 function markAccepted(state: OnboardingSnapshot): OnboardingSnapshot {

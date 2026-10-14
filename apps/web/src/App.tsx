@@ -52,11 +52,16 @@ function DevRouteJump() {
 }
 
 function PlayGate({ children }: { children: ReactElement }) {
-  const { onboarded, walletChecked } = useOnboarding();
+  const { onboarded, walletChecked, state, account } = useOnboarding();
   if (!onboarded && !walletChecked) {
     return null;
   }
+  // Disclaimer not accepted → go to /connect
   if (!onboarded) {
+    return <Navigate to="/connect" replace />;
+  }
+  // Wallet connected but on wrong network → show network-switch screen
+  if (account && state.network === "wrong") {
     return <Navigate to="/connect" replace />;
   }
   return children;

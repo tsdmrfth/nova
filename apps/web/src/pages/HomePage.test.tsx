@@ -256,12 +256,14 @@ describe("Home / Vote (UI-KIT-V2 05–06)", () => {
     expect(screen.getByTestId("home-screen")).toBeTruthy();
   });
 
-  it("disconnects back to Connect", async () => {
+  it("disconnects and stays on Home (disclaimer already accepted)", async () => {
     const user = userEvent.setup();
     await renderAt("/");
     await user.click(screen.getByTestId("hud-menu"));
     await user.click(screen.getByTestId("menu-disconnect"));
-    expect(screen.getByTestId("connect-cta")).toBeTruthy();
+    // Disclaimer persists after disconnect — player stays on home, not routed to /connect
+    expect(screen.getByTestId("home-screen")).toBeTruthy();
+    expect(screen.queryByTestId("connect-cta")).toBeNull();
   });
 
   it("redirects the retired /profile route Home", async () => {
