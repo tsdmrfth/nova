@@ -112,8 +112,8 @@ What is still a placeholder (human):
 | `NovaSignal` | [`0x4106eC17c53dc48Fc10D62377b6663B4941C7C56`](https://explorer.arc.io/address/0x4106eC17c53dc48Fc10D62377b6663B4941C7C56) — block 25978627 |
 | Nova public wallet | `0x0c230CE5aebEfd4C037723ca9266D7BD46fd3eA8` |
 | Deployer USDC (gas + a tiny buy) | Funded. |
-| Buy tx | `PENDING_HUMAN_BROADCAST` — explorer `https://explorer.arc.io/tx/<hash>` |
-| Signal tx | `PENDING_HUMAN_BROADCAST` — same explorer |
+| Buy tx | [`0x485e0117c18d83946419fea0e72f70cdbc03ae57762bbc5e4118d453a4a1038f`](https://explorer.arc.io/tx/0x485e0117c18d83946419fea0e72f70cdbc03ae57762bbc5e4118d453a4a1038f) |
+| Signal tx | [`0xe7aae75a4aa4d122bc400cf95d4059df95a1a9a7ad28c66187599976704eff30`](https://explorer.arc.io/tx/0xe7aae75a4aa4d122bc400cf95d4059df95a1a9a7ad28c66187599976704eff30) |
 | Live host URL | `PENDING_HUMAN_HOST` |
 
 USDC on Arc (public protocol address, Circle docs): `0x3600000000000000000000000000000000000000` (ERC-20, 6 decimals). RPC `https://rpc.mainnet.arc.io`. Explorer `https://explorer.arc.io`. Gas is also USDC; Arc drops transactions with `maxFeePerGas` below 20 gwei.
