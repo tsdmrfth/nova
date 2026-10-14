@@ -114,7 +114,7 @@ What is still a placeholder (human):
 | Deployer USDC (gas + a tiny buy) | Funded. |
 | Buy tx | [`0x485e0117c18d83946419fea0e72f70cdbc03ae57762bbc5e4118d453a4a1038f`](https://explorer.arc.io/tx/0x485e0117c18d83946419fea0e72f70cdbc03ae57762bbc5e4118d453a4a1038f) |
 | Signal tx | [`0xe7aae75a4aa4d122bc400cf95d4059df95a1a9a7ad28c66187599976704eff30`](https://explorer.arc.io/tx/0xe7aae75a4aa4d122bc400cf95d4059df95a1a9a7ad28c66187599976704eff30) |
-| Live host URL | `PENDING_HUMAN_HOST` |
+| Live host URL | https://nova-arc-agent.netlify.app |
 
 USDC on Arc (public protocol address, Circle docs): `0x3600000000000000000000000000000000000000` (ERC-20, 6 decimals). RPC `https://rpc.mainnet.arc.io`. Explorer `https://explorer.arc.io`. Gas is also USDC; Arc drops transactions with `maxFeePerGas` below 20 gwei.
 
