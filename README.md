@@ -108,10 +108,10 @@ What is still a placeholder (human):
 | Item | Status |
 | --- | --- |
 | GitHub repo visibility | Private until a human makes it public |
-| `NovaPool` | `PENDING_HUMAN_DEPLOY` |
-| `NovaSignal` | `PENDING_HUMAN_DEPLOY` |
-| Nova public wallet | Set `NOVA_WALLET` at deploy. Not in git. |
-| Deployer USDC (gas + a tiny buy) | Human-funded. No key in git. |
+| `NovaPool` | [`0x204643a50b88782D9e8A8B6A0Cb9fCe29fCae6E5`](https://explorer.arc.io/address/0x204643a50b88782D9e8A8B6A0Cb9fCe29fCae6E5) — block 25978627 |
+| `NovaSignal` | [`0x4106eC17c53dc48Fc10D62377b6663B4941C7C56`](https://explorer.arc.io/address/0x4106eC17c53dc48Fc10D62377b6663B4941C7C56) — block 25978627 |
+| Nova public wallet | `0x0c230CE5aebEfd4C037723ca9266D7BD46fd3eA8` |
+| Deployer USDC (gas + a tiny buy) | Funded. |
 | Buy tx | `PENDING_HUMAN_BROADCAST` — explorer `https://explorer.arc.io/tx/<hash>` |
 | Signal tx | `PENDING_HUMAN_BROADCAST` — same explorer |
 | Live host URL | `PENDING_HUMAN_HOST` |
