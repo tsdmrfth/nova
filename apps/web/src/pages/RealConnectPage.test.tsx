@@ -14,16 +14,24 @@ function renderReal() {
 }
 
 describe("real Connect route", () => {
-  it("does not accept old persisted mock connection as a real wallet", async () => {
-    seedOnboarded();
+  it("fresh visitor with no disclaimer sees the connect screen", async () => {
+    // No seedOnboarded — fresh localStorage → disclaimer not accepted → /connect
     vi.stubGlobal("ethereum", undefined);
     renderReal();
-    await userEvent.click(screen.getByTestId("connect-cta"));
-    expect(screen.getByRole("alert").textContent).toMatch(/Install MetaMask or Rabby/);
+    expect(await screen.findByTestId("connect-cta")).toBeTruthy();
     expect(screen.queryByTestId("home-screen")).toBeNull();
   });
 
-  it("shows the selected account and requires the notice after wallet approval", async () => {
+  it("player who accepted disclaimer bypasses connect and lands on home", async () => {
+    seedOnboarded();
+    vi.stubGlobal("ethereum", undefined);
+    renderReal();
+    // disclaimer accepted → isOnboarded true → PlayGate passes → home renders
+    expect(await screen.findByTestId("home-screen")).toBeTruthy();
+    expect(screen.queryByTestId("connect-cta")).toBeNull();
+  });
+
+  it("shows the soft-launch notice after wallet approval on first run", async () => {
     let accounts: string[] = [];
     vi.stubGlobal("ethereum", { request: vi.fn(async ({ method }: { method: string }) => {
       if (method === "eth_requestAccounts") accounts = [ADDRESS];

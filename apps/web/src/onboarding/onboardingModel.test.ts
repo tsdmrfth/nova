@@ -37,6 +37,7 @@ describe("onboarding model", () => {
     expect(connected.connected).toBe(true);
     expect(connected.face).toBe("notice");
     expect(connected.grantPending).toBe(false);
+    // connected alone is not enough — disclaimer still needed
     expect(isOnboarded(connected)).toBe(false);
 
     expect(canProceed(connected)).toBe(false);
@@ -45,6 +46,7 @@ describe("onboarding model", () => {
     const entered = enterNova(setRulesChecked(connected, true));
     expect(entered.disclaimerAccepted).toBe(true);
     expect(entered.face).toBe("welcome");
+    // disclaimer accepted → onboarded (wallet connection no longer required)
     expect(isOnboarded(entered)).toBe(true);
   });
 
@@ -59,6 +61,8 @@ describe("onboarding model", () => {
     const returning = createOnboardingSnapshot({ disclaimerAccepted: true, rulesChecked: true });
     const connected = succeedConnect(returning);
     expect(connected.face).toBe("welcome");
+    // returning player with disclaimer accepted is onboarded regardless of wallet state
+    expect(isOnboarded(returning)).toBe(true);
     expect(isOnboarded(connected)).toBe(true);
   });
 
@@ -68,11 +72,12 @@ describe("onboarding model", () => {
     expect(restoreFace(createOnboardingSnapshot()).face).toBe("welcome");
   });
 
-  it("disconnects back to Connect", () => {
+  it("disconnects but stays onboarded (disclaimer persists)", () => {
     const entered = enterNova(setRulesChecked(succeedConnect(createOnboardingSnapshot()), true));
     const out = disconnect(entered);
     expect(out.connected).toBe(false);
-    expect(isOnboarded(out)).toBe(false);
+    // disclaimer still accepted after disconnect → still onboarded
+    expect(isOnboarded(out)).toBe(true);
     expect(out.disclaimerAccepted).toBe(true);
   });
 
